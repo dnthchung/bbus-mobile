@@ -1,14 +1,22 @@
 import 'dart:convert';
-import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
-import 'package:http/http.dart' as http;
 
-class AuthRemoteDatasource {
-  final String baseURL = '';
-  Future<UserModel> login(
-      {required String username, required String password}) async {
-    final response = await http.post(Uri.parse(baseURL),
-        body: jsonEncode({username: username, password: password}),
-        headers: {'Content-Type': 'application/json'});
-    return UserModel.fromJson(jsonDecode(response.body));
+import 'package:bbus_mobile/config/injector/injector_conf.dart';
+import 'package:bbus_mobile/core/constants/api_constants.dart';
+import 'package:bbus_mobile/core/network/dio_client.dart';
+import 'package:bbus_mobile/features/authentication/data/models/login_model.dart';
+import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
+
+abstract class AuthRemoteDatasource {
+  Future<UserModel> login(LoginModel loginModel);
+}
+
+class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
+  @override
+  Future<UserModel> login(LoginModel loginModel) async {
+    try {
+      var res = await sl<DioClient>()
+          .post(ApiConstants.loginApiUrl, data: loginModel.toMap());
+      return UserModel.fromJson(jsonDecode(res) as Map<String, dynamic>);
+    } catch (e) {}
   }
 }

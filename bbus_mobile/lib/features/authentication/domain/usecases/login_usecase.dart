@@ -1,12 +1,33 @@
+import 'package:bbus_mobile/core/errors/failures.dart';
+import 'package:bbus_mobile/core/usecases/usecase.dart';
 import 'package:bbus_mobile/features/authentication/domain/entities/user.dart';
 import 'package:bbus_mobile/features/authentication/domain/repository/auth_repository.dart';
+import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 
-class LoginUsecase {
+class LoginUsecase implements UseCase<UserEntity, LoginParams> {
   final AuthRepository repository;
+  const LoginUsecase({required this.repository});
 
-  LoginUsecase({required this.repository});
-
-  Future<UserEntity> call(String username, String password) {
-    return repository.login(username, password);
+  @override
+  Future<Either<Failure, UserEntity>> call(LoginParams params) async {
+    final res = await repository.login(
+        username: params.username, password: params.password);
+    return res;
   }
+}
+
+class LoginParams extends Equatable {
+  final String username;
+  final String password;
+  const LoginParams({
+    required this.username,
+    required this.password,
+  });
+
+  @override
+  List<Object?> get props => [
+        username,
+        password,
+      ];
 }
