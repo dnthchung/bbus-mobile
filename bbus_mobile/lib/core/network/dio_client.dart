@@ -1,10 +1,19 @@
 import 'package:bbus_mobile/core/constants/api_constants.dart';
 import 'package:bbus_mobile/core/network/api_interceptors.dart';
+import 'package:bbus_mobile/core/network/logger_interceptor.dart';
 import 'package:dio/dio.dart';
 
 class DioClient {
   final Dio _dio;
-  DioClient(this._dio);
+  DioClient()
+      : _dio = Dio(
+          BaseOptions(
+              headers: {'Content-Type': 'application/json; charset=UTF-8'},
+              baseUrl: ApiConstants.baseApiUrl,
+              responseType: ResponseType.json,
+              sendTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 10)),
+        )..interceptors.addAll([LoggerInterceptor(), ApiInterceptors()]);
   // GET METHOD
   Future<dynamic> get(
     String url, {
@@ -95,4 +104,5 @@ class DioClient {
     }
   }
 }
+
 enum Method { get, post, put, patch, delete }

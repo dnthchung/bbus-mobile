@@ -1,8 +1,14 @@
 import 'package:bbus_mobile/config/theme/theme.dart';
+import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'config/injector/injector.dart';
 
 void main() {
-  runApp(const MyApp());
+  initializeDependencies();
+  runApp(MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => sl<AuthCubit>())],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

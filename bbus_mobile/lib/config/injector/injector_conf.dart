@@ -1,7 +1,6 @@
-import 'package:bbus_mobile/core/network/dio_client.dart';
-import 'package:get_it/get_it.dart';
-
+part of 'injector.dart';
 final sl = GetIt.instance;
-Future<void> initializeDependencies() async {
-  sl.registerSingleton(() => DioClient());
+void initializeDependencies() {
+  sl.registerSingleton<DioClient>(DioClient());
+  sl.registerLazySingleton(()=>AuthCubit());
 }

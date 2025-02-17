@@ -1,22 +1,23 @@
-import 'dart:convert';
-
-import 'package:bbus_mobile/config/injector/injector_conf.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/core/constants/api_constants.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/features/authentication/data/models/login_model.dart';
-import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 
 abstract class AuthRemoteDatasource {
-  Future<UserModel> login(LoginModel loginModel);
+  Future<Either> login(LoginModel loginModel);
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   @override
-  Future<UserModel> login(LoginModel loginModel) async {
+  Future<Either> login(LoginModel loginModel) async {
     try {
       var res = await sl<DioClient>()
           .post(ApiConstants.loginApiUrl, data: loginModel.toMap());
-      return UserModel.fromJson(jsonDecode(res) as Map<String, dynamic>);
-    } catch (e) {}
+      return Right(res);
+    } on DioException catch (e) {
+      return Left(e.response!.data['message']);
+    }
   }
 }
