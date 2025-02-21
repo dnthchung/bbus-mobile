@@ -18,14 +18,25 @@ dependencies:
   flutter_bloc: ^9.0.0
   # comparing dart objects
   equatable: ^2.0.7
+  # Type Class
+  dartz: ^0.10.1
   # date format
   intl: ^0.20.2
   # Database
   floor: ^1.4.2
   # API request
-  retrofit: ^4.4.2
-  # Hooks
-  flutter_hooks: ^0.20.5
+  dio: ^5.8.0+1
+  # Logger
+  logger: ^2.5.0
+  # JSON
+  json_annotation: ^4.9.0
+  # Dependency Injector
+  get_it: ^8.0.3
+  # Secure Storage
+  flutter_secure_storage: ^9.2.4
+  # Routers
+  go_router: ^14.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -36,7 +47,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  retrofit_generator: '>=8.0.0 <10.0.0'
+  json_serializable: ^6.8.0
   floor_generator: ^1.4.2
   build_runner: ^2.1.2
 
