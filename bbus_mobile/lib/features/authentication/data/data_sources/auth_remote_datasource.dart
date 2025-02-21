@@ -10,11 +10,13 @@ abstract class AuthRemoteDatasource {
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
+  final DioClient _dioClient;
+  AuthRemoteDatasourceImpl(this._dioClient);
   @override
   Future<Either> login(LoginModel loginModel) async {
     try {
-      var res = await sl<DioClient>()
-          .post(ApiConstants.loginApiUrl, data: loginModel.toMap());
+      var res = await _dioClient.post(ApiConstants.loginApiUrl,
+          data: loginModel.toMap());
       return Right(res);
     } on DioException catch (e) {
       return Left(e.response!.data['message']);

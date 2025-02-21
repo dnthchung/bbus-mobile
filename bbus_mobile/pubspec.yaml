@@ -34,6 +34,8 @@ dependencies:
   get_it: ^8.0.3
   # Secure Storage
   flutter_secure_storage: ^9.2.4
+  # Routers
+  go_router: ^14.8.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}): super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -14,10 +16,10 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      // Perform login logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logging in...')),
-      );
+      final username = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      context.read<AuthCubit>().login(username, password);
     }
   }
 
@@ -62,9 +64,36 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _login,
-                  child: const Text('Login'),
+                
+                // BlocBuilder to show loading state
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    return ElevatedButton(
+                      onPressed: _login,
+                      child: const Text('Login'),
+                    );
+                  },
+                ),
+
+                // BlocListener to handle success or failure
+                BlocListener<AuthCubit, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthSucess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Login Successful!')),
+                      );
+                      // Navigate to home screen after success
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } else if (state is AuthFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
+                  child: const SizedBox.shrink(),
                 ),
               ],
             ),

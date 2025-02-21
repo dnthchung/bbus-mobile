@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 
 class LoginUsecase implements UseCase<void, LoginParams> {
   final AuthRepository repository;
-  const LoginUsecase({required this.repository});
+  const LoginUsecase(this.repository);
 
   @override
   Future<Either<Failure, bool>> call(LoginParams params) async {
