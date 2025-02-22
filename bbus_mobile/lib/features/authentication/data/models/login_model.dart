@@ -2,10 +2,10 @@ import 'package:bbus_mobile/features/authentication/domain/entities/user.dart';
 
 class LoginModel extends UserEntity {
   const LoginModel({
-    required String username,
+    required String phone,
     required String password,
-  }) : super(username: username, password: password);
+  }) : super(phone: phone, password: password);
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{'username': username, 'password': password};
+    return <String, dynamic>{'phone': phone, 'password': password};
   }
 }

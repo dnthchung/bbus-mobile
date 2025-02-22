@@ -9,24 +9,24 @@ class LoginUsecase implements UseCase<void, LoginParams> {
   const LoginUsecase(this.repository);
 
   @override
-  Future<Either<Failure, bool>> call(LoginParams params) async {
-    final res = await repository.login(
-        username: params.username, password: params.password);
+  Future<Either<Failure, Map<String, dynamic>>> call(LoginParams params) async {
+    final res =
+        await repository.login(phone: params.phone, password: params.password);
     return res;
   }
 }
 
 class LoginParams extends Equatable {
-  final String username;
+  final String phone;
   final String password;
   const LoginParams({
-    required this.username,
+    required this.phone,
     required this.password,
   });
 
   @override
   List<Object?> get props => [
-        username,
+        phone,
         password,
       ];
 }

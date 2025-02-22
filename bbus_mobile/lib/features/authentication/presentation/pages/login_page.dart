@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 // BlocBuilder to show loading state
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
