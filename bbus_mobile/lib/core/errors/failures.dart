@@ -20,3 +20,5 @@ class PasswordNotMatchFailure extends Failure {}
 class InvalidEmailFailure extends Failure {}
 
 class InvalidPasswordFailure extends Failure {}
+
+class AuthorizationFailure extends Failure {}

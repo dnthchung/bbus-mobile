@@ -29,9 +29,10 @@ class MyApp extends StatelessWidget {
             create: (context) => sl<AuthCubit>()..checkLoggedInStatus())
       ],
       child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (_, current) => current is AuthSucess,
+        listenWhen: (_, current) => current is AuthLoggedInStatusSuccess,
         listener: (context, state) => {
-          if (state is AuthSucess) {router.goNamed(RouteNames.home)}
+          if (state is AuthLoggedInStatusSuccess)
+            {router.goNamed(RouteNames.home)}
         },
         child: MaterialApp.router(
           theme: AppTheme.defaultThemeMode,

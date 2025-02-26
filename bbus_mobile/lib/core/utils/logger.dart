@@ -4,7 +4,7 @@ var logger = Logger(
   filter: null,
   output: null,
   printer: PrettyPrinter(
-    methodCount: 0,
+    methodCount: 1,
     errorMethodCount: 8,
     lineLength: 120,
     colors: true,

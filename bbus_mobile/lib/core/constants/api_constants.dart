@@ -5,6 +5,7 @@ class ApiConstants {
 
   //Endpoints
   static const String loginApiUrl = '/auth/login';
+  static const String userApiUrl = '/user';
   static const List<String> publicEndpoints = [
     '/auth/login',
   ];

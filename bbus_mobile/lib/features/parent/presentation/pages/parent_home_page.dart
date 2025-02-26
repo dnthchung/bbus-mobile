@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ParentHomePage extends StatefulWidget {
@@ -10,6 +11,15 @@ class ParentHomePage extends StatefulWidget {
 class _ParentHomePageState extends State<ParentHomePage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+      ),
+      body: Center(
+        child: Column(
+          children: [Text('Parent HomePage')],
+        ),
+      ),
+    );
   }
 }
