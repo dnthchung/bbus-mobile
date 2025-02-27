@@ -1,13 +1,17 @@
 import 'package:bbus_mobile/config/routes/app_route_conf.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
+import 'package:bbus_mobile/core/network/firebase_api.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
-import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'config/injector/injector.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotification();
   initializeDependencies();
   runApp(const MyApp());
 }
