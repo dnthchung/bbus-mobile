@@ -1,16 +1,55 @@
+import 'package:bbus_mobile/common/widgets/child_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class ChildrenListPage extends StatefulWidget {
+final List<Map<String, String>> children = [
+  {
+    "name": "Alice Johnson",
+    "age": "10",
+    "address": "address1",
+    "status": "In Bus",
+    "avatar": "null",
+  },
+  {
+    "name": "Bob Johnson",
+    "age": "9",
+    "address": "address1",
+    "status": "At Home",
+    "avatar": "null",
+  },
+  {
+    "name": "Tom Johnson",
+    "age": "9",
+    "address": "address1",
+    "status": "At School",
+    "avatar": "null",
+  },
+];
+
+class ChildrenListPage extends StatelessWidget {
   const ChildrenListPage({super.key});
 
   @override
-  State<ChildrenListPage> createState() => _ChildrenListPageState();
-}
-
-class _ChildrenListPageState extends State<ChildrenListPage> {
-  @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: children.length,
+              itemBuilder: (context, index) {
+                final child = children[index];
+                return ChildCard(
+                  name: child['name']!,
+                  age: child['age']!,
+                  address: child['address']!,
+                  status: child['status']!,
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

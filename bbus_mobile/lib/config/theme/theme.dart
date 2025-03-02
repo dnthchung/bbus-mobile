@@ -24,7 +24,12 @@ class TAppTheme {
       ),
       drawerTheme: DrawerThemeData(
         backgroundColor: Colors.white,
-      ));
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+        backgroundColor: TColors.darkPrimary,
+        foregroundColor: Colors.white,
+      )));
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
