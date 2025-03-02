@@ -3,6 +3,7 @@ import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
 import 'package:bbus_mobile/core/network/firebase_api.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
+import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,10 +24,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = AppRouteConf().router;
-    // return MaterialApp(
-    //   theme: AppTheme.defaultThemeMode,
-    //   home: const LoginPage(),
-    // );
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -39,7 +36,7 @@ class MyApp extends StatelessWidget {
             {router.goNamed(RouteNames.home)}
         },
         child: MaterialApp.router(
-          theme: AppTheme.defaultThemeMode,
+          theme: TAppTheme.lightTheme,
           routerConfig: router,
         ),
       ),
