@@ -3,7 +3,6 @@ import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
 import 'package:bbus_mobile/core/network/firebase_api.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
-import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
         listenWhen: (_, current) => current is AuthLoggedInStatusSuccess,
         listener: (context, state) => {
           if (state is AuthLoggedInStatusSuccess)
-            {router.goNamed(RouteNames.home)}
+            {router.goNamed(RouteNames.parentChildren)}
         },
         child: MaterialApp.router(
           theme: TAppTheme.lightTheme,

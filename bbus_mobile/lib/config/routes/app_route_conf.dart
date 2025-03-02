@@ -10,7 +10,7 @@ class AppRouteConf {
 
   late final _router = GoRouter(
     // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.children,
+    initialLocation: RoutePaths.parentChildren,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -18,13 +18,13 @@ class AppRouteConf {
         },
         routes: [
           GoRoute(
-            path: RoutePaths.children,
-            name: RouteNames.children,
+            path: RoutePaths.parentChildren,
+            name: RouteNames.parentChildren,
             builder: (_, __) => const ChildrenListPage(),
           ),
           GoRoute(
-            path: RoutePaths.profile,
-            name: RouteNames.profile,
+            path: RoutePaths.parentProfile,
+            name: RouteNames.parentProfile,
             builder: (_, __) => const ProfilePage(),
           ),
         ],

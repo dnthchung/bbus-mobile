@@ -1,13 +1,11 @@
 class RoutePaths {
-  static const String home = '/';
   static const String login = '/login';
-  static const String profile = '/profile';
-  static const String children = '/children';
+  static const String parentProfile = '/parent/profile';
+  static const String parentChildren = '/parent/children';
 }
 
 class RouteNames {
-  static const String home = 'home';
   static const String login = 'login';
-  static const String profile = 'profile';
-  static const String children = 'children';
+  static const String parentProfile = 'parent_profile';
+  static const String parentChildren = 'parent_children';
 }

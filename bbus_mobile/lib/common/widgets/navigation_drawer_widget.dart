@@ -8,15 +8,15 @@ final List<(int, IconData, String, String, String)> menuItems = [
     1,
     Icons.people_rounded,
     "My children",
-    RoutePaths.children,
-    RouteNames.children
+    RoutePaths.parentChildren,
+    RouteNames.parentChildren
   ),
   (
     2,
     Icons.person_pin_rounded,
     "Profile",
-    RoutePaths.profile,
-    RouteNames.profile
+    RoutePaths.parentProfile,
+    RouteNames.parentProfile
   ),
   (
     3,
@@ -40,7 +40,25 @@ class NavigationDrawerWidget extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              child: Text('Drawer Header'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 35, // Adjust size
+                    backgroundImage:
+                        AssetImage("assets/images/default_avatar.png"),
+                  ),
+                  SizedBox(width: 12), // Space between image and text
+                  Text(
+                    "John Doe",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "john.doe@example.com",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
             ),
             ...menuItems.map(
               (item) => MenuItem(

@@ -198,7 +198,7 @@ class __FormContentState extends State<_FormContent> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Login Successful!')),
                   );
-                  context.goNamed(RouteNames.home);
+                  context.goNamed(RouteNames.parentChildren);
                 } else if (state is AuthLoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message)),
