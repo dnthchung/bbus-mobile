@@ -1,4 +1,6 @@
+import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ChildCard extends StatelessWidget {
   final String name;
@@ -18,7 +20,12 @@ class ChildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          context.pushNamed(
+            RouteNames.childFeature,
+            pathParameters: {'name': Uri.encodeComponent(name)},
+          );
+        },
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(

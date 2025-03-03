@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
+import 'package:bbus_mobile/features/child_feature.dart/child_feature_layout.dart';
 import 'package:bbus_mobile/features/children_list/presentation/pages/children_list_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/profile.dart';
@@ -28,6 +29,14 @@ class AppRouteConf {
             builder: (_, __) => const ProfilePage(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '${RoutePaths.childFeature}/:name',
+        name: RouteNames.childFeature,
+        builder: (context, state) {
+          final name = state.pathParameters['name']!;
+          return ChildFeatureLayout(childName: Uri.decodeComponent(name));
+        },
       ),
       GoRoute(
         path: RoutePaths.login,
