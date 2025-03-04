@@ -4,6 +4,7 @@ final sl = GetIt.instance;
 void initializeDependencies() {
   // Auth
   AuthDependency.initAuth();
+  HistoryDependency.initHistory();
   //core
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(

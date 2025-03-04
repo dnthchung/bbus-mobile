@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/features/child_feature.dart/history/history_page.dart';
 import 'package:bbus_mobile/features/child_feature.dart/tracking/presentation/pages/tracking_page.dart';
 import 'package:flutter/material.dart';
 
@@ -67,9 +68,7 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
                 controller: _tabController,
                 children: [
                   TrackingPage(),
-                  Column(
-                    children: [Text('Page 2')],
-                  ),
+                  HistoryPage(),
                   Column(
                     children: [Text('Page 3')],
                   )
