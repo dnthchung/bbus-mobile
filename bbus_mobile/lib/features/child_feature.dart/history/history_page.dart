@@ -1,10 +1,7 @@
 import 'package:bbus_mobile/config/injector/injector.dart';
-import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/features/child_feature.dart/history/cubit/history_cubit.dart';
-import 'package:bbus_mobile/features/child_feature.dart/widgets/date_bar.dart';
-import 'package:bbus_mobile/features/child_feature.dart/widgets/history_detail.dart';
-import 'package:bbus_mobile/features/child_feature.dart/widgets/timeline_point.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:bbus_mobile/features/child_feature.dart/history/date_bar.dart';
+import 'package:bbus_mobile/features/child_feature.dart/history/history_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
