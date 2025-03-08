@@ -1,6 +1,8 @@
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 final List<(int, IconData, String, String, String)> menuItems = [
@@ -67,8 +69,13 @@ class NavigationDrawerWidget extends StatelessWidget {
                 title: item.$3,
                 isSelected: item.$4 == currentRoute ? true : false,
                 onTap: () {
-                  context.goNamed(item.$5);
+                  if (item.$5 != 'logout') {
+                    context.goNamed(item.$5);
+                  } else {
+                    context.read<AuthCubit>().logout();
+                  }
                   Scaffold.of(context).closeDrawer();
+                  context.goNamed(RouteNames.login);
                 },
               ),
             ),

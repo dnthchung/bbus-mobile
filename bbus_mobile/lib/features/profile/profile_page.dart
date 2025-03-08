@@ -36,72 +36,83 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16, 12, 18, 12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 36,
-                    children: [
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 64,
-                            backgroundImage:
-                                AssetImage('assets/images/default_avatar.png'),
-                          ),
-                          Positioned(
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.add_a_photo),
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            currentFocus.unfocus(); // Dismiss keyboard
+          }
+        },
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 12, 18, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 36,
+                      children: [
+                        Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 64,
+                              backgroundImage: AssetImage(
+                                  'assets/images/default_avatar.png'),
                             ),
-                            top: -10,
-                            left: 80,
-                          )
-                        ],
-                      ),
-                      _buildTextField(
-                          _fullNameController, 'Full Name', Icons.person,
-                          capitalization: TextCapitalization.words),
-                      _buildTextField(_relationController,
-                          'Relation with student', Icons.groups),
-                      _buildTextField(
-                          _phoneController, 'Phone Number', Icons.call),
-                      _buildTextField(_emailController, 'Email', Icons.mail),
-                      SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: () {
-                          print('Full Name: ${_fullNameController.text}');
-                          print('Relation: ${_relationController.text}');
-                          print('Phone: ${_phoneController.text}');
-                          print('Email: ${_emailController.text}');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: TColors.darkPrimary,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            Positioned(
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.add_a_photo),
+                              ),
+                              top: -10,
+                              left: 80,
+                            )
+                          ],
+                        ),
+                        _buildTextField(
+                            _fullNameController, 'Full Name', Icons.person,
+                            capitalization: TextCapitalization.words),
+                        _buildTextField(_relationController,
+                            'Relation with student', Icons.groups),
+                        _buildTextField(
+                            _phoneController, 'Phone Number', Icons.call),
+                        _buildTextField(_emailController, 'Email', Icons.mail),
+                        SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: () {
+                            print('Full Name: ${_fullNameController.text}');
+                            print('Relation: ${_relationController.text}');
+                            print('Phone: ${_phoneController.text}');
+                            print('Email: ${_emailController.text}');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: TColors.darkPrimary,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            fixedSize: Size(
+                                MediaQuery.of(context).size.width * 0.7, 50),
                           ),
-                          fixedSize:
-                              Size(MediaQuery.of(context).size.width * 0.7, 50),
-                        ),
-                        child: const Text(
-                          'Submit',
-                          style: TextStyle(color: Colors.white, fontSize: 24),
-                        ),
-                      )
-                    ],
+                          child: const Text(
+                            'Submit',
+                            style: TextStyle(color: Colors.white, fontSize: 24),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
