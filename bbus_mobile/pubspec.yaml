@@ -40,6 +40,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   # Routers
   go_router: ^14.8.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,5 @@
 import 'package:bbus_mobile/core/errors/failures.dart';
-import 'package:bbus_mobile/features/authentication/domain/entities/user.dart';
+import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class AuthRepository {

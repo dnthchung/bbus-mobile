@@ -23,6 +23,6 @@ class AuthDependency {
       ..registerLazySingleton(() => LoginUsecase(sl()))
       ..registerLazySingleton(() => CheckLoggedInStatusUsecase(sl()))
       // Bloc
-      ..registerLazySingleton<AuthCubit>(() => AuthCubit(sl(), sl()));
+      ..registerLazySingleton<AuthCubit>(() => AuthCubit(sl(), sl(), sl()));
   }
 }

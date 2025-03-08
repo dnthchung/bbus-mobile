@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'package:bbus_mobile/core/cache/secure_local_storage.dart';
 import 'package:bbus_mobile/core/errors/exceptions.dart';
 import 'package:bbus_mobile/core/errors/failures.dart';
-import 'package:bbus_mobile/core/usecases/usecase.dart';
 import 'package:bbus_mobile/core/utils/jwt_converter.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/authentication/data/data_sources/auth_local_datasource.dart';
 import 'package:bbus_mobile/features/authentication/data/data_sources/auth_remote_datasource.dart';
 import 'package:bbus_mobile/features/authentication/data/models/login_model.dart';
 import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
-import 'package:bbus_mobile/features/authentication/domain/entities/user.dart';
+import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:bbus_mobile/features/authentication/domain/repository/auth_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -60,6 +59,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, UserEntity>> checkLoggedInStatus() async {
     try {
       final result = await _authLocalDatasource.checkLoggedInStatus();
+      logger.i(result);
       final user = UserModel.fromJson(result);
       return Right(user);
     } on CacheException {

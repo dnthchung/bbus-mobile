@@ -1,3 +1,4 @@
+import 'package:bbus_mobile/common/cubit/cubit/current_user_cubit.dart';
 import 'package:bbus_mobile/config/routes/app_route_conf.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
@@ -25,13 +26,15 @@ class MyApp extends StatelessWidget {
     final router = AppRouteConf().router;
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => sl<CurrentUserCubit>()),
         BlocProvider(
-            create: (context) => sl<AuthCubit>()..checkLoggedInStatus())
+          create: (context) => sl<AuthCubit>()..checkLoggedInStatus(),
+        ),
       ],
-      child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (_, current) => current is AuthLoggedInStatusSuccess,
+      child: BlocListener<CurrentUserCubit, CurrentUserState>(
+        listenWhen: (_, current) => current is CurrentUserLoggedIn,
         listener: (context, state) => {
-          if (state is AuthLoggedInStatusSuccess)
+          if (state is CurrentUserLoggedIn)
             {router.goNamed(RouteNames.parentChildren)}
         },
         child: MaterialApp.router(

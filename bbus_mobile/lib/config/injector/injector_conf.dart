@@ -10,4 +10,5 @@ void initializeDependencies() {
   sl.registerLazySingleton(
       () => SecureLocalStorage(sl<FlutterSecureStorage>()));
   sl.registerSingleton<DioClient>(DioClient());
+  sl.registerLazySingleton(() => CurrentUserCubit());
 }

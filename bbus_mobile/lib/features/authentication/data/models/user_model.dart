@@ -1,4 +1,4 @@
-import 'package:bbus_mobile/features/authentication/domain/entities/user.dart';
+import 'package:bbus_mobile/common/entities/user.dart';
 
 class UserModel extends UserEntity {
   UserModel({

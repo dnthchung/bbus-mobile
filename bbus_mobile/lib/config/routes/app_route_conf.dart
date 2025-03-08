@@ -10,8 +10,8 @@ class AppRouteConf {
   GoRouter get router => _router;
 
   late final _router = GoRouter(
-    // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.parentChildren,
+    initialLocation: RoutePaths.login,
+    // initialLocation: RoutePaths.parentProfile,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
