@@ -4,6 +4,7 @@ final sl = GetIt.instance;
 void initializeDependencies() {
   // Auth
   AuthDependency.initAuth();
+  _initNotificaiton();
   _initChangePassword();
   _initBus();
   _initMap();
@@ -23,17 +24,7 @@ void initializeDependencies() {
 }
 
 void _initNotificaiton() {
-  sl
-    // Datasource
-    ..registerLazySingleton<ChangePasswordRemoteDatasource>(
-        () => ChangePasswordRemoteDatasourceImpl(sl()))
-    // Repo
-    ..registerLazySingleton<ChangePasswordRepository>(
-        () => ChangePasswordRepositoryImpl(sl(), sl()))
-    // Usecases
-    ..registerLazySingleton(() => ChangePasswordUsecase(sl()))
-    // Bloc
-    ..registerFactory(() => ChangePasswordCubit(sl()));
+  sl..registerLazySingleton(() => NotificationCubit(sl()));
 }
 
 void _initChangePassword() {
@@ -107,7 +98,7 @@ void _initRequest() {
 _initDriver() {
   sl
     ..registerLazySingleton<ScheduleDatasource>(
-        () => ScheduleDatasourceImpl(sl()))
+        () => ScheduleDatasourceImpl(sl(), sl()))
     ..registerLazySingleton<StudentListDatasource>(
         () => StudentListDatasourceImpl(sl()))
     ..registerLazySingleton<ScheduleRepository>(

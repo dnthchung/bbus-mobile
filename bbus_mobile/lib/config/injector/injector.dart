@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
+import 'package:bbus_mobile/common/notifications/cubit/notification_cubit.dart';
 import 'package:bbus_mobile/common/notifications/notification_service.dart';
 import 'package:bbus_mobile/common/websocket/multi_websocket_service.dart';
 import 'package:bbus_mobile/common/websocket/websocket_service.dart';
@@ -32,7 +33,6 @@ import 'package:bbus_mobile/features/map/domain/usecases/get_checkpoint_list.dar
 import 'package:bbus_mobile/features/map/domain/usecases/get_live_location.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/get_map_route.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/register_checkpoint.dart';
-import 'package:bbus_mobile/features/notification/domain/usecases/get_list_notifications.dart';
 import 'package:bbus_mobile/features/parent/data/datasources/bus_datasource.dart';
 import 'package:bbus_mobile/features/parent/data/datasources/children_datasource.dart';
 import 'package:bbus_mobile/features/parent/data/datasources/request_remote_datasource.dart';
@@ -54,5 +54,6 @@ import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/requ
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_type/request_type_cubit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 
 part 'injector_conf.dart';
