@@ -13,3 +13,5 @@ class AuthException implements Exception {}
 class TokenExpireException implements Exception {}
 
 class EmptyException implements Exception {}
+
+class RegisterCheckpointException implements Exception {}
