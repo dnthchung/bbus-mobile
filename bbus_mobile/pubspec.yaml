@@ -1,16 +1,19 @@
 name: bbus_mobile
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>3.5.0'
+  sdk: ">3.5.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
+  firebase_core: ^3.12.1
+  firebase_messaging: ^15.2.4
+  flutter_local_notifications: ^18.0.1
+  flutter_native_splash: ^2.4.4
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -21,7 +24,8 @@ dependencies:
   # Type Class
   dartz: ^0.10.1
   # date format
-  intl: ^0.20.2
+  intl: ^0.19.0
+  easy_date_timeline: ^2.0.9
   # Database
   floor: ^1.4.2
   # API request
@@ -36,6 +40,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   # Routers
   go_router: ^14.8.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -53,16 +58,15 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/logos/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

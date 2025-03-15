@@ -1,15 +1,122 @@
-import 'package:flutter/widgets.dart';
+import 'package:bbus_mobile/common/widgets/navigation_drawer_widget.dart';
+import 'package:bbus_mobile/config/routes/routes.dart';
+import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class ParentHomePage extends StatefulWidget {
-  const ParentHomePage({super.key});
-
-  @override
-  State<ParentHomePage> createState() => _ParentHomePageState();
+String getAppBarTitle(String currentRoute) {
+  Map<String, String> routeTitles = {
+    RoutePaths.parentChildren: "My Children",
+    RoutePaths.parentProfile: "My Profile",
+    RoutePaths.parentSetting: "Settings",
+  };
+  return routeTitles[currentRoute] ?? "BBUS";
 }
 
-class _ParentHomePageState extends State<ParentHomePage> {
+final List<(int, IconData, String, String, String)> menuItems = [
+  (
+    1,
+    Icons.people_rounded,
+    "My children",
+    RoutePaths.parentChildren,
+    RouteNames.parentChildren
+  ),
+  (
+    2,
+    Icons.person_pin_rounded,
+    "Profile",
+    RoutePaths.parentProfile,
+    RouteNames.parentProfile
+  ),
+  (
+    3,
+    Icons.settings,
+    "Settings",
+    RoutePaths.parentSetting,
+    RouteNames.parentSetting
+  ),
+  (
+    4,
+    Icons.mail,
+    "School Contact",
+    RoutePaths.parentContact,
+    RouteNames.parentContact
+  ),
+  (
+    5,
+    Icons.logout,
+    "Logout",
+    '/logout',
+    'logout',
+  ),
+];
+
+class ParentHomePage extends StatelessWidget {
+  final Widget child;
+  ParentHomePage({super.key, required this.child});
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final String currentRoute =
+        GoRouter.of(context).routeInformationProvider.value.uri.path;
+    final String appBarTitle = getAppBarTitle(currentRoute);
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(appBarTitle),
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+        ),
+        actions: currentRoute == RoutePaths.parentChildren
+            ? [
+                Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.notifications),
+                      onPressed: () {
+                        // Navigate to notifications page
+                        context.pushNamed(RouteNames.parentNotification);
+                      },
+                    ),
+                    // if (unreadNotifications > 0)
+                    Positioned(
+                      right: 11,
+                      top: 11,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: TColors.error,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 14,
+                          minHeight: 14,
+                        ),
+                        child: Text(
+                          // unreadNotifications.toString(),
+                          "0",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ]
+            : [],
+      ),
+      drawer: NavigationDrawerWidget(
+        menuItems: menuItems,
+        currentRoute: currentRoute,
+      ),
+      body: child,
+    );
   }
 }

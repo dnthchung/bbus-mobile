@@ -5,6 +5,7 @@ import 'package:bbus_mobile/features/authentication/data/repository/auth_reposit
 import 'package:bbus_mobile/features/authentication/domain/repository/auth_repository.dart';
 import 'package:bbus_mobile/features/authentication/domain/usecases/check_logged_in_status_usecase.dart';
 import 'package:bbus_mobile/features/authentication/domain/usecases/login_usecase.dart';
+import 'package:bbus_mobile/features/authentication/domain/usecases/logout_usecase.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
 
 class AuthDependency {
@@ -22,7 +23,9 @@ class AuthDependency {
       // Usecases
       ..registerLazySingleton(() => LoginUsecase(sl()))
       ..registerLazySingleton(() => CheckLoggedInStatusUsecase(sl()))
+      ..registerLazySingleton(() => LogoutUsecase(sl()))
       // Bloc
-      ..registerLazySingleton<AuthCubit>(() => AuthCubit(sl(), sl()));
+      ..registerLazySingleton<AuthCubit>(
+          () => AuthCubit(sl(), sl(), sl(), sl()));
   }
 }

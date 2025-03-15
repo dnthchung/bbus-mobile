@@ -1,11 +1,23 @@
-import 'package:bbus_mobile/features/authentication/domain/entities/user.dart';
+import 'package:bbus_mobile/common/entities/user.dart';
 
 class LoginModel extends UserEntity {
+  final String platform;
+  final String deviceToken;
+  final String versionApp;
   const LoginModel({
-    required String username,
+    required String phone,
     required String password,
-  }) : super(username: username, password: password);
+    this.platform = "MOBILE",
+    this.deviceToken = "x-token",
+    this.versionApp = 'v1.2.9',
+  }) : super(phone: phone, password: password);
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{'username': username, 'password': password};
+    return <String, dynamic>{
+      'phone': phone,
+      'password': password,
+      'platform': platform,
+      'deviceToken': deviceToken,
+      'versionApp': versionApp,
+    };
   }
 }

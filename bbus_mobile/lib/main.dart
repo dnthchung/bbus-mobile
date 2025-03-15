@@ -1,13 +1,19 @@
+import 'package:bbus_mobile/common/cubit/cubit/current_user_cubit.dart';
 import 'package:bbus_mobile/config/routes/app_route_conf.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
+import 'package:bbus_mobile/core/network/firebase_api.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
-import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
+import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'config/injector/injector.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotification();
   initializeDependencies();
   runApp(const MyApp());
 }
@@ -19,22 +25,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = AppRouteConf().router;
-    // return MaterialApp(
-    //   theme: AppTheme.defaultThemeMode,
-    //   home: const LoginPage(),
-    // );
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => sl<CurrentUserCubit>()),
         BlocProvider(
-            create: (context) => sl<AuthCubit>()..checkLoggedInStatus())
+          create: (context) => sl<AuthCubit>()..checkLoggedInStatus(),
+        ),
+        BlocProvider(create: (_) => sl<StudentListCubit>())
       ],
-      child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (_, current) => current is AuthSucess,
+      child: BlocListener<CurrentUserCubit, CurrentUserState>(
+        listenWhen: (_, current) => current is CurrentUserLoggedIn,
         listener: (context, state) => {
-          if (state is AuthSucess) {router.goNamed(RouteNames.home)}
+          if (state is CurrentUserLoggedIn)
+            if (state.user.roles == 'parent')
+              {
+                {router.goNamed(RouteNames.parentChildren)}
+              }
+            else
+              {
+                {router.goNamed(RouteNames.driverProfile)}
+              }
         },
         child: MaterialApp.router(
-          theme: AppTheme.defaultThemeMode,
+          theme: TAppTheme.lightTheme,
           routerConfig: router,
         ),
       ),

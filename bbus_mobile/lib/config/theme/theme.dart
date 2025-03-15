@@ -1,5 +1,40 @@
+import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-class AppTheme {
-  static final defaultThemeMode = ThemeData.fallback();
+class TAppTheme {
+  TAppTheme._();
+  static ThemeData lightTheme = ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        brightness: Brightness.light,
+        seedColor: TColors.primary,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: TColors.primary,
+        iconTheme: IconThemeData(
+          color: TColors.textWhite,
+        ),
+        elevation: 0,
+        titleTextStyle: TextStyle(
+          color: TColors.textWhite,
+          fontSize: 22.0,
+          fontWeight: FontWeight.w600,
+        ),
+        centerTitle: true,
+      ),
+      drawerTheme: DrawerThemeData(
+        backgroundColor: Colors.white,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+        backgroundColor: TColors.darkPrimary,
+        foregroundColor: Colors.white,
+      )));
+  static ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      brightness: Brightness.dark,
+      seedColor: TColors.primary,
+    ),
+  );
 }

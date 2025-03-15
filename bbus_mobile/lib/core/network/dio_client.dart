@@ -11,8 +11,8 @@ class DioClient {
               headers: {'Content-Type': 'application/json; charset=UTF-8'},
               baseUrl: ApiConstants.baseApiUrl,
               responseType: ResponseType.json,
-              sendTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 10)),
+              sendTimeout: const Duration(seconds: 3),
+              receiveTimeout: const Duration(seconds: 3)),
         )..interceptors.addAll([LoggerInterceptor(), ApiInterceptors()]);
   // GET METHOD
   Future<dynamic> get(
