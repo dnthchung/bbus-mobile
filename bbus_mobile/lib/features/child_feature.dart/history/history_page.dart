@@ -34,27 +34,33 @@ class _HistoryPageState extends State<HistoryPage>
     super.build(context);
     return BlocProvider(
       create: (context) => _historyCubit,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DateBar(),
-          BlocBuilder<HistoryCubit, HistoryState>(builder: (_, state) {
-            if (state is HistoryLoading) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is HistorySuccess) {
-              return HistoryDetail(dailySchedule: state.dailySchedule);
-            } else if (state is HistoryEmpty) {
-              return Center(
-                child: Text('No schedule available for this date'),
-              );
-            }
-            return Center(
-              child: Text('Select a date to see history'),
-            );
-          }),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DateBar(),
+                BlocBuilder<HistoryCubit, HistoryState>(builder: (_, state) {
+                  if (state is HistoryLoading) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is HistorySuccess) {
+                    return HistoryDetail(dailySchedule: state.dailySchedule);
+                  } else if (state is HistoryEmpty) {
+                    return Center(
+                      child: Text('No schedule available for this date'),
+                    );
+                  }
+                  return Center(
+                    child: Text('Select a date to see history'),
+                  );
+                }),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

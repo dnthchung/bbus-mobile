@@ -44,6 +44,7 @@ class ChildrenListPage extends StatelessWidget {
                   age: child['age']!,
                   address: child['address']!,
                   status: child['status']!,
+                  isParent: true,
                 );
               },
             ),

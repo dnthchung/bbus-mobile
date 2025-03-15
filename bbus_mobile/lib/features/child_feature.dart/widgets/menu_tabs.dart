@@ -47,7 +47,6 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
                 fontWeight: FontWeight.bold,
               ),
               indicatorColor: TColors.primary,
-              padding: EdgeInsetsDirectional.fromSTEB(65, 0, 0, 0),
               tabs: [
                 Tab(
                   text: 'Tracking',

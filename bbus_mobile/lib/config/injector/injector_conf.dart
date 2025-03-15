@@ -5,6 +5,7 @@ void initializeDependencies() {
   // Auth
   AuthDependency.initAuth();
   HistoryDependency.initHistory();
+  StudentListDependency.initStudentList();
   //core
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(

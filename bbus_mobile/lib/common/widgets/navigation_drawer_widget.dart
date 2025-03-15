@@ -5,33 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-final List<(int, IconData, String, String, String)> menuItems = [
-  (
-    1,
-    Icons.people_rounded,
-    "My children",
-    RoutePaths.parentChildren,
-    RouteNames.parentChildren
-  ),
-  (
-    2,
-    Icons.person_pin_rounded,
-    "Profile",
-    RoutePaths.parentProfile,
-    RouteNames.parentProfile
-  ),
-  (
-    3,
-    Icons.logout,
-    "Logout",
-    '/logout',
-    'logout',
-  ),
-];
-
 class NavigationDrawerWidget extends StatelessWidget {
   final String currentRoute;
-  const NavigationDrawerWidget({super.key, required this.currentRoute});
+  final List menuItems;
+  const NavigationDrawerWidget(
+      {super.key, required this.currentRoute, required this.menuItems});
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +47,15 @@ class NavigationDrawerWidget extends StatelessWidget {
                 title: item.$3,
                 isSelected: item.$4 == currentRoute ? true : false,
                 onTap: () {
+                  Scaffold.of(context).closeDrawer();
                   if (item.$5 != 'logout') {
-                    context.goNamed(item.$5);
+                    if (item.$5 != currentRoute) {
+                      context.goNamed(item.$5);
+                    }
                   } else {
                     context.read<AuthCubit>().logout();
+                    context.goNamed(RouteNames.login);
                   }
-                  Scaffold.of(context).closeDrawer();
-                  context.goNamed(RouteNames.login);
                 },
               ),
             ),

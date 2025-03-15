@@ -15,7 +15,7 @@ class TrackingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: EdgeInsetsDirectional.fromSTEB(12, 12, 12, 0),
       child: Column(
         mainAxisSize: MainAxisSize.max,

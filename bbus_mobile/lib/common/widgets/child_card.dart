@@ -8,24 +8,28 @@ class ChildCard extends StatelessWidget {
   final String address;
   final String status;
   final String? avatar;
+  final bool? isParent;
   const ChildCard(
       {super.key,
       required this.name,
       required this.age,
       required this.address,
       required this.status,
-      this.avatar});
+      this.avatar,
+      this.isParent});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        onTap: () {
-          context.pushNamed(
-            RouteNames.childFeature,
-            pathParameters: {'name': Uri.encodeComponent(name)},
-          );
-        },
+        onTap: isParent == true
+            ? () {
+                context.pushNamed(
+                  RouteNames.childFeature,
+                  pathParameters: {'name': Uri.encodeComponent(name)},
+                );
+              }
+            : null,
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(
@@ -83,10 +87,26 @@ class ChildCard extends StatelessWidget {
                               ],
                             ),
                             const Spacer(),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text('Report Absent'),
-                            )
+                            if (isParent == true)
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Text('RePort Absent'),
+                              )
+                            // else
+                            //   Container(
+                            //     padding: const EdgeInsets.symmetric(
+                            //         horizontal: 12, vertical: 6),
+                            //     decoration: BoxDecoration(
+                            //       color: Colors.grey.shade300,
+                            //       borderRadius: BorderRadius.circular(8),
+                            //     ),
+                            //     child: Text(
+                            //       status,
+                            //       style: const TextStyle(
+                            //           fontSize: 14,
+                            //           fontWeight: FontWeight.w500),
+                            //     ),
+                            //   ),
                           ],
                         )
                       ],

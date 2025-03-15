@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/config/routes/routes.dart';
+import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/constants/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,18 +52,24 @@ class _Logo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FlutterLogo(size: isSmallScreen ? 100 : 200),
+        Image(
+          image: AssetImage('assets/logos/logo.png'),
+          width: 100,
+        ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            "Welcome to Flutter!",
+            "Welcome to BBUS!",
             textAlign: TextAlign.center,
             style: isSmallScreen
-                ? Theme.of(context).textTheme.headlineMedium
+                ? Theme.of(context)
+                    .textTheme
+                    .headlineMedium
+                    ?.copyWith(color: TColors.primary)
                 : Theme.of(context)
                     .textTheme
                     .headlineMedium
-                    ?.copyWith(color: Colors.black),
+                    ?.copyWith(color: TColors.primary),
           ),
         )
       ],
@@ -198,7 +205,11 @@ class __FormContentState extends State<_FormContent> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Login Successful!')),
                   );
-                  context.goNamed(RouteNames.parentChildren);
+                  print(state.data);
+                  if (state.data.roles == 'parent')
+                    context.goNamed(RouteNames.parentChildren);
+                  else
+                    context.goNamed(RouteNames.driverStudent);
                 } else if (state is AuthLoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message)),

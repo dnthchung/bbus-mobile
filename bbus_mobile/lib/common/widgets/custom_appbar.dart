@@ -2,26 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomAppbar extends StatelessWidget {
-  const CustomAppbar({super.key});
+  final String childName;
+  final String? avatarUrl; // Nullable, uses default image if null
+
+  const CustomAppbar({
+    super.key,
+    required this.childName,
+    this.avatarUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(12, 0, 12, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          // Back Button
           IconButton(
             onPressed: () {
               context.pop();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back,
               color: Colors.black,
-              size: 20,
+              size: 24,
             ),
-          )
+          ),
+
+          // Child Avatar
+          CircleAvatar(
+            radius: 20,
+            backgroundImage: avatarUrl != null
+                ? NetworkImage(avatarUrl!)
+                : const AssetImage("assets/images/default_child.png")
+                    as ImageProvider,
+          ),
+
+          const SizedBox(width: 10),
+
+          // Child Name
+          Text(
+            childName,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
     );
