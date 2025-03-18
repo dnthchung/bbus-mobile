@@ -41,6 +41,13 @@ dependencies:
   # Routers
   go_router: ^14.8.0
   image_picker: ^1.1.2
+  # Map
+  flutter_map: ^8.1.1
+  location: ^8.0.0
+  latlong2: ^0.9.1
+  flutter_map_location_marker: ^10.0.0
+  geolocator: ^13.0.2
+  flutter_polyline_points: ^2.1.0
 
 dev_dependencies:
   flutter_test:

@@ -4,6 +4,8 @@ import 'package:bbus_mobile/features/children_list/presentation/pages/children_l
 import 'package:bbus_mobile/features/contact/school_contact_page.dart';
 import 'package:bbus_mobile/features/driver/driver_home_page.dart';
 import 'package:bbus_mobile/features/driver/student_list/student_list_page.dart';
+import 'package:bbus_mobile/features/map/edit_location_map.dart';
+import 'package:bbus_mobile/features/map/map_page.dart';
 import 'package:bbus_mobile/features/notification/notification_page.dart';
 import 'package:bbus_mobile/features/notification/notification_setting_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
@@ -16,7 +18,7 @@ class AppRouteConf {
 
   late final _router = GoRouter(
     // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.parentChildren,
+    initialLocation: RoutePaths.parentEditLocation,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -42,6 +44,11 @@ class AppRouteConf {
             path: RoutePaths.parentSetting,
             name: RouteNames.parentSetting,
             builder: (_, __) => const NotificationSettingPage(),
+          ),
+          GoRoute(
+            path: RoutePaths.parentEditLocation,
+            name: RouteNames.parentEditLocation,
+            builder: (_, __) => const EditLocationMap(),
           ),
         ],
       ),

@@ -7,6 +7,7 @@ class RoutePaths {
   static const String parentContact = '/parent/contact';
   static const String parentNotification = '/parent/notification';
   static const String parentSetting = '/parent/setting';
+  static const String parentEditLocation = '/parent/edit-location';
 
   // Driver
   static const String driverProfile = '/driver/profile';
@@ -23,6 +24,7 @@ class RouteNames {
   static const String parentContact = 'parent_contact';
   static const String parentNotification = 'parent_notification';
   static const String parentSetting = 'parent_setting';
+  static const String parentEditLocation = 'parent_edit-location';
 
   // Driver
   static const String driverProfile = 'driver_profile';

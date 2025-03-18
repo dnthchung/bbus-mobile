@@ -8,6 +8,7 @@ String getAppBarTitle(String currentRoute) {
   Map<String, String> routeTitles = {
     RoutePaths.parentChildren: "My Children",
     RoutePaths.parentProfile: "My Profile",
+    RoutePaths.parentEditLocation: "Edit Location",
     RoutePaths.parentSetting: "Settings",
   };
   return routeTitles[currentRoute] ?? "BBUS";
@@ -30,20 +31,27 @@ final List<(int, IconData, String, String, String)> menuItems = [
   ),
   (
     3,
+    Icons.add_location_alt,
+    "Edit Location",
+    RoutePaths.parentEditLocation,
+    RouteNames.parentEditLocation
+  ),
+  (
+    4,
     Icons.settings,
     "Settings",
     RoutePaths.parentSetting,
     RouteNames.parentSetting
   ),
   (
-    4,
+    5,
     Icons.mail,
     "School Contact",
     RoutePaths.parentContact,
     RouteNames.parentContact
   ),
   (
-    5,
+    6,
     Icons.logout,
     "Logout",
     '/logout',
