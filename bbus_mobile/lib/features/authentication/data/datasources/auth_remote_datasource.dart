@@ -30,7 +30,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       if (e.toString() == 'Bad state: No element') {
         throw AuthException();
       }
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -44,7 +44,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       throw FetchDataException('No Internet Connection!');
     } catch (e) {
       logger.e(e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -55,7 +55,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return;
     } catch (e) {
       logger.e(e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 }

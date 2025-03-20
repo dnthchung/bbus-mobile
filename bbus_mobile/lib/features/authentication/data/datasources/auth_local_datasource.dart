@@ -16,12 +16,9 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
     try {
       final user = jsonDecode(await _secureLocalStorage.load(key: 'user'));
       final token = await _secureLocalStorage.load(key: 'token');
-      if (isTokenExpired(token)) {
-        throw TokenExpireException();
-      }
       return user;
     } catch (e) {
-      throw CacheException();
+      throw CacheException(e.toString());
     }
   }
 }

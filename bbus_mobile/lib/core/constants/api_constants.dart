@@ -6,6 +6,8 @@ class ApiConstants {
   //Endpoints
   static const String loginApiUrl = '/auth/login';
   static const String userApiUrl = '/user';
+  static const String changePasswordApiUrl = '/user/change-pwd';
+  static const String getRefreshTokenUrl = '/auth/refresh-token';
   static const List<String> publicEndpoints = [
     '/auth/login',
   ];

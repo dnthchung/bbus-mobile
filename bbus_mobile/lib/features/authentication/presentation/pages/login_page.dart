@@ -205,8 +205,8 @@ class __FormContentState extends State<_FormContent> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Login Successful!')),
                   );
-                  print(state.data);
-                  if (state.data.roles == 'parent')
+                  print(state.data.role);
+                  if (state.data.role?.toLowerCase() == 'parent')
                     context.goNamed(RouteNames.parentChildren);
                   else
                     context.goNamed(RouteNames.driverStudent);

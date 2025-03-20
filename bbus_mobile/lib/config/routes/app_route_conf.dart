@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
+import 'package:bbus_mobile/features/change_password/change_password_page.dart';
 import 'package:bbus_mobile/features/child_feature.dart/child_feature_layout.dart';
 import 'package:bbus_mobile/features/children_list/presentation/pages/children_list_page.dart';
 import 'package:bbus_mobile/features/contact/school_contact_page.dart';
@@ -10,6 +11,7 @@ import 'package:bbus_mobile/features/notification/notification_page.dart';
 import 'package:bbus_mobile/features/notification/notification_setting_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
 import 'package:bbus_mobile/features/profile/profile_page.dart';
+import 'package:bbus_mobile/features/request/requests_page.dart';
 import 'package:go_router/go_router.dart';
 import 'routes.dart';
 
@@ -18,7 +20,7 @@ class AppRouteConf {
 
   late final _router = GoRouter(
     // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.parentEditLocation,
+    initialLocation: RoutePaths.parentRequest,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -36,6 +38,11 @@ class AppRouteConf {
             builder: (_, __) => const ProfilePage(),
           ),
           GoRoute(
+            path: RoutePaths.parentChangePassword,
+            name: RouteNames.parentChangePassword,
+            builder: (_, __) => ChangePasswordPage(),
+          ),
+          GoRoute(
             path: RoutePaths.parentContact,
             name: RouteNames.parentContact,
             builder: (_, __) => const SchoolContactPage(),
@@ -46,9 +53,9 @@ class AppRouteConf {
             builder: (_, __) => const NotificationSettingPage(),
           ),
           GoRoute(
-            path: RoutePaths.parentEditLocation,
-            name: RouteNames.parentEditLocation,
-            builder: (_, __) => const EditLocationMap(),
+            path: RoutePaths.parentRequest,
+            name: RouteNames.parentRequest,
+            builder: (_, __) => RequestsPage(),
           ),
         ],
       ),
@@ -86,6 +93,11 @@ class AppRouteConf {
         path: RoutePaths.parentNotification,
         name: RouteNames.parentNotification,
         builder: (_, __) => const NotificationPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.parentEditLocation,
+        name: RouteNames.parentEditLocation,
+        builder: (_, __) => const EditLocationMap(),
       ),
       GoRoute(
         path: RoutePaths.login,

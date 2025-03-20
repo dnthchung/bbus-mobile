@@ -10,7 +10,7 @@ class DioClient {
       : _dio = Dio(
           BaseOptions(
               headers: {'Content-Type': 'application/json; charset=UTF-8'},
-              // baseUrl: ApiConstants.baseApiUrl,
+              baseUrl: ApiConstants.baseApiUrl,
               responseType: ResponseType.json,
               sendTimeout: const Duration(seconds: 3),
               receiveTimeout: const Duration(seconds: 3)),
@@ -85,6 +85,30 @@ class DioClient {
     }
   }
 
+  // PUT METHOD
+  Future<dynamic> patch(
+    String url, {
+    data,
+    Map<String, dynamic>? queryPrams,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    try {
+      final res = await _dio.patch(url,
+          data: data,
+          queryParameters: queryPrams,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
+      return _returnResponse(res);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // DELETE METHOD
   Future<dynamic> delete(
     String url, {
@@ -107,10 +131,8 @@ class DioClient {
 }
 
 dynamic _returnResponse(Response response) {
-  switch (response.statusCode) {
-    case 200:
-      return response.data;
-    case 201:
+  switch (response.statusCode!) {
+    case >= 200 && < 300:
       return response.data;
     case 400:
       throw BadRequestException(response.data["message"].toString());

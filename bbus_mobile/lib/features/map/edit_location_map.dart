@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
@@ -129,111 +130,125 @@ class _EditLocationMapState extends State<EditLocationMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        initialCenter: _currentLocation ?? LatLng(0, 0),
-                        initialZoom: 10,
-                        minZoom: 2,
-                        maxZoom: 100,
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Chọn điểm đón'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.pop();
+          },
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : FlutterMap(
+                        mapController: _mapController,
+                        options: MapOptions(
+                          initialCenter: _currentLocation ?? LatLng(0, 0),
+                          initialZoom: 10,
+                          minZoom: 2,
+                          maxZoom: 100,
                         ),
-                        CurrentLocationLayer(
-                          style: LocationMarkerStyle(
-                            marker: DefaultLocationMarker(
-                              child:
-                                  Icon(Icons.location_pin, color: Colors.white),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          ),
+                          CurrentLocationLayer(
+                            style: LocationMarkerStyle(
+                              marker: DefaultLocationMarker(
+                                child: Icon(Icons.location_pin,
+                                    color: Colors.white),
+                              ),
+                              markerSize: const Size(35, 35),
+                              markerDirection: MarkerDirection.heading,
                             ),
-                            markerSize: const Size(35, 35),
-                            markerDirection: MarkerDirection.heading,
                           ),
-                        ),
-                        MarkerLayer(
-                          markers: _demoLocations.entries.map((location) {
-                            return Marker(
-                              point: location.value,
-                              width: 50,
-                              height: 50,
-                              child: GestureDetector(
-                                onTap: () =>
-                                    _fetchRouteToDestination(location.value),
-                                child: const Icon(
-                                  Icons.location_pin,
-                                  size: 40,
-                                  color: Colors.red,
+                          MarkerLayer(
+                            markers: _demoLocations.entries.map((location) {
+                              return Marker(
+                                point: location.value,
+                                width: 50,
+                                height: 50,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _fetchRouteToDestination(location.value),
+                                  child: const Icon(
+                                    Icons.location_pin,
+                                    size: 40,
+                                    color: Colors.red,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        if (_route.isNotEmpty)
-                          PolylineLayer(
-                            polylines: [
-                              Polyline(
-                                points: _route,
-                                strokeWidth: 5,
-                                color: TColors.darkPrimary,
-                              ),
-                            ],
+                              );
+                            }).toList(),
                           ),
-                      ],
+                          if (_route.isNotEmpty)
+                            PolylineLayer(
+                              polylines: [
+                                Polyline(
+                                  points: _route,
+                                  strokeWidth: 5,
+                                  color: TColors.darkPrimary,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                Positioned(
+                  left: 16,
+                  top: 40,
+                  right: 16,
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedLocation,
+                    items: _demoLocations.keys.map((location) {
+                      return DropdownMenuItem<String>(
+                        value: location,
+                        child: Text(location),
+                      );
+                    }).toList(),
+                    onChanged: _onLocationSelected,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 20),
+                      hintText: 'Select a location',
                     ),
-              Positioned(
-                left: 16,
-                top: 40,
-                right: 16,
-                child: DropdownButtonFormField<String>(
-                  value: _selectedLocation,
-                  items: _demoLocations.keys.map((location) {
-                    return DropdownMenuItem<String>(
-                      value: location,
-                      child: Text(location),
-                    );
-                  }).toList(),
-                  onChanged: _onLocationSelected,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    hintText: 'Select a location',
+                    isDense: true,
+                    isExpanded: false,
                   ),
                 ),
-              ),
-              Positioned(
-                left: 16,
-                bottom: 40,
-                right: 16,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_destination == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Must choose a destination")),
-                      );
-                    } else {
-                      _showConfirmationDialog(_destination!);
-                    }
-                  },
-                  child: Text('Save'),
+                Positioned(
+                  left: 16,
+                  bottom: 40,
+                  right: 16,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_destination == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Must choose a destination")),
+                        );
+                      } else {
+                        _showConfirmationDialog(_destination!);
+                      }
+                    },
+                    child: Text('Save'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

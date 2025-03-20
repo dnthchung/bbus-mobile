@@ -1,6 +1,6 @@
 import 'package:bbus_mobile/config/injector/injector.dart';
-import 'package:bbus_mobile/features/authentication/data/data_sources/auth_local_datasource.dart';
-import 'package:bbus_mobile/features/authentication/data/data_sources/auth_remote_datasource.dart';
+import 'package:bbus_mobile/features/authentication/data/datasources/auth_local_datasource.dart';
+import 'package:bbus_mobile/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:bbus_mobile/features/authentication/data/repository/auth_repository_impl.dart';
 import 'package:bbus_mobile/features/authentication/domain/repository/auth_repository.dart';
 import 'package:bbus_mobile/features/authentication/domain/usecases/check_logged_in_status_usecase.dart';

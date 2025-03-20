@@ -10,6 +10,6 @@ class HistoryDependency {
       // Usecases
 
       // Bloc
-      ..registerLazySingleton<HistoryCubit>(() => HistoryCubit());
+      ..registerFactory<HistoryCubit>(() => HistoryCubit());
   }
 }
