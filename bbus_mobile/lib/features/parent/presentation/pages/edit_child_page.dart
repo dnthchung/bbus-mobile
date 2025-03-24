@@ -6,6 +6,7 @@ import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/utils/image_utils.dart';
 import 'package:bbus_mobile/features/parent/data/datasources/children_datasource.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +23,6 @@ class EditChildPage extends StatefulWidget {
 class _EditChildPageState extends State<EditChildPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   DateTime? _selectedDate;
@@ -44,7 +44,6 @@ class _EditChildPageState extends State<EditChildPage> {
         try {
           final res =
               await sl<ChildrenDatasource>().updateChild(widget.child.copyWith(
-            name: _fullNameController.text,
             address: _addressController.text,
             dob: _selectedDate.toString().split(' ')[0],
             gender: _selectedGender,
@@ -53,6 +52,7 @@ class _EditChildPageState extends State<EditChildPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Cập nhật thành công')),
             );
+            context.read<ChildrenListCubit>().getAll();
           }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -75,7 +75,6 @@ class _EditChildPageState extends State<EditChildPage> {
   @override
   void initState() {
     super.initState();
-    _fullNameController.text = widget.child.name ?? '';
     _addressController.text = widget.child.address ?? '';
     if (widget.child.dob != null) {
       _selectedDate = DateTime.tryParse(widget.child.dob!);
@@ -90,7 +89,6 @@ class _EditChildPageState extends State<EditChildPage> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
     _dobController.dispose();
     super.dispose();
   }
@@ -148,7 +146,7 @@ class _EditChildPageState extends State<EditChildPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     spacing: 36,
                     children: [
-                      Stack(
+                      Column(
                         children: [
                           CircleAvatar(
                             radius: 64,
@@ -177,23 +175,17 @@ class _EditChildPageState extends State<EditChildPage> {
                                     )),
                             ),
                           ),
+                          SizedBox(height: 8),
+                          Text(
+                            widget.child.name!,
+                            style: TextStyle(fontSize: 24),
+                          )
                         ],
-                      ),
-                      _buildTextField(
-                        _fullNameController,
-                        'Tên',
-                        Icons.person,
-                        capitalization: TextCapitalization.words,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Vui lòng nhập tên';
-                          }
-                          return null;
-                        },
                       ),
                       _buildTextField(
                         _addressController,
                         'Địa chỉ',
+                        true,
                         Icons.home,
                         capitalization: TextCapitalization.words,
                         validator: (value) {
@@ -299,6 +291,7 @@ class _EditChildPageState extends State<EditChildPage> {
   Widget _buildTextField(
     TextEditingController controller,
     String label,
+    bool isEnable,
     IconData icon, {
     TextCapitalization capitalization = TextCapitalization.none,
     String? Function(String?)? validator,
@@ -309,6 +302,7 @@ class _EditChildPageState extends State<EditChildPage> {
       decoration: _inputDecoration(label, icon),
       cursorColor: TColors.textPrimary,
       validator: validator,
+      enabled: isEnable,
     );
   }
 }
