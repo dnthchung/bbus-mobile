@@ -5,6 +5,6 @@ class StudentListDependency {
   StudentListDependency._();
   static void initStudentList() {
     // Bloc
-    sl..registerLazySingleton<StudentListCubit>(() => StudentListCubit());
+    sl..registerFactory<StudentListCubit>(() => StudentListCubit());
   }
 }

@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 
 String getAppBarTitle(String currentRoute) {
   Map<String, String> routeTitles = {
-    RoutePaths.parentChildren: "My Children",
-    RoutePaths.parentProfile: "My Profile",
-    RoutePaths.parentSetting: "Settings",
+    RoutePaths.parentChildren: "Con của tôi",
+    RoutePaths.parentProfile: "Hồ sơ",
+    RoutePaths.parentEditLocation: "Gửi yêu cầu",
+    RoutePaths.parentChangePassword: "Đổi mật khẩu",
+    RoutePaths.parentSetting: "Cài đặt",
   };
   return routeTitles[currentRoute] ?? "BBUS";
 }
@@ -17,35 +19,49 @@ final List<(int, IconData, String, String, String)> menuItems = [
   (
     1,
     Icons.people_rounded,
-    "My children",
+    "Con tôi",
     RoutePaths.parentChildren,
     RouteNames.parentChildren
   ),
   (
     2,
     Icons.person_pin_rounded,
-    "Profile",
+    "Hồ sơ",
     RoutePaths.parentProfile,
     RouteNames.parentProfile
   ),
   (
     3,
+    Icons.widgets,
+    "Gửi yêu cầu",
+    RoutePaths.parentRequest,
+    RouteNames.parentRequest
+  ),
+  (
+    4,
     Icons.settings,
-    "Settings",
+    "Cài đặt",
     RoutePaths.parentSetting,
     RouteNames.parentSetting
   ),
   (
-    4,
+    5,
     Icons.mail,
-    "School Contact",
+    "Liên hệ nhà trường",
     RoutePaths.parentContact,
     RouteNames.parentContact
   ),
   (
-    5,
+    6,
+    Icons.key,
+    "Đổi mật khẩu",
+    RoutePaths.parentChangePassword,
+    RouteNames.parentChangePassword
+  ),
+  (
+    7,
     Icons.logout,
-    "Logout",
+    "Đăng xuất",
     '/logout',
     'logout',
   ),

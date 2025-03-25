@@ -1,5 +1,6 @@
 import 'package:bbus_mobile/common/widgets/custom_appbar.dart';
 import 'package:bbus_mobile/features/child_feature.dart/widgets/menu_tabs.dart';
+import 'package:bbus_mobile/features/map/bus_tracking_map.dart';
 import 'package:flutter/material.dart';
 
 class ChildFeatureLayout extends StatelessWidget {
@@ -12,22 +13,7 @@ class ChildFeatureLayout extends StatelessWidget {
       body: Stack(
         children: [
           // Map as background
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: Container(
-              width: 100,
-              height: MediaQuery.sizeOf(context).height * 0.3,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: Image.network(
-                    'https://staticmapmaker.com/img/google-placeholder.png',
-                  ).image,
-                ),
-              ),
-            ),
-          ),
+          BusTrackingMap(),
           // Custom App Bar
           Positioned(
             top: 30,

@@ -11,7 +11,7 @@ class UserEntity extends Equatable {
   final String? phone;
   final String? address;
   final String? status;
-  final String? roles;
+  final String? role;
   final String? password;
   /*"id": 2,
         "username": null,
@@ -23,7 +23,7 @@ class UserEntity extends Equatable {
         "phone": "0912345672",
         "address": "72 An Dương",
         "status": null,
-        "roles": null*/
+        "role": null*/
 
   const UserEntity(
       {this.userId,
@@ -37,7 +37,7 @@ class UserEntity extends Equatable {
       this.avatar,
       this.address,
       this.status,
-      this.roles});
+      this.role});
 
   @override
   // TODO: implement props
@@ -54,7 +54,7 @@ class UserEntity extends Equatable {
       avatar,
       address,
       status,
-      roles
+      role
     ];
   }
 }

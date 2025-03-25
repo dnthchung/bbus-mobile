@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/core/constants/api_constants.dart';
+import 'package:bbus_mobile/core/network/api_exception.dart';
 import 'package:bbus_mobile/core/network/api_interceptors.dart';
 import 'package:bbus_mobile/core/network/logger_interceptor.dart';
 import 'package:dio/dio.dart';
@@ -30,7 +31,7 @@ class DioClient {
           options: options,
           cancelToken: cancelToken,
           onReceiveProgress: onReceiveProgress);
-      return res.data;
+      return _returnResponse(res);
     } catch (e) {
       rethrow;
     }
@@ -54,7 +55,7 @@ class DioClient {
           cancelToken: cancelToken,
           onSendProgress: onSendProgress,
           onReceiveProgress: onReceiveProgress);
-      return res.data;
+      return _returnResponse(res);
     } catch (e) {
       rethrow;
     }
@@ -78,7 +79,31 @@ class DioClient {
           cancelToken: cancelToken,
           onSendProgress: onSendProgress,
           onReceiveProgress: onReceiveProgress);
-      return res.data;
+      return _returnResponse(res);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // PUT METHOD
+  Future<dynamic> patch(
+    String url, {
+    data,
+    Map<String, dynamic>? queryPrams,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    try {
+      final res = await _dio.patch(url,
+          data: data,
+          queryParameters: queryPrams,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
+      return _returnResponse(res);
     } catch (e) {
       rethrow;
     }
@@ -98,10 +123,32 @@ class DioClient {
           queryParameters: queryPrams,
           options: options,
           cancelToken: cancelToken);
-      return res.data;
+      return _returnResponse(res);
     } catch (e) {
       rethrow;
     }
+  }
+}
+
+dynamic _returnResponse(Response response) {
+  switch (response.statusCode!) {
+    case >= 200 && < 300:
+      return response.data;
+    case 400:
+      throw BadRequestException(response.data["message"].toString());
+    case 401:
+      throw UnauthorizedException(response.data["message"].toString());
+    case 403:
+      throw ForbiddenException(response.data["message"].toString());
+    case 404:
+      throw NotFoundException(response.data["message"].toString());
+    case 422:
+      throw UnprocessableContentException(response.data["message"].toString());
+    case 500:
+      throw InternalServerException(response.data["message"].toString());
+    default:
+      throw FetchDataException(
+          'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
   }
 }
 

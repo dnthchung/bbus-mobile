@@ -5,8 +5,8 @@ import 'package:bbus_mobile/core/errors/exceptions.dart';
 import 'package:bbus_mobile/core/errors/failures.dart';
 import 'package:bbus_mobile/core/utils/jwt_converter.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
-import 'package:bbus_mobile/features/authentication/data/data_sources/auth_local_datasource.dart';
-import 'package:bbus_mobile/features/authentication/data/data_sources/auth_remote_datasource.dart';
+import 'package:bbus_mobile/features/authentication/data/datasources/auth_local_datasource.dart';
+import 'package:bbus_mobile/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:bbus_mobile/features/authentication/data/models/login_model.dart';
 import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
 import 'package:bbus_mobile/common/entities/user.dart';
@@ -26,7 +26,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final model = LoginModel(phone: phone, password: password);
       final result = await _authRemoteDatasource.login(model);
       if (result['status'] == 401) {
-        return Left(CredentialFailure());
+        return Left(Failure('Wrong Email or Password'));
       }
       final tokenPayload = parseJwt(result['access_token']);
       await _secureLocalStorage.save(
@@ -49,9 +49,9 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       return Right(user);
     } on ServerException {
-      return Left(ServerFailure());
+      return Left(Failure());
     } on AuthException {
-      return Left(CredentialFailure());
+      return Left((Failure('Wrong Email or Password')));
     }
   }
 
@@ -62,8 +62,8 @@ class AuthRepositoryImpl implements AuthRepository {
       logger.i(result);
       final user = UserModel.fromJson(result);
       return Right(user);
-    } on CacheException {
-      return Left(CacheFailure());
+    } on CacheException catch (e) {
+      return Left(Failure(e.message));
     }
   }
 
@@ -84,8 +84,8 @@ class AuthRepositoryImpl implements AuthRepository {
         key: 'userId',
       );
       return Right(result);
-    } on ServerException {
-      return Left(ServerFailure());
+    } on ServerException catch (e) {
+      return Left(Failure(e.message));
     }
   }
 }

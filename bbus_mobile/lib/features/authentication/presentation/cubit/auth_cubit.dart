@@ -1,6 +1,5 @@
-import 'package:bbus_mobile/common/cubit/cubit/current_user_cubit.dart';
+import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
 import 'package:bbus_mobile/core/usecases/usecase.dart';
-import 'package:bbus_mobile/core/utils/failures_converter.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:bbus_mobile/features/authentication/domain/usecases/check_logged_in_status_usecase.dart';
@@ -23,17 +22,17 @@ class AuthCubit extends Cubit<AuthState> {
     final result =
         await _loginUsecase.call(LoginParams(phone: phone, password: password));
     logger.i(result);
-    result.fold((l) => emit(AuthLoginFailure(mapFailureToMessage(l))), (r) {
+    result.fold((l) => emit(AuthLoginFailure(l.message)), (r) {
       _currentUserCubit.updateUser(r);
       emit(AuthLoginSucess(r));
     });
   }
 
   Future<void> checkLoggedInStatus() async {
+    print('object');
     emit(AuthLoggedInStatusLoading());
     final result = await _checkLoggedInStatusUsecase.call(NoParams());
-    result.fold((l) => emit(AuthLoggedInStatusFailure(mapFailureToMessage(l))),
-        (r) {
+    result.fold((l) => emit(AuthLoggedInStatusFailure(l.message)), (r) {
       _currentUserCubit.updateUser(r);
       emit(AuthLoggedInStatusSuccess(r));
     });
@@ -43,7 +42,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLogoutLoading());
     final result = await _logoutUsecase.call(NoParams());
     result.fold((l) {
-      emit(AuthLogoutFailure(mapFailureToMessage(l)));
+      emit(AuthLogoutFailure(l.message));
     }, (r) {
       _currentUserCubit.updateUser(null);
       emit(const AuthLogoutSuccess('Logout Success'));

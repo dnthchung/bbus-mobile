@@ -29,16 +29,31 @@ class ApiInterceptors extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    logger.e(err.response?.statusCode);
-    switch (err.response?.statusCode) {
-      case 401:
-        break;
-      case 403:
-        break;
-      case 400:
-        break;
-      default:
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (ApiConstants.publicEndpoints
+        .any((endpoint) => err.requestOptions.path.contains(endpoint))) {
+      return handler.next(err);
+    }
+    if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
+      final refreshToken = await _secureLocalStorage.load(key: 'refresh_token');
+      Dio retryDio = Dio(
+        BaseOptions(
+          baseUrl: ApiConstants.baseApiUrl,
+        ),
+      );
+      var response = await retryDio.post(
+        ApiConstants.getRefreshTokenUrl,
+        data: {refreshToken},
+        options: Options(
+          headers: {"Content-Type": 'application/json'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        await _secureLocalStorage.save(key: 'token', value: 'access_token');
+        await _secureLocalStorage.save(
+            key: 'refresh_token', value: 'refresh_token');
+        handler.resolve(response);
+      }
     }
     super.onError(err, handler);
   }

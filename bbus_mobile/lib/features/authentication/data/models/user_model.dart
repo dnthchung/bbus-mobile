@@ -12,7 +12,7 @@ class UserModel extends UserEntity {
     required String? phone,
     required String? address,
     required String? status,
-    required String? roles,
+    required String? role,
   }) : super(
           userId: userId,
           username: username,
@@ -24,7 +24,7 @@ class UserModel extends UserEntity {
           phone: phone,
           address: address,
           status: status,
-          roles: roles,
+          role: role,
         );
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -38,7 +38,7 @@ class UserModel extends UserEntity {
       phone: json['phone'],
       address: json['address'],
       status: json['status'],
-      roles: json['roles'],
+      role: json['role'],
     );
   }
   Map<String, dynamic> toMap() {
@@ -53,7 +53,7 @@ class UserModel extends UserEntity {
     data['phone'] = this.phone;
     data['address'] = this.address;
     data['status'] = this.status;
-    data['roles'] = this.roles;
+    data['role'] = this.role;
     return data;
   }
 }
