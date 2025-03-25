@@ -17,7 +17,7 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
   }
 
   @override
@@ -49,11 +49,11 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
               indicatorColor: TColors.primary,
               tabs: [
                 Tab(
-                  text: 'Tracking',
+                  text: 'Status',
                 ),
-                Tab(
-                  text: 'History',
-                ),
+                // Tab(
+                //   text: 'History',
+                // ),
                 Tab(
                   text: 'Bus Info',
                 ),
@@ -68,7 +68,7 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
                 controller: _tabController,
                 children: [
                   TrackingPage(),
-                  HistoryPage(),
+                  // HistoryPage(),
                   BusInfoPage(),
                 ],
               ),

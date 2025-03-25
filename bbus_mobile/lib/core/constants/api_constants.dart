@@ -8,6 +8,11 @@ class ApiConstants {
   static const String userApiUrl = '/user';
   static const String changePasswordApiUrl = '/user/change-pwd';
   static const String getRefreshTokenUrl = '/auth/refresh-token';
+  static const String checkpointUrl = '/checkpoint/list';
+  static const String reportTypeUrl = '/request-type/list';
+  static const String reportUrl = '/request/list';
+  static const String socketAddress = 'ws://10.0.2.2:8080/ws';
+
   static const List<String> publicEndpoints = [
     '/auth/login',
   ];

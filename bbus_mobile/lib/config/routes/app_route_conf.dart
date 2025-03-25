@@ -5,6 +5,7 @@ import 'package:bbus_mobile/features/children_list/presentation/pages/children_l
 import 'package:bbus_mobile/features/contact/school_contact_page.dart';
 import 'package:bbus_mobile/features/driver/driver_home_page.dart';
 import 'package:bbus_mobile/features/driver/student_list/student_list_page.dart';
+import 'package:bbus_mobile/features/map/bus_tracking_map.dart';
 import 'package:bbus_mobile/features/map/edit_location_map.dart';
 import 'package:bbus_mobile/features/map/map_page.dart';
 import 'package:bbus_mobile/features/notification/notification_page.dart';
@@ -20,7 +21,7 @@ class AppRouteConf {
 
   late final _router = GoRouter(
     // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.parentRequest,
+    initialLocation: RoutePaths.parentChildren,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -98,6 +99,11 @@ class AppRouteConf {
         path: RoutePaths.parentEditLocation,
         name: RouteNames.parentEditLocation,
         builder: (_, __) => const EditLocationMap(),
+      ),
+      GoRoute(
+        path: RoutePaths.parentBusMap,
+        name: RouteNames.parentBusMap,
+        builder: (_, __) => const BusTrackingMap(),
       ),
       GoRoute(
         path: RoutePaths.login,

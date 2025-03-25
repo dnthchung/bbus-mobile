@@ -10,6 +10,7 @@ class RoutePaths {
   static const String parentEditLocation = '/parent/edit-location';
   static const String parentChangePassword = '/parent/change-password';
   static const String parentRequest = '/parent/requests';
+  static const String parentBusMap = '/parent/bus-map';
 
   // Driver
   static const String driverProfile = '/driver/profile';
@@ -30,6 +31,7 @@ class RouteNames {
   static const String parentSetting = 'parent_setting';
   static const String parentEditLocation = 'parent_edit-location';
   static const String parentRequest = 'parent_requests';
+  static const String parentBusMap = 'parent_bus-map';
 
   // Driver
   static const String driverProfile = 'driver_profile';
