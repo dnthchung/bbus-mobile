@@ -28,10 +28,13 @@ class _EditLocationMapState extends State<EditLocationMap> {
 
   // Demo locations
   final Map<String, LatLng> _demoLocations = {
-    "San Francisco": LatLng(37.7749, -122.4194),
-    "Los Angeles": LatLng(37.0522, -122.2437),
-    "New York": LatLng(40.7128, -74.0060),
-    "London": LatLng(51.5074, -0.1278),
+    "Lô T2, Ng. 54 Lê Văn Lương, Trung Hòa Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam":
+        LatLng(37.7749, -122.4194),
+    "Đ. Lê Văn Lương, Trung Hòa Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam":
+        LatLng(37.7722, -122.4137),
+    "Đ. Lê Văn Lương, Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam":
+        LatLng(40.7128, -74.0060),
+    "Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam": LatLng(51.5074, -0.1278),
   };
 
   String? _selectedLocation;
@@ -209,7 +212,17 @@ class _EditLocationMapState extends State<EditLocationMap> {
                     items: _demoLocations.keys.map((location) {
                       return DropdownMenuItem<String>(
                         value: location,
-                        child: Text(location),
+                        child: SizedBox(
+                          width:
+                              double.infinity, // Ensures text takes full width
+                          child: Text(
+                            location,
+                            softWrap: true,
+                            maxLines: 2, // Adjust max lines as needed
+                            overflow: TextOverflow
+                                .ellipsis, // Optional: adds "..." if too long
+                          ),
+                        ),
                       );
                     }).toList(),
                     onChanged: _onLocationSelected,
@@ -224,7 +237,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                       hintText: 'Select a location',
                     ),
                     isDense: true,
-                    isExpanded: false,
+                    isExpanded: true,
                   ),
                 ),
                 Positioned(
@@ -241,7 +254,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                         _showConfirmationDialog(_destination!);
                       }
                     },
-                    child: Text('Save'),
+                    child: Text('Lưu'),
                   ),
                 ),
               ],

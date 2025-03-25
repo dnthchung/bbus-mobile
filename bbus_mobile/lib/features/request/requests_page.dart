@@ -88,9 +88,36 @@ class RequestList extends StatefulWidget {
 
 class _RequestListState extends State<RequestList> {
   final List<Map<String, String>> requestHistory = [
-    {'type': 'Leave', 'status': 'Approved'},
-    {'type': 'Expense', 'status': 'Pending'},
+    {
+      'type': 'Leave',
+      'typeName': 'Sửa điểm đón',
+      'status': 'Approved',
+      'content':
+          'Điểm đón được sửa thành Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam',
+      'createdAt': '22/02/2025'
+    },
+    {
+      'type': 'Expense',
+      'typeName': 'Báo nghỉ',
+      'status': 'Pending',
+      'content':
+          'Đơn xin báo nghỉ: do bé có lịch khám riêng nên bé sẽ không đi xe buýt ngày 12/03/2025',
+      'createdAt': '22/02/2025'
+    },
   ];
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Approved':
+        return Colors.green;
+      case 'Pending':
+        return Colors.orange;
+      case 'Rejected':
+        return Colors.red;
+      default:
+        return Colors.black;
+    }
+  }
+
   String? selectedType;
   @override
   Widget build(BuildContext context) {
@@ -120,22 +147,27 @@ class _RequestListState extends State<RequestList> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButtonFormField<String>(
                   value: selectedType,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 10.0),
                   ),
-                  hint: Text('Filter by Type', style: TextStyle(fontSize: 16)),
+                  hint: const Text('Filter by Type',
+                      style: TextStyle(fontSize: 16)),
                   onChanged: (value) {
                     setState(() {
                       selectedType = value;
                     });
                   },
-                  items: [null, ...requestHistory.map((e) => e['type'])]
-                      .map((type) {
+                  items: [
+                    {'type': null, 'typeName': 'Tất cả'}, // 'All' option
+                    ...requestHistory
+                  ].map((entry) {
                     return DropdownMenuItem(
-                      value: type,
-                      child:
-                          Text(type ?? 'All', style: TextStyle(fontSize: 16)),
+                      value: entry['type'], // Keep the actual value as 'type'
+                      child: Text(
+                        entry['typeName'] ?? '',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     );
                   }).toList(),
                 ),
@@ -147,11 +179,51 @@ class _RequestListState extends State<RequestList> {
           child: ListView.builder(
             itemCount: filteredHistory.length,
             itemBuilder: (context, index) {
+              final request = filteredHistory[index];
+
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: ListTile(
-                  title: Text(filteredHistory[index]['type']!),
-                  subtitle: Text('Status: ${filteredHistory[index]['status']}'),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              request['typeName'] ?? 'No Type Name',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(request['status']!)
+                                  .withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              request['status']!,
+                              style: TextStyle(
+                                color: _getStatusColor(request['status']!),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Text(request['content'] ?? 'No content'),
+                      const SizedBox(height: 5),
+                      Text('Created: ${request['createdAt']}',
+                          style: TextStyle(color: Colors.grey.shade600)),
+                    ],
+                  ),
                 ),
               );
             },

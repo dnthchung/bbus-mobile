@@ -9,20 +9,20 @@ class NotificationPage extends StatelessWidget {
     // Sample notifications list (Replace with Bloc state later)
     final List<Map<String, dynamic>> notifications = [
       {
-        "title": "Drop Reminder",
-        "body": "Sam school bus has reached at your drop location",
+        "title": "Xe đến điểm trả",
+        "body": "Xe buýt của Lan đã về đến điểm đón",
         "unread": true,
         "timestamp": DateTime.now().subtract(const Duration(minutes: 10)),
       },
       {
-        "title": "School Left",
-        "body": "Sam school bus has left school compound",
+        "title": "Xe rời trường",
+        "body": "Xe buýt của Lan từ trường học đã xuất phát",
         "unread": false,
         "timestamp": DateTime.now().subtract(const Duration(hours: 2)),
       },
       {
-        "title": "School Reached",
-        "body": "Sam school has reached school compound",
+        "title": "Xe đến trường",
+        "body": "Xe buýt của Lan đã đến trường",
         "unread": true,
         "timestamp": DateTime.now().subtract(const Duration(days: 1)),
       },
@@ -30,7 +30,7 @@ class NotificationPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notifications"),
+        title: const Text("Thông báo"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

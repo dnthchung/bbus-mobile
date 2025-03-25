@@ -1,4 +1,4 @@
-import 'package:bbus_mobile/common/cubit/cubit/current_user_cubit.dart';
+import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
 import 'package:bbus_mobile/config/routes/app_route_conf.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
@@ -13,8 +13,8 @@ import 'config/injector/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseApi().initNotification();
+  // await Firebase.initializeApp();
+  // await FirebaseApi().initNotification();
   initializeDependencies();
   runApp(const MyApp());
 }

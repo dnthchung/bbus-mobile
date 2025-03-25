@@ -29,7 +29,7 @@ class _NotificationSettingPageState extends State<NotificationSettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Notification Settings",
+            "Cài đặt thông báo",
             style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -40,11 +40,11 @@ class _NotificationSettingPageState extends State<NotificationSettingPage> {
           ),
           CheckboxListTile(
             title: const Text(
-              "Pickup Notification",
+              "Thông báo đón",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: const Text(
-              "Get notified when you receive a new message.",
+              "Nhận thông báo khi con bạn lên xe.",
               style: TextStyle(color: TColors.textSecondary),
             ),
             value: newMessage,
@@ -56,11 +56,11 @@ class _NotificationSettingPageState extends State<NotificationSettingPage> {
           ),
           CheckboxListTile(
             title: const Text(
-              "Drop Notification",
+              "Thông báo trả",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: const Text(
-              "Get notified when you receive a new message.",
+              "Nhận thông báo khi con bạn xuống xe.",
               style: TextStyle(color: TColors.textSecondary),
             ),
             value: scheduleUpdate,
@@ -72,11 +72,11 @@ class _NotificationSettingPageState extends State<NotificationSettingPage> {
           ),
           CheckboxListTile(
             title: const Text(
-              "Reached at School",
+              "Thông báo đến trường",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: const Text(
-              "Get notified when you receive a new message.",
+              "Nhận thông báo khi con bạn đến trường.",
               style: TextStyle(color: TColors.textSecondary),
             ),
             value: systemAlert,
@@ -88,11 +88,11 @@ class _NotificationSettingPageState extends State<NotificationSettingPage> {
           ),
           CheckboxListTile(
             title: const Text(
-              "Left from School",
+              "Thông báo rời trường",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: const Text(
-              "Get notified when you receive a new message.",
+              "Nhận thông báo khi con bạn rời trường.",
               style: TextStyle(color: TColors.textSecondary),
             ),
             value: systemAlert,
@@ -109,7 +109,7 @@ class _NotificationSettingPageState extends State<NotificationSettingPage> {
               child: ElevatedButton(
                 onPressed: _saveSettings,
                 child: const Text(
-                  "Save Settings",
+                  "Lưu cài đặt",
                   style: TextStyle(fontSize: 20),
                 ),
               ),

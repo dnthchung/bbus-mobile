@@ -1,4 +1,4 @@
-import 'package:bbus_mobile/common/cubit/cubit/current_user_cubit.dart';
+import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
 import 'package:bbus_mobile/core/usecases/usecase.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/common/entities/user.dart';
@@ -29,6 +29,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> checkLoggedInStatus() async {
+    print('object');
     emit(AuthLoggedInStatusLoading());
     final result = await _checkLoggedInStatusUsecase.call(NoParams());
     result.fold((l) => emit(AuthLoggedInStatusFailure(l.message)), (r) {
