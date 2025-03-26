@@ -31,7 +31,7 @@ class SchoolContactPage extends StatelessWidget {
                   spacing: 12,
                   children: [
                     Text(
-                      "Need Help?",
+                      "Cần giúp đỡ?",
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
@@ -49,7 +49,7 @@ class SchoolContactPage extends StatelessWidget {
             height: 60,
           ),
           Text(
-            "Connect Us",
+            "Liên hệ với chúng tôi",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(
