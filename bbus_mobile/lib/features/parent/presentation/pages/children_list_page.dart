@@ -5,7 +5,7 @@ final List<Map<String, String>> children = [
   {
     "name": "Alice Johnson",
     "age": "10",
-    "address": "address1",
+    "address": "",
     "status": "In Bus",
     "avatar": "null",
   },

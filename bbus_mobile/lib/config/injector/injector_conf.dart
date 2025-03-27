@@ -4,7 +4,6 @@ final sl = GetIt.instance;
 void initializeDependencies() {
   // Auth
   AuthDependency.initAuth();
-  HistoryDependency.initHistory();
   StudentListDependency.initStudentList();
   _initChangePassword();
   _initMapTracking();

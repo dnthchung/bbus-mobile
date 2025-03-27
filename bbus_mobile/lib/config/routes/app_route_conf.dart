@@ -1,7 +1,7 @@
 import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
 import 'package:bbus_mobile/features/change_password/change_password_page.dart';
-import 'package:bbus_mobile/features/child_feature.dart/child_feature_layout.dart';
-import 'package:bbus_mobile/features/children_list/presentation/pages/children_list_page.dart';
+import 'package:bbus_mobile/features/parent/presentation/pages/child_feature_layout.dart';
+import 'package:bbus_mobile/features/parent/presentation/pages/children_list_page.dart';
 import 'package:bbus_mobile/features/contact/school_contact_page.dart';
 import 'package:bbus_mobile/features/driver/driver_home_page.dart';
 import 'package:bbus_mobile/features/driver/student_list/student_list_page.dart';

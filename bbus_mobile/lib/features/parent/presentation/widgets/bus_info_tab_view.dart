@@ -1,10 +1,10 @@
-import 'package:bbus_mobile/features/child_feature.dart/bus_info/bus_info_item.dart';
+import 'package:bbus_mobile/features/parent/presentation/widgets/bus_info_item.dart';
 import 'package:flutter/material.dart';
 
 List<(String, String, String, String, String)> busInfoList = [];
 
-class BusInfoPage extends StatelessWidget {
-  const BusInfoPage({super.key});
+class BusInfoTabView extends StatelessWidget {
+  const BusInfoTabView({super.key});
 
   @override
   Widget build(BuildContext context) {

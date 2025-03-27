@@ -9,7 +9,6 @@ import 'package:bbus_mobile/features/change_password/data/repository/change_pass
 import 'package:bbus_mobile/features/change_password/domain/cubit/change_password_cubit.dart';
 import 'package:bbus_mobile/features/change_password/domain/repository/change_password_repository.dart';
 import 'package:bbus_mobile/features/change_password/domain/usecase/change_password_usecase.dart';
-import 'package:bbus_mobile/features/child_feature.dart/di/history_dependency.dart';
 import 'package:bbus_mobile/features/driver/di/student_list_dependency.dart';
 import 'package:bbus_mobile/features/map/cubit/location_tracking_cubit.dart';
 import 'package:bbus_mobile/features/map/data/datasources/location_socket_datasource.dart';
