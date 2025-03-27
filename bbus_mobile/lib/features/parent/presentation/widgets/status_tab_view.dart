@@ -1,5 +1,5 @@
-import 'package:bbus_mobile/features/child_feature.dart/domain/entities/daily_schedule.dart';
-import 'package:bbus_mobile/features/child_feature.dart/widgets/timeline_point.dart';
+import 'package:bbus_mobile/features/parent/domain/entities/daily_schedule.dart';
+import 'package:bbus_mobile/features/parent/presentation/widgets/timeline_point.dart';
 import 'package:flutter/material.dart';
 
 final trackingSchedule = DailyScheduleEntity(
@@ -10,8 +10,8 @@ final trackingSchedule = DailyScheduleEntity(
   drop: EventDetail(time: null, address: "456 Oak Street, Springfield"),
 );
 
-class TrackingPage extends StatelessWidget {
-  const TrackingPage({super.key});
+class StatusTabView extends StatelessWidget {
+  const StatusTabView({super.key});
 
   @override
   Widget build(BuildContext context) {

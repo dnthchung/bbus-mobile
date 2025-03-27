@@ -1,7 +1,6 @@
 import 'package:bbus_mobile/config/theme/colors.dart';
-import 'package:bbus_mobile/features/child_feature.dart/bus_info/bus_info_page.dart';
-import 'package:bbus_mobile/features/child_feature.dart/history/history_page.dart';
-import 'package:bbus_mobile/features/child_feature.dart/tracking/tracking_page.dart';
+import 'package:bbus_mobile/features/parent/presentation/widgets/bus_info_tab_view.dart';
+import 'package:bbus_mobile/features/parent/presentation/widgets/status_tab_view.dart';
 import 'package:flutter/material.dart';
 
 class MenuTabs extends StatefulWidget {
@@ -67,9 +66,8 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  TrackingPage(),
-                  // HistoryPage(),
-                  BusInfoPage(),
+                  StatusTabView(),
+                  BusInfoTabView(),
                 ],
               ),
             ),

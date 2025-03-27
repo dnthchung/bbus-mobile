@@ -18,6 +18,9 @@ class EditLocationMap extends StatefulWidget {
 }
 
 class _EditLocationMapState extends State<EditLocationMap> {
+  final String childAvatar = 'default_child.png';
+  final String childId = '1';
+  final String childName = 'David';
   final MapController _mapController = MapController();
   final Location _location = Location();
   bool isLoading = true;
@@ -154,7 +157,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                         mapController: _mapController,
                         options: MapOptions(
                           initialCenter: _currentLocation ?? LatLng(0, 0),
-                          initialZoom: 10,
+                          initialZoom: 20,
                           minZoom: 2,
                           maxZoom: 100,
                         ),
@@ -205,39 +208,91 @@ class _EditLocationMapState extends State<EditLocationMap> {
                       ),
                 Positioned(
                   left: 16,
-                  top: 40,
+                  top: 16, // Adjusted for spacing
                   right: 16,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedLocation,
-                    items: _demoLocations.keys.map((location) {
-                      return DropdownMenuItem<String>(
-                        value: location,
-                        child: SizedBox(
-                          width:
-                              double.infinity, // Ensures text takes full width
-                          child: Text(
-                            location,
-                            softWrap: true,
-                            maxLines: 2, // Adjust max lines as needed
-                            overflow: TextOverflow
-                                .ellipsis, // Optional: adds "..." if too long
-                          ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
                         ),
-                      );
-                    }).toList(),
-                    onChanged: _onLocationSelected,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 20),
-                      hintText: 'Select a location',
+                      ],
                     ),
-                    isDense: true,
-                    isExpanded: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 12,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage:
+                                  AssetImage('assets/images/$childAvatar'),
+                              radius: 24, // Adjust as needed
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  childName,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                // Text(
+                                //   "ID: ${childId}",
+                                //   style: const TextStyle(
+                                //     fontSize: 14,
+                                //     color: Colors.grey,
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Divider(
+                            thickness: 1,
+                            color: Color.fromARGB(255, 206, 206, 206)),
+                        DropdownButtonFormField<String>(
+                          value: _selectedLocation,
+                          items: _demoLocations.keys.map((location) {
+                            return DropdownMenuItem<String>(
+                              value: location,
+                              child: SizedBox(
+                                width: double
+                                    .infinity, // Ensures text takes full width
+                                child: Text(
+                                  location,
+                                  softWrap: true,
+                                  maxLines: 2, // Adjust max lines as needed
+                                  overflow: TextOverflow
+                                      .ellipsis, // Optional: adds "..." if too long
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: _onLocationSelected,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20),
+                            hintText: 'Select a location',
+                          ),
+                          isDense: true,
+                          isExpanded: true,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Positioned(

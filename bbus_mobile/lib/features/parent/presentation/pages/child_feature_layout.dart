@@ -1,5 +1,5 @@
 import 'package:bbus_mobile/common/widgets/custom_appbar.dart';
-import 'package:bbus_mobile/features/child_feature.dart/widgets/menu_tabs.dart';
+import 'package:bbus_mobile/features/parent/presentation/widgets/menu_tabs.dart';
 import 'package:bbus_mobile/features/map/bus_tracking_map.dart';
 import 'package:flutter/material.dart';
 
