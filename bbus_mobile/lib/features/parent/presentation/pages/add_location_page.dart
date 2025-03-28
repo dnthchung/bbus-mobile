@@ -3,6 +3,7 @@ import 'package:bbus_mobile/features/parent/domain/usecases/send_new_checkpoint_
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AddLocationPage extends StatefulWidget {
   const AddLocationPage({Key? key}) : super(key: key);
@@ -44,7 +45,7 @@ class _AddLocationPageState extends State<AddLocationPage> {
           SnackBar(content: Text("Yêu cầu đã được gửi thành công!")),
         );
         _reasonController.clear();
-        context.read<RequestListCubit>().getRequestList();
+        context.pop();
       });
     }
   }
