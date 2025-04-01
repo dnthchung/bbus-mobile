@@ -41,6 +41,12 @@ class AuthRepositoryImpl implements AuthRepository {
         key: 'userId',
         value: tokenPayload['userId'].toString(),
       );
+      final entityId = await _authRemoteDatasource
+          .getEntityId(tokenPayload['userId'].toString());
+      await _secureLocalStorage.save(
+        key: 'entityId',
+        value: entityId,
+      );
       final user = await _authRemoteDatasource
           .getUserDetail(tokenPayload['userId'].toString());
       await _secureLocalStorage.save(

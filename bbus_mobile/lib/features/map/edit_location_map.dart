@@ -264,15 +264,40 @@ class _EditLocationMapState extends State<EditLocationMap> {
                           items: _demoLocations.keys.map((location) {
                             return DropdownMenuItem<String>(
                               value: location,
-                              child: SizedBox(
-                                width: double
-                                    .infinity, // Ensures text takes full width
+                              child: Container(
+                                width: double.infinity,
+                                alignment: Alignment.centerLeft,
+                                
+                                padding:
+                                    const EdgeInsets.fromLTRB(0, 8.0, 0, 6.0),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(
+                                      color: _demoLocations.keys
+                                                  .toList()
+                                                  .indexOf(location) ==
+                                              0
+                                          ? Colors.transparent
+                                          : Colors.grey,
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
                                 child: Text(
                                   location,
                                   softWrap: true,
-                                  maxLines: 2, // Adjust max lines as needed
-                                  overflow: TextOverflow
-                                      .ellipsis, // Optional: adds "..." if too long
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: _selectedLocation == location
+                                        ? FontWeight.bold
+                                        : FontWeight
+                                            .normal, // Highlight selected
+                                    color: _selectedLocation == location
+                                        ? Colors.blue
+                                        : Colors
+                                            .black, // Change color for selected
+                                  ),
                                 ),
                               ),
                             );
@@ -288,8 +313,16 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                 const EdgeInsets.symmetric(horizontal: 20),
                             hintText: 'Select a location',
                           ),
-                          isDense: true,
                           isExpanded: true,
+                          selectedItemBuilder: (BuildContext context) {
+                            return _demoLocations.keys.map<Widget>((location) {
+                              return Text(
+                                location,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            }).toList();
+                          },
                         ),
                       ],
                     ),

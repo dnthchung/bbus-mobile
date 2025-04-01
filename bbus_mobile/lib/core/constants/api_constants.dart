@@ -12,6 +12,7 @@ class ApiConstants {
   static const String reportTypeUrl = '/request-type/list';
   static const String reportUrl = '/request/list';
   static const String socketAddress = 'ws://10.0.2.2:8080/ws';
+  static const String childrenList = '/parent/student-list';
 
   static const List<String> publicEndpoints = [
     '/auth/login',

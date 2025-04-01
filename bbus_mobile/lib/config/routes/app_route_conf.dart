@@ -21,7 +21,7 @@ class AppRouteConf {
 
   late final _router = GoRouter(
     // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.parentChildren,
+    initialLocation: RoutePaths.parentEditLocation,
     routes: [
       ShellRoute(
         builder: (context, state, child) {

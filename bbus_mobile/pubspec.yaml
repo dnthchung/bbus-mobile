@@ -50,7 +50,9 @@ dependencies:
   flutter_polyline_points: ^2.1.0
   # Web Socket
   web_socket_channel: ^3.0.2
-
+  # Device Info
+  device_info_plus: ^11.3.0
+  app_set_id: ^1.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -6,7 +6,7 @@ import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/features/authentication/di/auth_dependency.dart';
 import 'package:bbus_mobile/features/change_password/data/datasources/change_password_remote_datasource.dart';
 import 'package:bbus_mobile/features/change_password/data/repository/change_password_repository_impl.dart';
-import 'package:bbus_mobile/features/change_password/domain/cubit/change_password_cubit.dart';
+import 'package:bbus_mobile/features/change_password/cubit/change_password_cubit.dart';
 import 'package:bbus_mobile/features/change_password/domain/repository/change_password_repository.dart';
 import 'package:bbus_mobile/features/change_password/domain/usecase/change_password_usecase.dart';
 import 'package:bbus_mobile/features/driver/di/student_list_dependency.dart';
@@ -16,6 +16,11 @@ import 'package:bbus_mobile/features/map/data/repository/map_repository_impl.dar
 import 'package:bbus_mobile/features/map/domain/repository/map_repository.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/get_live_location.dart';
 import 'package:bbus_mobile/features/notification/domain/usecases/get_list_notifications.dart';
+import 'package:bbus_mobile/features/parent/data/datasources/children_datasource.dart';
+import 'package:bbus_mobile/features/parent/data/repository/children_repository_impl.dart';
+import 'package:bbus_mobile/features/parent/domain/repository/children_repository.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/getChildrenList.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 

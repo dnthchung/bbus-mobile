@@ -7,6 +7,7 @@ void initializeDependencies() {
   StudentListDependency.initStudentList();
   _initChangePassword();
   _initMapTracking();
+  _initChildren();
   //core
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(
@@ -41,4 +42,14 @@ void _initMapTracking() {
     ..registerLazySingleton(() => GetLiveLocation(sl()))
     // Bloc
     ..registerFactory(() => LocationTrackingCubit(sl()));
+}
+
+void _initChildren() {
+  sl
+    ..registerLazySingleton<ChildrenDatasource>(
+        () => ChildrenDatasourceImpl(sl(), sl()))
+    ..registerLazySingleton<ChildrenRepository>(
+        () => ChildrenRepositoryImpl(sl()))
+    ..registerSingleton(() => Getchildrenlist(sl()))
+    ..registerFactory(() => ChildrenListCubit(sl()));
 }

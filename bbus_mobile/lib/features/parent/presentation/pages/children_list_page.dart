@@ -1,55 +1,59 @@
 import 'package:bbus_mobile/common/widgets/child_card.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-final List<Map<String, String>> children = [
-  {
-    "name": "Alice Johnson",
-    "age": "10",
-    "address": "",
-    "status": "In Bus",
-    "avatar": "null",
-  },
-  {
-    "name": "Bob Johnson",
-    "age": "9",
-    "address": "address1",
-    "status": "At Home",
-    "avatar": "null",
-  },
-  {
-    "name": "Tom Johnson",
-    "age": "9",
-    "address": "address1",
-    "status": "At School",
-    "avatar": "null",
-  },
-];
-
-class ChildrenListPage extends StatelessWidget {
+class ChildrenListPage extends StatefulWidget {
   const ChildrenListPage({super.key});
+
+  @override
+  State<ChildrenListPage> createState() => _ChildrenListPageState();
+}
+
+class _ChildrenListPageState extends State<ChildrenListPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<ChildrenListCubit>().getAll();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: children.length,
-              itemBuilder: (context, index) {
-                final child = children[index];
-                return ChildCard(
-                  name: child['name']!,
-                  age: child['age']!,
-                  address: child['address']!,
-                  status: child['status']!,
-                  isParent: true,
-                );
-              },
-            ),
-          )
-        ],
+      child: BlocBuilder<ChildrenListCubit, ChildrenListState>(
+        builder: (context, state) {
+          if (state is ChildrenListSuccess) {
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.data.length,
+                    itemBuilder: (context, index) {
+                      final child = state.data[index];
+                      return ChildCard(
+                        name: child.name!,
+                        age: child.dob,
+                        address: child.address,
+                        status: child.status,
+                        isParent: true,
+                      );
+                    },
+                  ),
+                )
+              ],
+            );
+          } else if (state is ChildrenListFailure) {
+            return Center(
+              child: Text('Chưa có cháu nào được đăng ký'),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }
