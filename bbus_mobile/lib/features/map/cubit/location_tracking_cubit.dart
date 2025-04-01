@@ -9,13 +9,11 @@ part 'location_tracking_state.dart';
 class LocationTrackingCubit extends Cubit<LocationTrackingState> {
   final GetLiveLocation _getLiveLocation;
   LocationTrackingCubit(this._getLiveLocation)
-      : super(LocationTrackingInitial()) {
-    listenForLocationUpdates();
-  }
-  Future<void> listenForLocationUpdates() async {
+      : super(LocationTrackingInitial());
+  Future<void> listenForLocationUpdates(busId) async {
     await _getLiveLocation.openLiveTracking((location) {
       emit(LocationUpdated(location));
-    });
+    }, busId);
   }
 
   void stopListening() {

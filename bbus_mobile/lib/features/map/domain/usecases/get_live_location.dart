@@ -10,8 +10,9 @@ class GetLiveLocation {
       StreamController<LocationEntity>();
   Stream<LocationEntity> get locationStream => _locationController.stream;
   Future<void> openLiveTracking(
-      Function(LocationEntity location) onLocationReceived) async {
-    await _mapRepository.startListening(onLocationReceived);
+      Function(LocationEntity location) onLocationReceived,
+      String busId) async {
+    await _mapRepository.startListening(onLocationReceived, busId);
   }
 
   void stop() {

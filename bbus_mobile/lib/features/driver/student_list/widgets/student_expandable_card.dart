@@ -3,6 +3,7 @@ import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class StudentExpandableCard extends StatefulWidget {
+  final String studentId;
   final String name;
   final String age;
   final String address;
@@ -13,6 +14,7 @@ class StudentExpandableCard extends StatefulWidget {
 
   const StudentExpandableCard({
     Key? key,
+    required this.studentId,
     required this.name,
     required this.age,
     required this.address,
@@ -47,6 +49,7 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
           InkWell(
             onTap: _toggleExpand,
             child: ChildCard(
+              studentId: widget.studentId,
               name: widget.name,
               age: widget.age,
               address: widget.address,

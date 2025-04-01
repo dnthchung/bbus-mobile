@@ -15,9 +15,8 @@ class ChildrenDatasourceImpl implements ChildrenDatasource {
   @override
   Future<List<ChildEntity>> getChildrenList() async {
     try {
-      final parentId = await _secureLocalStorage.load(key: 'entityId');
-      final result =
-          await _dioClient.get('${ApiConstants.childrenList}/$parentId');
+      // final parentId = await _secureLocalStorage.load(key: 'entityId');
+      final result = await _dioClient.get(ApiConstants.childrenList);
       return result.map((child) => ChildEntity.fromJson(child)).toList();
     } catch (e) {
       throw ServerException(e.toString());

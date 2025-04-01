@@ -33,10 +33,12 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
                     itemBuilder: (context, index) {
                       final child = state.data[index];
                       return ChildCard(
+                        studentId: child.id!,
+                        busId: child.busId!,
                         name: child.name!,
-                        age: child.dob,
-                        address: child.address,
-                        status: child.status,
+                        age: child.dob!,
+                        address: child.address!,
+                        status: child.status!,
                         isParent: true,
                       );
                     },
@@ -48,10 +50,12 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
             return Center(
               child: Text('Chưa có cháu nào được đăng ký'),
             );
-          } else {
+          } else if (state is ChildrenListLoading) {
             return Center(
               child: CircularProgressIndicator(),
             );
+          } else {
+            return SizedBox();
           }
         },
       ),

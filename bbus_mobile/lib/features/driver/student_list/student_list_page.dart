@@ -79,6 +79,7 @@ class _StudentListPageState extends State<StudentListPage>
 
                       return StudentExpandableCard(
                         key: ValueKey(student["name"]),
+                        studentId: student["id"] ?? "Unknown",
                         name: student["name"] ?? "Unknown",
                         age: student["age"] ?? "0",
                         address: student["address"] ?? "Unknown",

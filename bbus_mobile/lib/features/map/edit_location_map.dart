@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
+import 'package:bbus_mobile/features/map/cubit/location_tracking_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -11,16 +14,14 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
 class EditLocationMap extends StatefulWidget {
-  const EditLocationMap({super.key});
+  final ChildEntity child;
+  const EditLocationMap({super.key, required this.child});
 
   @override
   State<EditLocationMap> createState() => _EditLocationMapState();
 }
 
 class _EditLocationMapState extends State<EditLocationMap> {
-  final String childAvatar = 'default_child.png';
-  final String childId = '1';
-  final String childName = 'David';
   final MapController _mapController = MapController();
   final Location _location = Location();
   bool isLoading = true;
@@ -126,6 +127,9 @@ class _EditLocationMapState extends State<EditLocationMap> {
   void initState() {
     _initializeLocation();
     super.initState();
+    context
+        .read<LocationTrackingCubit>()
+        .listenForLocationUpdates(widget.child.busId);
   }
 
   @override
@@ -230,8 +234,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
                         Row(
                           children: [
                             CircleAvatar(
-                              backgroundImage:
-                                  AssetImage('assets/images/$childAvatar'),
+                              backgroundImage: AssetImage(
+                                  'assets/images/${widget.child.avatar ?? 'default_child.png'}'),
                               radius: 24, // Adjust as needed
                             ),
                             const SizedBox(width: 12),
@@ -239,7 +243,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  childName,
+                                  widget.child.name!,
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -267,7 +271,6 @@ class _EditLocationMapState extends State<EditLocationMap> {
                               child: Container(
                                 width: double.infinity,
                                 alignment: Alignment.centerLeft,
-                                
                                 padding:
                                     const EdgeInsets.fromLTRB(0, 8.0, 0, 6.0),
                                 decoration: BoxDecoration(

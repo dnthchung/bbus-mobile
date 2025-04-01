@@ -7,8 +7,9 @@ class MapRepositoryImpl implements MapRepository {
   MapRepositoryImpl(this._locationSocketDatasource);
   @override
   Future<void> startListening(
-      Function(LocationEntity location) onLocationReceived) async {
-    await _locationSocketDatasource.startListening(onLocationReceived);
+      Function(LocationEntity location) onLocationReceived,
+      String busId) async {
+    await _locationSocketDatasource.startListening(onLocationReceived, busId);
   }
 
   @override

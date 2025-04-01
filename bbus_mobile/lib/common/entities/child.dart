@@ -1,50 +1,56 @@
 import 'package:equatable/equatable.dart';
 
 class ChildEntity extends Equatable {
-  ChildEntity({
-    required this.id,
-    required this.rollNumber,
-    required this.name,
-    required this.avatar,
-    required this.dob,
-    required this.address,
-    required this.gender,
-    required this.status,
-    required this.parentId,
-    required this.parent,
-    required this.checkpointId,
-    required this.checkpointName,
-    required this.checkpointDescription,
-  });
+  String? id;
+  String? rollNumber;
+  String? name;
+  String? avatar;
+  String? dob;
+  String? address;
+  String? gender;
+  String? status;
+  String? parentId;
+  String? busId;
+  String? busName;
+  String? parent;
+  String? checkpointId;
+  String? checkpointName;
+  String? checkpointDescription;
 
-  final String? id;
-  final String? rollNumber;
-  final String? name;
-  final dynamic avatar;
-  final dynamic dob;
-  final dynamic address;
-  final dynamic gender;
-  final dynamic status;
-  final dynamic parentId;
-  final dynamic parent;
-  final dynamic checkpointId;
-  final dynamic checkpointName;
-  final dynamic checkpointDescription;
+  ChildEntity({
+    this.id,
+    this.rollNumber,
+    this.name,
+    this.avatar,
+    this.dob,
+    this.address,
+    this.gender,
+    this.status,
+    this.parentId,
+    this.busId,
+    this.busName,
+    this.parent,
+    this.checkpointId,
+    this.checkpointName,
+    this.checkpointDescription,
+  });
 
   ChildEntity copyWith({
     String? id,
     String? rollNumber,
     String? name,
-    dynamic? avatar,
-    dynamic? dob,
-    dynamic? address,
-    dynamic? gender,
-    dynamic? status,
-    dynamic? parentId,
-    dynamic? parent,
-    dynamic? checkpointId,
-    dynamic? checkpointName,
-    dynamic? checkpointDescription,
+    String? avatar,
+    String? dob,
+    String? address,
+    String? gender,
+    String? status,
+    String? parentId,
+    String? busId,
+    String? busName,
+    String? parent,
+    String? checkpointId,
+    String? checkpointName,
+    String? checkpointDescription,
   }) {
     return ChildEntity(
       id: id ?? this.id,
@@ -56,6 +62,8 @@ class ChildEntity extends Equatable {
       gender: gender ?? this.gender,
       status: status ?? this.status,
       parentId: parentId ?? this.parentId,
+      busId: busId ?? this.busId,
+      busName: busName ?? this.busName,
       parent: parent ?? this.parent,
       checkpointId: checkpointId ?? this.checkpointId,
       checkpointName: checkpointName ?? this.checkpointName,
@@ -75,6 +83,8 @@ class ChildEntity extends Equatable {
       gender: json["gender"],
       status: json["status"],
       parentId: json["parentId"],
+      busId: json["busId"],
+      busName: json["busName"],
       parent: json["parent"],
       checkpointId: json["checkpointId"],
       checkpointName: json["checkpointName"],
@@ -93,6 +103,8 @@ class ChildEntity extends Equatable {
         gender,
         status,
         parentId,
+        busId,
+        busName,
         parent,
         checkpointId,
         checkpointName,

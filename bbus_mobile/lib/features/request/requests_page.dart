@@ -8,6 +8,11 @@ class RequestsPage extends StatelessWidget {
   final List<Map<String, dynamic>> requestTypes = [
     {
       'type': 'Chọn điểm đón',
+      'icon': Icons.edit_location_alt,
+      'path': RouteNames.parentEditLocation
+    },
+    {
+      'type': 'Thêm điểm đón',
       'icon': Icons.add_location_alt,
       'path': RouteNames.parentEditLocation
     },

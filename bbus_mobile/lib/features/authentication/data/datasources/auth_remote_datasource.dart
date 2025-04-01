@@ -12,7 +12,7 @@ import 'package:bbus_mobile/features/authentication/data/models/user_model.dart'
 abstract class AuthRemoteDatasource {
   Future<Map<String, dynamic>> login(LoginModel loginModel);
   Future<UserModel> getUserDetail(String userId);
-  Future<String> getEntityId(String userId);
+  // Future<String> getEntityId(String userId);
   Future<void> logout();
 }
 
@@ -64,18 +64,18 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     }
   }
 
-  @override
-  Future<String> getEntityId(String userId) async {
-    try {
-      var res =
-          await _dioClient.get('${ApiConstants.userApiUrl}/entity/$userId');
-      final entityId = res['data']['id'];
-      return entityId;
-    } on SocketException {
-      throw FetchDataException('No Internet Connection!');
-    } catch (e) {
-      logger.e(e);
-      throw ServerException(e.toString());
-    }
-  }
+  // @override
+  // Future<String> getEntityId(String userId) async {
+  //   try {
+  //     var res =
+  //         await _dioClient.get('${ApiConstants.userApiUrl}/entity/$userId');
+  //     final entityId = res['data']['id'];
+  //     return entityId;
+  //   } on SocketException {
+  //     throw FetchDataException('No Internet Connection!');
+  //   } catch (e) {
+  //     logger.e(e);
+  //     throw ServerException(e.toString());
+  //   }
+  // }
 }

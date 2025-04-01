@@ -1,3 +1,4 @@
+import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
 import 'package:bbus_mobile/features/change_password/change_password_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/child_feature_layout.dart';
@@ -98,7 +99,15 @@ class AppRouteConf {
       GoRoute(
         path: RoutePaths.parentEditLocation,
         name: RouteNames.parentEditLocation,
-        builder: (_, __) => const EditLocationMap(),
+        builder: (_, state) {
+          final params = state.pathParameters;
+          final child = ChildEntity(
+              id: params['childId'],
+              name: params['name'],
+              busId: params['busId'],
+              avatar: params['avatar']);
+          return EditLocationMap(child: child);
+        },
       ),
       GoRoute(
         path: RoutePaths.parentBusMap,

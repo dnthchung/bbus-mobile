@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ChildCard extends StatelessWidget {
+  final String studentId;
+  final String? busId;
   final String name;
   final String age;
   final String address;
@@ -12,6 +14,8 @@ class ChildCard extends StatelessWidget {
   final bool? isParent;
   const ChildCard(
       {super.key,
+      required this.studentId,
+      this.busId,
       required this.name,
       required this.age,
       required this.address,
@@ -107,7 +111,12 @@ class ChildCard extends StatelessWidget {
                 } else {
                   context.pushNamed(
                     RouteNames.childFeature,
-                    pathParameters: {'name': Uri.encodeComponent(name)},
+                    pathParameters: {
+                      'studentId': studentId,
+                      'name': name,
+                      'avatar': avatar!,
+                      'busId': busId!
+                    },
                   );
                 }
               }
