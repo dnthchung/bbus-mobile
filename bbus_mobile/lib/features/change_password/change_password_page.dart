@@ -1,4 +1,4 @@
-import 'package:bbus_mobile/features/change_password/domain/cubit/change_password_cubit.dart';
+import 'package:bbus_mobile/features/change_password/cubit/change_password_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
