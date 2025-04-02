@@ -8,10 +8,12 @@ import 'package:url_launcher/url_launcher.dart';
 class StudentExpandableCard extends StatefulWidget {
   final StudentEntity student;
   final bool routeEnded;
+  final bool isAssistant;
   const StudentExpandableCard({
     Key? key,
     required this.student,
     required this.routeEnded,
+    required this.isAssistant,
   }) : super(key: key);
 
   @override
@@ -49,6 +51,7 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
             child: StudentCard(
               student: widget.student,
               routeEnded: widget.routeEnded,
+              isAssistant: widget.isAssistant,
             ),
           ),
           if (isExpanded) ...[
