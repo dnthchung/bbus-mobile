@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 String getAppBarTitle(String currentRoute) {
   Map<String, String> routeTitles = {
     RoutePaths.driverStudent: "Danh sách học sinh",
-    RoutePaths.driverProfile: "Hồ sơ cá nhân",
     RoutePaths.driverProfile: "Thông tin trường",
+    RoutePaths.driverSchedule: "Lịch xe",
   };
   return routeTitles[currentRoute] ?? "BBUS";
 }
@@ -23,10 +23,10 @@ final List<(int, IconData, String, String, String)> menuItems = [
   ),
   (
     2,
-    Icons.person_pin_rounded,
-    "Hồ sơ",
-    RoutePaths.driverProfile,
-    RouteNames.driverProfile
+    Icons.calendar_today,
+    "Lịch xe",
+    RoutePaths.driverSchedule,
+    RouteNames.driverSchedule
   ),
   (
     3,
