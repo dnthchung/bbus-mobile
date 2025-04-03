@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
 import 'package:bbus_mobile/common/entities/bus_schedule.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
@@ -28,10 +27,22 @@ class _StudentListPageState extends State<StudentListPage>
   late List<BusScheduleEntity> _busSchedules;
   bool _isLoading = true;
   bool _noSchedule = false;
+  late bool _isAssistant;
 
   @override
   void initState() {
     super.initState();
+    final cubit = context.read<CurrentUserCubit>();
+    if (cubit.state is! CurrentUserLoggedIn) {
+      context.pushNamed(RouteNames.login);
+      return;
+    }
+    if (cubit.state is CurrentUserLoggedIn) {
+      _isAssistant =
+          // (cubit.state as CurrentUserLoggedIn).user.role!.toLowerCase() ==
+          //     'assistant';
+          true;
+    }
     _tabController = TabController(length: 3, vsync: this);
     initialize();
   }
@@ -49,14 +60,15 @@ class _StudentListPageState extends State<StudentListPage>
         print('Error: ${l.message}');
         if (l is EmptyFailure) {
           setState(() {
+            _noSchedule = true;
             _isLoading = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Một số lỗi đã xảy ra, vui lòng thử lại sau'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text('Một số lỗi đã xảy ra, vui lòng thử lại sau'),
+          //     backgroundColor: Colors.red,
+          //   ),
+          // );
         }
       },
       (r) {
@@ -139,8 +151,9 @@ class _StudentListPageState extends State<StudentListPage>
               builder: (context, state) {
                 if (state is StudentListLoaded) {
                   final studentList = state.filteredStudents;
-                  final isEndRoute = !state.allStudents
-                      .any((s) => (s.checkout == null && s.checkin != null));
+                  final studentsCheckedInNotOut = state.allStudents
+                      .where((s) => s.checkin != null && s.checkout == null)
+                      .toList();
                   return Column(
                     children: [
                       Expanded(
@@ -154,6 +167,7 @@ class _StudentListPageState extends State<StudentListPage>
                               key: ValueKey(
                                   '${student.studentId}-${student.checkin}-${student.checkout}'),
                               student: student,
+                              isAssistant: _isAssistant,
                             );
                           },
                         ),
@@ -168,9 +182,66 @@ class _StudentListPageState extends State<StudentListPage>
                                 color: Colors.grey,
                               ),
                             )
-                          : ElevatedButton(
-                              onPressed: isEndRoute
-                                  ? () {
+                          : (_isAssistant)
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    if (studentsCheckedInNotOut.isNotEmpty) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: Row(
+                                            children: [
+                                              const Icon(Icons.warning,
+                                                  color: Colors.orange,
+                                                  size: 28),
+                                              const SizedBox(width: 8),
+                                              const Text('Cảnh báo',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ],
+                                          ),
+                                          content: SingleChildScrollView(
+                                            // wrap content
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'Còn học sinh ở trên xe:',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                                const SizedBox(height: 12),
+                                                ...studentsCheckedInNotOut
+                                                    .map(
+                                                      (student) => ListTile(
+                                                        leading: const Icon(
+                                                            Icons.person,
+                                                            color: Colors.blue),
+                                                        title: Text(student
+                                                                .studentName ??
+                                                            'Không có tên'),
+                                                        subtitle: Text(
+                                                            'Mã học sinh: ${student.rollNumber}'),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text('Đã hiểu'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    } else {
                                       showDialog(
                                         context: context,
                                         builder: (context) => EndRouteModal(
@@ -183,9 +254,10 @@ class _StudentListPageState extends State<StudentListPage>
                                         ),
                                       );
                                     }
-                                  : null,
-                              child: Text('Kết thúc chuyến xe'),
-                            )
+                                  },
+                                  child: Text('Kết thúc chuyến xe'),
+                                )
+                              : const SizedBox()
                     ],
                   );
                 } else if (state is StudentLoadFailure) {
