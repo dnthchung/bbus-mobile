@@ -1,5 +1,4 @@
 import 'package:bbus_mobile/common/entities/user.dart';
-import 'package:bbus_mobile/core/utils/device_utils.dart';
 
 class LoginModel extends UserEntity {
   final String platform;
