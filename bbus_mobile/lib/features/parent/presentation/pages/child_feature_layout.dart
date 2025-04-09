@@ -1,11 +1,15 @@
+import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/common/widgets/custom_appbar.dart';
 import 'package:bbus_mobile/features/parent/presentation/widgets/menu_tabs.dart';
 import 'package:bbus_mobile/features/map/bus_tracking_map.dart';
 import 'package:flutter/material.dart';
 
 class ChildFeatureLayout extends StatelessWidget {
-  final String childName;
-  const ChildFeatureLayout({super.key, required this.childName});
+  final ChildEntity child;
+  const ChildFeatureLayout({
+    super.key,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +17,17 @@ class ChildFeatureLayout extends StatelessWidget {
       body: Stack(
         children: [
           // Map as background
-          BusTrackingMap(),
+          BusTrackingMap(
+            busId: child.busId!,
+          ),
           // Custom App Bar
           Positioned(
             top: 30,
             left: 0,
             right: 0,
             child: CustomAppbar(
-              childName: "John Doe", // Replace with actual image URL
+              childName:
+                  child.name ?? 'John Doe', // Replace with actual image URL
             ),
           ),
           // Draggable Bottom Sheet

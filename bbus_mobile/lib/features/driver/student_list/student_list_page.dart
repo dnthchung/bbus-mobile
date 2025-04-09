@@ -55,7 +55,9 @@ class _StudentListPageState extends State<StudentListPage>
           ),
           TabBar(
             controller: _tabController,
-            onTap: (index) => context.read<StudentListCubit>().changeTab(index),
+            onTap: (index) => context
+                .read<StudentListCubit>()
+                .filterByStatus(index.toString()),
             indicatorColor: TColors.primary,
             labelColor: TColors.primary,
             unselectedLabelColor: Colors.grey,
@@ -69,7 +71,7 @@ class _StudentListPageState extends State<StudentListPage>
             child: BlocBuilder<StudentListCubit, StudentListState>(
               builder: (context, state) {
                 if (state is StudentListLoaded) {
-                  final studentList = state.filteredStudents;
+                  final studentList = state.students;
                   return ListView.builder(
                     key: ValueKey(
                         studentList), // Forces rebuild when filter changes
@@ -78,15 +80,15 @@ class _StudentListPageState extends State<StudentListPage>
                       final student = studentList[index];
 
                       return StudentExpandableCard(
-                        key: ValueKey(student["name"]),
-                        studentId: student["id"] ?? "Unknown",
-                        name: student["name"] ?? "Unknown",
-                        age: student["age"] ?? "0",
-                        address: student["address"] ?? "Unknown",
-                        status: student["status"] ?? "Unknown",
-                        avatar: student["avatar"],
-                        parentName: student["parentName"] ?? "Unknown",
-                        parentPhone: student["parentPhone"] ?? "Unknown",
+                        key: ValueKey(student.id),
+                        studentId: student.id ?? "Unknown",
+                        name: student.name ?? "Unknown",
+                        age: student.dob ?? "0",
+                        address: student.address ?? "Unknown",
+                        status: student.status ?? "Unknown",
+                        avatar: student.avatar,
+                        parentName: student.parentId ?? "Unknown",
+                        parentPhone: student.parent ?? "Unknown",
                       );
                     },
                   );

@@ -6,6 +6,7 @@ import 'package:bbus_mobile/core/network/firebase_api.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
 import 'package:bbus_mobile/features/change_password/cubit/change_password_cubit.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
+import 'package:bbus_mobile/features/map/cubit/checkpoint/checkpoint_list_cubit.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => sl<StudentListCubit>()),
         BlocProvider(create: (_) => sl<ChildrenListCubit>()),
+        BlocProvider(create: (_) => sl<ChildrenListCubit>()),
+        BlocProvider(create: (_) => sl<CheckpointListCubit>()),
         BlocProvider(create: (_) => sl<ChangePasswordCubit>())
       ],
       child: BlocListener<CurrentUserCubit, CurrentUserState>(

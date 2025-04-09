@@ -68,6 +68,8 @@ class AuthRepositoryImpl implements AuthRepository {
       logger.i(result);
       final user = UserModel.fromJson(result);
       return Right(user);
+    } on TokenExpireException {
+      return Left(Failure('Token is expired'));
     } on CacheException catch (e) {
       return Left(Failure(e.message));
     }

@@ -10,29 +10,22 @@ sealed class StudentListState extends Equatable {
 
 final class StudentListInitial extends StudentListState {}
 
+final class StudentListLoading extends StudentListState {}
+
 final class StudentListLoaded extends StudentListState {
-  final int selectedTabIndex;
-  final PickupDrop pickupDrop;
-  final List<Map<String, String>> filteredStudents;
+  final List<ChildEntity> students;
 
-  const StudentListLoaded({
-    required this.selectedTabIndex,
-    required this.pickupDrop,
-    required this.filteredStudents,
-  });
+  const StudentListLoaded(this.students);
+  @override
+  // TODO: implement props
+  List<Object> get props => [students];
+}
 
-  StudentListLoaded copyWith({
-    int? selectedTabIndex,
-    PickupDrop? pickupDrop,
-    List<Map<String, String>>? filteredStudents,
-  }) {
-    return StudentListLoaded(
-      selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
-      pickupDrop: pickupDrop ?? this.pickupDrop,
-      filteredStudents: filteredStudents ?? this.filteredStudents,
-    );
-  }
+class StudentLoadFailure extends StudentListState {
+  final String message;
+
+  const StudentLoadFailure(this.message);
 
   @override
-  List<Object> get props => [selectedTabIndex, pickupDrop, filteredStudents];
+  List<Object> get props => [message];
 }

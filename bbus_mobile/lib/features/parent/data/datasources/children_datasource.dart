@@ -3,6 +3,7 @@ import 'package:bbus_mobile/core/cache/secure_local_storage.dart';
 import 'package:bbus_mobile/core/constants/api_constants.dart';
 import 'package:bbus_mobile/core/errors/exceptions.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
 
 abstract class ChildrenDatasource {
   Future<List<ChildEntity>> getChildrenList();
@@ -16,9 +17,11 @@ class ChildrenDatasourceImpl implements ChildrenDatasource {
   Future<List<ChildEntity>> getChildrenList() async {
     try {
       // final parentId = await _secureLocalStorage.load(key: 'entityId');
-      final result = await _dioClient.get(ApiConstants.childrenList);
-      return result.map((child) => ChildEntity.fromJson(child)).toList();
+      final result = await _dioClient.get(ApiConstants.childrenListUrl);
+      final List<dynamic> data = result['data'];
+      return data.map((child) => ChildEntity.fromJson(child)).toList();
     } catch (e) {
+      logger.e(e.toString());
       throw ServerException(e.toString());
     }
   }

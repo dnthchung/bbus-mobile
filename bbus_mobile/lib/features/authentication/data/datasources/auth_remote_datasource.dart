@@ -43,6 +43,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future<UserModel> getUserDetail(String userId) async {
     try {
       var res = await _dioClient.get('${ApiConstants.userApiUrl}/$userId');
+      logger.i(res['data']);
       final user = UserModel.fromJson(res['data']);
       return user;
     } on SocketException {

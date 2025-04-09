@@ -11,7 +11,8 @@ class PickupDropToggle extends StatelessWidget {
     return BlocBuilder<StudentListCubit, StudentListState>(
       builder: (context, state) {
         if (state is! StudentListLoaded) return SizedBox.shrink();
-
+        final cubit = context.read<StudentListCubit>();
+        final selected = cubit.pickupDrop;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SegmentedButton<PickupDrop>(
@@ -26,11 +27,10 @@ class PickupDropToggle extends StatelessWidget {
               ),
             ],
             showSelectedIcon: false,
-            selected: {state.pickupDrop},
+            selected: {selected},
             onSelectionChanged: (newSelection) {
-              context
-                  .read<StudentListCubit>()
-                  .togglePickupDrop(newSelection.first);
+              cubit.setPickupDrop(
+                  newSelection.first); // <-- Add this to your Cubit
             },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.resolveWith((states) {

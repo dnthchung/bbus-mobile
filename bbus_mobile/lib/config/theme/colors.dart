@@ -5,6 +5,9 @@ class TColors {
   static const Color primary = Color(0xFFFF5722);
   static const Color lightPrimary = Color(0xFFFFCCBC);
   static const Color darkPrimary = Color(0xFFE64A19);
+  static const Color secondary = Color(0xFF4CAE4F);
+  static const Color lightSecondary = Color(0xFF8BC34B);
+  static const Color darkSecondary = Color(0xFF137032);
   static const Color accent = Color(0xFFFF9800);
   static const Color error = Color.fromARGB(244, 212, 24, 24);
   static const Color fillColor = Colors.white;

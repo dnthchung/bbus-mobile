@@ -4,18 +4,18 @@ class ChildEntity extends Equatable {
   String? id;
   String? rollNumber;
   String? name;
-  String? avatar;
-  String? dob;
-  String? address;
-  String? gender;
-  String? status;
-  String? parentId;
+  dynamic avatar;
+  dynamic dob;
+  dynamic address;
+  dynamic gender;
+  dynamic status;
+  dynamic parentId;
   String? busId;
   String? busName;
-  String? parent;
-  String? checkpointId;
-  String? checkpointName;
-  String? checkpointDescription;
+  dynamic parent;
+  dynamic checkpointId;
+  dynamic checkpointName;
+  dynamic checkpointDescription;
 
   ChildEntity({
     this.id,
@@ -78,7 +78,7 @@ class ChildEntity extends Equatable {
       rollNumber: json["rollNumber"],
       name: json["name"],
       avatar: json["avatar"],
-      dob: json["dob"],
+      dob: json["dob"].toString(),
       address: json["address"],
       gender: json["gender"],
       status: json["status"],

@@ -1,9 +1,14 @@
 import 'dart:async';
 import 'package:bbus_mobile/common/entities/child.dart';
+import 'package:bbus_mobile/common/widgets/result_dialog.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
-import 'package:bbus_mobile/features/map/cubit/location_tracking_cubit.dart';
+import 'package:bbus_mobile/features/map/cubit/checkpoint/checkpoint_list_cubit.dart';
+import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
+import 'package:bbus_mobile/features/map/domain/usecases/register_checkpoint.dart';
+import 'package:bbus_mobile/features/map/widgets/add_location_form.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -29,17 +34,6 @@ class _EditLocationMapState extends State<EditLocationMap> {
   LatLng? _destination;
   List<LatLng> _route = [];
   StreamSubscription<LocationData>? _locationSubscription;
-
-  // Demo locations
-  final Map<String, LatLng> _demoLocations = {
-    "Lô T2, Ng. 54 Lê Văn Lương, Trung Hòa Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam":
-        LatLng(37.7749, -122.4194),
-    "Đ. Lê Văn Lương, Trung Hòa Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam":
-        LatLng(37.7722, -122.4137),
-    "Đ. Lê Văn Lương, Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam":
-        LatLng(40.7128, -74.0060),
-    "Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam": LatLng(51.5074, -0.1278),
-  };
 
   String? _selectedLocation;
 
@@ -91,34 +85,69 @@ class _EditLocationMapState extends State<EditLocationMap> {
     return true;
   }
 
-  void _onLocationSelected(String? locationName) {
-    if (locationName == null) return;
-    setState(() {
-      _selectedLocation = locationName;
-      _destination = _demoLocations[locationName]!;
-    });
-    _mapController.move(_destination!, 15);
+  // void _onLocationSelected(String? locationName) {
+  //   if (locationName == null) return;
+  //   setState(() {
+  //     _selectedLocation = locationName;
+  //     _destination = _demoLocations[locationName]!;
+  //   });
+  //   _mapController.move(_destination!, 15);
+  // }
+
+  Future<void> _onRegisterCheckpoint(LatLng location) async {
+    bool? confirmRegister = await ResultDialog.show(context,
+        title: 'Đăng ký điểm đón',
+        message: 'Bạn chắc chắn muốn lựa chọn điểm đón này?',
+        cancelText: 'Không');
+    if (confirmRegister == true) {
+      final result = await sl<RegisterCheckpoint>()
+          .call(RegisterCheckpointParams(widget.child.id!, _selectedLocation!));
+      result.fold(
+          (l) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Failed to choose this location: ${l.message}'))),
+          (r) async {
+        bool? isOk = await ResultDialog.show(context,
+            title: 'Đăng ký điểm đón',
+            message: 'Bạn đã đăng kí điểm đón cho con thành công',
+            status: DialogStatus.success);
+        if (isOk!) {
+          context.pop();
+        }
+      });
+    } else {
+      return;
+    }
   }
 
-  void _showConfirmationDialog(LatLng location) {
+  void _showResultDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Choose Destination"),
-        content: const Text("Do you want to navigate to this location?"),
+        title: Text(title),
+        content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _fetchRouteToDestination(location);
+              context.read<ChildrenListCubit>().getAll();
+              context.pop();
             },
-            child: const Text("Confirm"),
+            child: const Text("OK"),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showAddLocationForm(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AddLocationForm(
+        onSubmit: (name, address, description) {
+          // Handle form submission logic here
+          print(
+              'Location: $name, Address: $address, Description: $description');
+        },
       ),
     );
   }
@@ -126,10 +155,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
   @override
   void initState() {
     _initializeLocation();
+    context.read<CheckpointListCubit>().getAll();
     super.initState();
-    context
-        .read<LocationTrackingCubit>()
-        .listenForLocationUpdates(widget.child.busId);
   }
 
   @override
@@ -149,6 +176,10 @@ class _EditLocationMapState extends State<EditLocationMap> {
             context.pop();
           },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddLocationForm(context),
+        child: Icon(Icons.add_location),
       ),
       body: Column(
         children: [
@@ -180,23 +211,43 @@ class _EditLocationMapState extends State<EditLocationMap> {
                               markerDirection: MarkerDirection.heading,
                             ),
                           ),
-                          MarkerLayer(
-                            markers: _demoLocations.entries.map((location) {
-                              return Marker(
-                                point: location.value,
-                                width: 50,
-                                height: 50,
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      _fetchRouteToDestination(location.value),
-                                  child: const Icon(
-                                    Icons.location_pin,
-                                    size: 40,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                          BlocBuilder<CheckpointListCubit, CheckpointListState>(
+                            builder: (context, state) {
+                              if (state is CheckpointListLoading) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (state is CheckpointListSuccess) {
+                                return MarkerLayer(
+                                  markers: state.data.map((checkpoint) {
+                                    final bool isSelected =
+                                        _selectedLocation != null &&
+                                            _selectedLocation == checkpoint.id;
+                                    final location = LatLng(
+                                        double.parse(checkpoint.latitude!),
+                                        double.parse(checkpoint.longitude!));
+
+                                    return Marker(
+                                      point: location,
+                                      width: 50,
+                                      height: 50,
+                                      child: GestureDetector(
+                                        onTap: () =>
+                                            _fetchRouteToDestination(location),
+                                        child: Icon(
+                                          Icons.location_pin,
+                                          size: 40,
+                                          color: isSelected
+                                              ? TColors.secondary
+                                              : TColors.primary,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              } else {
+                                return Text("Failed to load locations");
+                              }
+                            },
                           ),
                           if (_route.isNotEmpty)
                             PolylineLayer(
@@ -263,68 +314,89 @@ class _EditLocationMapState extends State<EditLocationMap> {
                         const Divider(
                             thickness: 1,
                             color: Color.fromARGB(255, 206, 206, 206)),
-                        DropdownButtonFormField<String>(
-                          value: _selectedLocation,
-                          items: _demoLocations.keys.map((location) {
-                            return DropdownMenuItem<String>(
-                              value: location,
-                              child: Container(
-                                width: double.infinity,
-                                alignment: Alignment.centerLeft,
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 8.0, 0, 6.0),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    top: BorderSide(
-                                      color: _demoLocations.keys
-                                                  .toList()
-                                                  .indexOf(location) ==
-                                              0
-                                          ? Colors.transparent
-                                          : Colors.grey,
-                                      width: 1,
+                        BlocBuilder<CheckpointListCubit, CheckpointListState>(
+                          builder: (context, state) {
+                            if (state is CheckpointListLoading) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (state is CheckpointListSuccess) {
+                              return DropdownButtonFormField<String>(
+                                value: _selectedLocation,
+                                items: state.data.map((checkpoint) {
+                                  return DropdownMenuItem<String>(
+                                    value: checkpoint.id,
+                                    child: Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.centerLeft,
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 8.0, 0, 6.0),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            color: state.data
+                                                        .indexOf(checkpoint) ==
+                                                    0
+                                                ? Colors.transparent
+                                                : Colors.grey,
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        checkpoint.name!,
+                                        softWrap: true,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: _selectedLocation ==
+                                                  checkpoint.id
+                                              ? FontWeight.bold
+                                              : FontWeight
+                                                  .normal, // Highlight selected
+                                          color: _selectedLocation ==
+                                                  checkpoint.id
+                                              ? Colors.blue
+                                              : Colors
+                                                  .black, // Change color for selected
+                                        ),
+                                      ),
                                     ),
+                                  );
+                                }).toList(),
+                                onChanged: (checkpointId) {
+                                  final selected = state.data
+                                      .firstWhere((c) => c.id == checkpointId);
+                                  setState(() {
+                                    _selectedLocation = checkpointId;
+                                    _destination = LatLng(
+                                        double.parse(selected.latitude!),
+                                        double.parse(selected.longitude!));
+                                  });
+                                  _mapController.move(_destination!, 13);
+                                },
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  hintText: 'Select a location',
                                 ),
-                                child: Text(
-                                  location,
-                                  softWrap: true,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontWeight: _selectedLocation == location
-                                        ? FontWeight.bold
-                                        : FontWeight
-                                            .normal, // Highlight selected
-                                    color: _selectedLocation == location
-                                        ? Colors.blue
-                                        : Colors
-                                            .black, // Change color for selected
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: _onLocationSelected,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 20),
-                            hintText: 'Select a location',
-                          ),
-                          isExpanded: true,
-                          selectedItemBuilder: (BuildContext context) {
-                            return _demoLocations.keys.map<Widget>((location) {
-                              return Text(
-                                location,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
+                                isExpanded: true,
+                                selectedItemBuilder: (BuildContext context) {
+                                  return state.data.map<Widget>((checkpoint) {
+                                    return Text(
+                                      checkpoint.name!,
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                    );
+                                  }).toList();
+                                },
                               );
-                            }).toList();
+                            } else {
+                              return Text("Failed to load locations");
+                            }
                           },
                         ),
                       ],
@@ -342,7 +414,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                           SnackBar(content: Text("Must choose a destination")),
                         );
                       } else {
-                        _showConfirmationDialog(_destination!);
+                        _onRegisterCheckpoint(_destination!);
                       }
                     },
                     child: Text('Lưu'),

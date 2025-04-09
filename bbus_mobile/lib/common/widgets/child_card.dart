@@ -1,3 +1,4 @@
+import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ class ChildCard extends StatelessWidget {
   final String? busId;
   final String name;
   final String age;
-  final String address;
+  final String? address;
   final String status;
   final String? avatar;
   final bool? isParent;
@@ -106,17 +107,18 @@ class ChildCard extends StatelessWidget {
       child: InkWell(
         onTap: isParent == true
             ? () {
-                if (address.isEmpty) {
+                if (address == null) {
                   _showAddressDialog(context);
                 } else {
                   context.pushNamed(
                     RouteNames.childFeature,
-                    pathParameters: {
-                      'studentId': studentId,
-                      'name': name,
-                      'avatar': avatar!,
-                      'busId': busId!
-                    },
+                    pathParameters: {'id': studentId},
+                    extra: ChildEntity(
+                      id: studentId,
+                      name: name,
+                      busId: '', // if needed
+                      avatar: avatar ?? null,
+                    ),
                   );
                 }
               }

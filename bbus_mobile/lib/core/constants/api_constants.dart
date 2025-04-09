@@ -1,6 +1,7 @@
 class ApiConstants {
   //API
   static const String baseApiUrl = "http://10.0.2.2:8080";
+  // static const String baseApiUrl = "http://192.168.28.122:8080";
   static const String apiKey = '8581463081de418880661cf14ad3d77a';
 
   //Endpoints
@@ -12,7 +13,8 @@ class ApiConstants {
   static const String reportTypeUrl = '/request-type/list';
   static const String reportUrl = '/request/list';
   static const String socketAddress = 'ws://10.0.2.2:8080/ws';
-  static const String childrenList = '/parent/student-list';
+  static const String childrenListUrl = '/parent/list-student';
+  static const String registerCheckpointUrl = '/parent/register-checkpoint';
 
   static const List<String> publicEndpoints = [
     '/auth/login',

@@ -29,10 +29,12 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> checkLoggedInStatus() async {
-    print('object');
     emit(AuthLoggedInStatusLoading());
     final result = await _checkLoggedInStatusUsecase.call(NoParams());
-    result.fold((l) => emit(AuthLoggedInStatusFailure(l.message)), (r) {
+    result.fold((l) {
+      _currentUserCubit.updateUser(null);
+      emit(AuthLoggedInStatusFailure(l.message));
+    }, (r) {
       _currentUserCubit.updateUser(r);
       emit(AuthLoggedInStatusSuccess(r));
     });

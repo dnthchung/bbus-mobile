@@ -4,10 +4,11 @@ final sl = GetIt.instance;
 void initializeDependencies() {
   // Auth
   AuthDependency.initAuth();
-  StudentListDependency.initStudentList();
   _initChangePassword();
-  _initMapTracking();
+  _initMap();
   _initChildren();
+  _initCheckpoint();
+  _initRequest();
   //core
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(
@@ -31,7 +32,7 @@ void _initChangePassword() {
     ..registerFactory(() => ChangePasswordCubit(sl()));
 }
 
-void _initMapTracking() {
+void _initMap() {
   sl
     // Datasource
     ..registerLazySingleton<LocationSocketDatasource>(
@@ -50,6 +51,31 @@ void _initChildren() {
         () => ChildrenDatasourceImpl(sl(), sl()))
     ..registerLazySingleton<ChildrenRepository>(
         () => ChildrenRepositoryImpl(sl()))
-    ..registerSingleton(() => Getchildrenlist(sl()))
+    ..registerLazySingleton(() => Getchildrenlist(sl()))
     ..registerFactory(() => ChildrenListCubit(sl()));
+}
+
+void _initCheckpoint() {
+  sl
+    // Datasource
+    ..registerLazySingleton<CheckpointDatasource>(
+        () => CheckpointDatasourceImpl(sl()))
+    // Repo
+    ..registerLazySingleton<CheckpointRepository>(
+        () => CheckpointRespositoryImpl(sl()))
+    // Usecases
+    ..registerLazySingleton(() => GetCheckpointList(sl()))
+    ..registerLazySingleton(() => RegisterCheckpoint(sl()))
+    // Bloc
+    ..registerFactory(() => CheckpointListCubit(sl()));
+}
+
+void _initRequest() {
+  sl
+    ..registerLazySingleton<RequestRemoteDatasource>(
+        () => RequestRemoteDatasourceImpl(sl()))
+    ..registerLazySingleton<RequestRepository>(
+        () => RequestRepositoryImpl(sl()))
+    ..registerLazySingleton(() => GetAllRequestType(sl()))
+    ..registerLazySingleton(() => RequestTypeCubit(sl()));
 }

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:bbus_mobile/core/utils/logger.dart';
+
 Map<String, dynamic> parseJwt(String token) {
   final parts = token.split('.');
   if (parts.length != 3) {
@@ -49,6 +51,8 @@ DateTime? getExpirationDate(String token) {
 
 bool isTokenExpired(String token) {
   DateTime? expirationDate = getExpirationDate(token);
+  logger.i(expirationDate);
+  logger.i(DateTime.now());
   if (expirationDate == null) {
     return true; // Treat as expired if no exp claim is found
   }

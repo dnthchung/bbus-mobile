@@ -29,6 +29,10 @@ class TAppTheme {
           style: ElevatedButton.styleFrom(
         backgroundColor: TColors.darkPrimary,
         foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Rounded corners
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       )));
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,

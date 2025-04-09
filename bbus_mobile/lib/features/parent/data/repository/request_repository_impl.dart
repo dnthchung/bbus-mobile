@@ -1,8 +1,8 @@
 import 'package:bbus_mobile/common/entities/request_type.dart';
 import 'package:bbus_mobile/core/errors/exceptions.dart';
 import 'package:bbus_mobile/core/errors/failures.dart';
-import 'package:bbus_mobile/features/request/data/datasources/request_remote_datasource.dart';
-import 'package:bbus_mobile/features/request/domain/repository/request_repository.dart';
+import 'package:bbus_mobile/features/parent/data/datasources/request_remote_datasource.dart';
+import 'package:bbus_mobile/features/parent/domain/repository/request_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class RequestRepositoryImpl implements RequestRepository {

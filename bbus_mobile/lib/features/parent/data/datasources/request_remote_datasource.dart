@@ -15,7 +15,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
   Future<List<RequestTypeEntity>> getListRequestType() async {
     try {
       final response = await _dioClient.get(ApiConstants.reportTypeUrl);
-      final requestTypeList = response['data']['requestTypes'];
+      final List<dynamic> requestTypeList = response['data']['requestTypes'];
       return requestTypeList
           .map((requestType) => RequestTypeEntity.fromJson(requestType))
           .toList();

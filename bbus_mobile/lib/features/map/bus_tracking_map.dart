@@ -6,7 +6,7 @@ import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
-import 'package:bbus_mobile/features/map/cubit/location_tracking_cubit.dart';
+import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -16,7 +16,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
 class BusTrackingMap extends StatefulWidget {
-  const BusTrackingMap({super.key});
+  final String busId;
+  const BusTrackingMap({super.key, required this.busId});
 
   @override
   State<BusTrackingMap> createState() => _BusTrackingMapState();
@@ -89,6 +90,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   void initState() {
     // TODO: implement initState
     _locationTrackingCubit = sl<LocationTrackingCubit>();
+    _locationTrackingCubit.listenForLocationUpdates(widget.busId);
     super.initState();
   }
 

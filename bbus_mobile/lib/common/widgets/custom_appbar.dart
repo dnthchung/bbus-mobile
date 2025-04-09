@@ -41,12 +41,14 @@ class CustomAppbar extends StatelessWidget {
           const SizedBox(width: 10),
 
           // Child Name
-          Text(
-            childName,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+          Expanded(
+            child: Text(
+              childName,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  overflow: TextOverflow.clip),
             ),
           ),
         ],

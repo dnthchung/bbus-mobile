@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/common/entities/child.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
 import 'package:bbus_mobile/features/change_password/change_password_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/child_feature_layout.dart';
@@ -13,7 +14,7 @@ import 'package:bbus_mobile/features/notification/notification_page.dart';
 import 'package:bbus_mobile/features/notification/notification_setting_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
 import 'package:bbus_mobile/features/profile/profile_page.dart';
-import 'package:bbus_mobile/features/request/requests_page.dart';
+import 'package:bbus_mobile/features/parent/presentation/pages/requests_page.dart';
 import 'package:go_router/go_router.dart';
 import 'routes.dart';
 
@@ -21,8 +22,8 @@ class AppRouteConf {
   GoRouter get router => _router;
 
   late final _router = GoRouter(
-    // initialLocation: RoutePaths.login,
-    initialLocation: RoutePaths.parentEditLocation,
+    initialLocation: RoutePaths.login,
+    // initialLocation: RoutePaths.parentRequest,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -84,11 +85,15 @@ class AppRouteConf {
         ],
       ),
       GoRoute(
-        path: '${RoutePaths.childFeature}/:name',
+        path: '${RoutePaths.childFeature}/:id',
         name: RouteNames.childFeature,
         builder: (context, state) {
-          final name = state.pathParameters['name']!;
-          return ChildFeatureLayout(childName: Uri.decodeComponent(name));
+          final id = state.pathParameters['id'];
+          logger.i(id);
+          final data = state.extra as ChildEntity;
+          return ChildFeatureLayout(
+            child: data,
+          );
         },
       ),
       GoRoute(
@@ -100,20 +105,15 @@ class AppRouteConf {
         path: RoutePaths.parentEditLocation,
         name: RouteNames.parentEditLocation,
         builder: (_, state) {
-          final params = state.pathParameters;
-          final child = ChildEntity(
-              id: params['childId'],
-              name: params['name'],
-              busId: params['busId'],
-              avatar: params['avatar']);
-          return EditLocationMap(child: child);
+          final child = state.extra as ChildEntity?;
+          return EditLocationMap(child: child!);
         },
       ),
-      GoRoute(
-        path: RoutePaths.parentBusMap,
-        name: RouteNames.parentBusMap,
-        builder: (_, __) => const BusTrackingMap(),
-      ),
+      // GoRoute(
+      //   path: RoutePaths.parentBusMap,
+      //   name: RouteNames.parentBusMap,
+      //   builder: (_, __) => const BusTrackingMap(),
+      // ),
       GoRoute(
         path: RoutePaths.login,
         name: RouteNames.login,

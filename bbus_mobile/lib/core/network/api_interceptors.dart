@@ -34,6 +34,7 @@ class ApiInterceptors extends Interceptor {
         .any((endpoint) => err.requestOptions.path.contains(endpoint))) {
       return handler.next(err);
     }
+    logger.e(err);
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
       final refreshToken = await _secureLocalStorage.load(key: 'refresh_token');
       Dio retryDio = Dio(

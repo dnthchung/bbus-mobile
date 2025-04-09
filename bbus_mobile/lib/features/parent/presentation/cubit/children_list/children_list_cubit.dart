@@ -1,6 +1,6 @@
 import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/core/usecases/usecase.dart';
-import 'package:bbus_mobile/features/parent/domain/usecases/getChildrenList.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/get_children_list.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
