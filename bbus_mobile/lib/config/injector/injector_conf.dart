@@ -9,6 +9,7 @@ void initializeDependencies() {
   _initChildren();
   _initCheckpoint();
   _initRequest();
+  _initDriver();
   //core
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(
@@ -78,4 +79,19 @@ void _initRequest() {
         () => RequestRepositoryImpl(sl()))
     ..registerLazySingleton(() => GetAllRequestType(sl()))
     ..registerLazySingleton(() => RequestTypeCubit(sl()));
+}
+
+_initDriver() {
+  sl
+    ..registerLazySingleton<ScheduleDatasource>(
+        () => ScheduleDatasourceImpl(sl()))
+    ..registerLazySingleton<StudentListDatasource>(
+        () => StudentListDatasourceImpl(sl()))
+    ..registerLazySingleton<ScheduleRepository>(
+        () => ScheduleRepositoryImpl(sl()))
+    ..registerLazySingleton<StudentListRepository>(
+        () => StudentListRepositoryImpl(sl(), sl(), sl()))
+    ..registerLazySingleton(() => GetBusSchedule(sl()))
+    ..registerLazySingleton(() => GetStudentStream(sl()))
+    ..registerLazySingleton(() => StudentListCubit(sl()));
 }

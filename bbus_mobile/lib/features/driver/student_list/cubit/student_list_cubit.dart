@@ -1,60 +1,80 @@
 import 'dart:async';
 
-import 'package:bbus_mobile/common/entities/child.dart';
-import 'package:bbus_mobile/features/driver/domain/repository/student_list_repository.dart';
+import 'package:bbus_mobile/common/entities/student.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/get_student_stream.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 part 'student_list_state.dart';
 
-enum PickupDrop { pickup, drop }
-
 class StudentListCubit extends Cubit<StudentListState> {
-  final StudentListRepository _repository;
-  StreamSubscription<List<ChildEntity>>? _studentSub;
-  List<ChildEntity> _allStudents = [];
+  final GetStudentStream _getStudentStream;
+  StreamSubscription<List<StudentEntity>>? _subscription;
+  List<StudentEntity> _allStudents = [];
   String? _currentFilter;
-  PickupDrop _pickupDrop = PickupDrop.pickup;
-  PickupDrop get pickupDrop => _pickupDrop;
+  int? _currentDirection;
+  String? _busId;
+  StudentListCubit(this._getStudentStream) : super(StudentListInitial());
+  void initialize(String busId) {
+    _busId = busId;
+  }
 
-  StudentListCubit(this._repository) : super(StudentListInitial());
-
-  void listenToStudents() {
+  Future<void> loadStudents(int direction) async {
+    final currentState = state;
+    _currentDirection = direction;
+    if (currentState is StudentListLoaded &&
+        currentState.currentDirection == direction) {
+      return; // already showing this direction
+    }
     emit(StudentListLoading());
-
-    _studentSub?.cancel();
-    _studentSub = _repository.getStudentListStream().listen(
-      (students) {
-        _allStudents = students;
-        _applyFilter(); // emit filtered list based on current filter
-      },
-      onError: (error) {
-        emit(StudentLoadFailure("Failed to load students: $error"));
+    await _subscription?.cancel();
+    final result =
+        await _getStudentStream(StudentStreamParams(_busId!, direction));
+    result.fold(
+      (failure) => emit(StudentLoadFailure(failure.message)),
+      (stream) {
+        _subscription = stream.listen(
+          (studentList) {
+            _allStudents = studentList;
+            _applyFilter();
+          },
+          onError: (e) => emit(StudentLoadFailure(e.toString())),
+        );
       },
     );
   }
 
   void filterByStatus(String? status) {
-    _currentFilter = status;
+    if (status == '1') {
+      _currentFilter = 'picked';
+    } else if (status == '2') {
+      _currentFilter = 'absent';
+    } else {
+      _currentFilter = null;
+    }
     _applyFilter();
   }
 
   void _applyFilter() {
+    if (_currentDirection == null) return;
     final filtered = _currentFilter == null
         ? _allStudents
-        : _allStudents.where((s) => s.status == _currentFilter).toList();
-    emit(StudentListLoaded(filtered));
-  }
+        : _allStudents
+            .where((s) => s.status?.toLowerCase() == _currentFilter)
+            .toList();
 
-  void setPickupDrop(PickupDrop newValue) {
-    _pickupDrop = newValue;
-    filterByStatus(newValue.name); // or use a mapping
+    emit(StudentListLoaded(
+      filteredStudents: filtered,
+      allStudents: _allStudents,
+      currentDirection: _currentDirection!,
+      currentFilter: _currentFilter,
+    ));
   }
 
   @override
   Future<void> close() {
-    _studentSub?.cancel();
+    _subscription?.cancel();
     return super.close();
   }
 }

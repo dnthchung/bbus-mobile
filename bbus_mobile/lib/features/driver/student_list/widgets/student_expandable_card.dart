@@ -1,6 +1,7 @@
 import 'package:bbus_mobile/common/widgets/child_card.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StudentExpandableCard extends StatefulWidget {
   final String studentId;
@@ -39,6 +40,14 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
 
   void _callParent() async {
     // Handle phone call logic
+    final Uri phoneUri = Uri(scheme: 'tel', path: widget.parentPhone);
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch phone dialer')),
+      );
+    }
   }
 
   @override

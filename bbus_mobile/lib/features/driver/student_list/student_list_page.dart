@@ -1,5 +1,7 @@
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/core/usecases/usecase.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/get_bus_schedule.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
 import 'package:bbus_mobile/features/driver/student_list/widgets/pickup_drop_toggle.dart';
 import 'package:bbus_mobile/features/driver/student_list/widgets/student_expandable_card.dart';
@@ -16,17 +18,34 @@ class StudentListPage extends StatefulWidget {
 class _StudentListPageState extends State<StudentListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late String _busId;
+  bool _isBusIdReady = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    initialize();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> initialize() async {
+    final res = await sl<GetBusSchedule>().call(NoParams());
+    res.fold(
+      (l) {
+        // Handle error if needed
+      },
+      (r) {
+        _busId = r.busId!;
+        context.read<StudentListCubit>().initialize(_busId);
+        context.read<StudentListCubit>().loadStudents(0);
+      },
+    );
   }
 
   @override
@@ -71,7 +90,7 @@ class _StudentListPageState extends State<StudentListPage>
             child: BlocBuilder<StudentListCubit, StudentListState>(
               builder: (context, state) {
                 if (state is StudentListLoaded) {
-                  final studentList = state.students;
+                  final studentList = state.filteredStudents;
                   return ListView.builder(
                     key: ValueKey(
                         studentList), // Forces rebuild when filter changes
@@ -80,15 +99,15 @@ class _StudentListPageState extends State<StudentListPage>
                       final student = studentList[index];
 
                       return StudentExpandableCard(
-                        key: ValueKey(student.id),
-                        studentId: student.id ?? "Unknown",
-                        name: student.name ?? "Unknown",
-                        age: student.dob ?? "0",
-                        address: student.address ?? "Unknown",
+                        key: ValueKey(student.studentId),
+                        studentId: student.studentId ?? "Unknown",
+                        name: "Unknown",
+                        age: "0",
+                        address: "Unknown",
                         status: student.status ?? "Unknown",
-                        avatar: student.avatar,
-                        parentName: student.parentId ?? "Unknown",
-                        parentPhone: student.parent ?? "Unknown",
+                        // avatar: ,
+                        parentName: "Unknown",
+                        parentPhone: "Unknown",
                       );
                     },
                   );

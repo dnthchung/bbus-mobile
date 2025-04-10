@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => sl<StudentListCubit>()),
         BlocProvider(create: (_) => sl<ChildrenListCubit>()),
-        BlocProvider(create: (_) => sl<ChildrenListCubit>()),
         BlocProvider(create: (_) => sl<CheckpointListCubit>()),
         BlocProvider(create: (_) => sl<ChangePasswordCubit>())
       ],
@@ -50,7 +49,7 @@ class MyApp extends StatelessWidget {
               }
             else
               {
-                {router.goNamed(RouteNames.driverProfile)}
+                {router.goNamed(RouteNames.driverStudent)}
               }
         },
         child: MaterialApp.router(

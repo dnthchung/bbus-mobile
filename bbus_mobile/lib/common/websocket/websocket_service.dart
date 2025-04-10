@@ -22,6 +22,7 @@ class WebSocketService {
 
     _channel = IOWebSocketChannel.connect(url);
     _channel!.stream.listen((message) {
+      logger.i(message);
       _messageController.add(message);
     }, onDone: () {
       _channel = null; // Reset when closed

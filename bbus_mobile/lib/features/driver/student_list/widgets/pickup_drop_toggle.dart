@@ -12,25 +12,24 @@ class PickupDropToggle extends StatelessWidget {
       builder: (context, state) {
         if (state is! StudentListLoaded) return SizedBox.shrink();
         final cubit = context.read<StudentListCubit>();
-        final selected = cubit.pickupDrop;
+        final selected = state.currentDirection;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SegmentedButton<PickupDrop>(
+          child: SegmentedButton<int>(
             segments: const [
               ButtonSegment(
-                value: PickupDrop.pickup,
+                value: 0,
                 label: Text("Pickup"),
               ),
               ButtonSegment(
-                value: PickupDrop.drop,
+                value: 1,
                 label: Text("Drop"),
               ),
             ],
             showSelectedIcon: false,
             selected: {selected},
             onSelectionChanged: (newSelection) {
-              cubit.setPickupDrop(
-                  newSelection.first); // <-- Add this to your Cubit
+              cubit.loadStudents(newSelection.first);
             },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.resolveWith((states) {

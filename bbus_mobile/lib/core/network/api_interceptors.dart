@@ -30,11 +30,11 @@ class ApiInterceptors extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    logger.e(err);
     if (ApiConstants.publicEndpoints
         .any((endpoint) => err.requestOptions.path.contains(endpoint))) {
       return handler.next(err);
     }
-    logger.e(err);
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
       final refreshToken = await _secureLocalStorage.load(key: 'refresh_token');
       Dio retryDio = Dio(
@@ -50,12 +50,41 @@ class ApiInterceptors extends Interceptor {
         ),
       );
       if (response.statusCode == 200) {
-        await _secureLocalStorage.save(key: 'token', value: 'access_token');
         await _secureLocalStorage.save(
-            key: 'refresh_token', value: 'refresh_token');
+            key: 'token', value: response.data['access_token']);
+        await _secureLocalStorage.save(
+            key: 'refresh_token', value: response.data['refresh_token']);
         handler.resolve(response);
       }
     }
     super.onError(err, handler);
   }
+
+  // @override
+  // void onResponse(Response response, ResponseInterceptorHandler handler) async {
+  //   if (response.data['status'] == 403) {
+  //     logger.i(response)
+  //     final refreshToken = await _secureLocalStorage.load(key: 'refresh_token');
+  //     Dio retryDio = Dio(
+  //       BaseOptions(
+  //         baseUrl: ApiConstants.baseApiUrl,
+  //       ),
+  //     );
+  //     var res = await retryDio.post(
+  //       ApiConstants.getRefreshTokenUrl,
+  //       data: {"refreshToken": refreshToken},
+  //       options: Options(
+  //         headers: {"Content-Type": 'application/json'},
+  //       ),
+  //     );
+  //     if (res.statusCode == 200) {
+  //       await _secureLocalStorage.save(
+  //           key: 'token', value: res.data['access_token']);
+  //       await _secureLocalStorage.save(
+  //           key: 'refresh_token', value: res.data['refresh_token']);
+  //       handler.resolve(res);
+  //     }
+  //   }
+  //   super.onResponse(response, handler);
+  // }
 }
