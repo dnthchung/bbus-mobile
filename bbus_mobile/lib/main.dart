@@ -1,8 +1,11 @@
 import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
+import 'package:bbus_mobile/common/entities/local_notification_model.dart';
+import 'package:bbus_mobile/common/notifications/cubit/notification_cubit.dart';
 import 'package:bbus_mobile/common/notifications/notification_service.dart';
 import 'package:bbus_mobile/config/routes/app_route_conf.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
+import 'package:bbus_mobile/core/network/firebase_api.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
@@ -16,11 +19,14 @@ import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/requ
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'config/injector/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Hive.initFlutter();
+  Hive.registerAdapter(LocalNotificationModelAdapter());
   initializeDependencies();
   runApp(const MyApp());
 }
@@ -39,6 +45,7 @@ class MyApp extends StatelessWidget {
           create: (context) => sl<AuthCubit>()..checkLoggedInStatus(),
           // create: (context) => sl<AuthCubit>(),
         ),
+        BlocProvider(create: (_) => sl<NotificationCubit>()),
         BlocProvider(create: (_) => sl<ForgotPasswordCubit>()),
         BlocProvider(create: (_) => sl<ChildrenListCubit>()),
         BlocProvider(create: (_) => sl<StudentListCubit>()),
@@ -50,14 +57,17 @@ class MyApp extends StatelessWidget {
         listener: (context, state) async {
           if (state is AuthLoggedInStatusSuccess) {
             if (state.data.role?.toLowerCase() == 'parent') {
-              await sl<NotificationService>().init();
+              await sl<NotificationService>()
+                  .init(context.read<NotificationCubit>());
               final fcmToken = await sl<NotificationService>().getFcmToken();
               logger.i('FCM Token: $fcmToken');
-              await sl<AuthRemoteDatasource>().updatDeviceToken(fcmToken!);
               router.goNamed(RouteNames.parentChildren);
             } else {
               router.goNamed(RouteNames.driverStudent);
             }
+          }
+          if (state is AuthLoggedInStatusFailure) {
+            router.goNamed(RouteNames.login);
           }
         },
         child: MaterialApp.router(
