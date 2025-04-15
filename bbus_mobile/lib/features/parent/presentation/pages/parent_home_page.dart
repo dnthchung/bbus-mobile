@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/common/entities/user.dart';
+import 'package:bbus_mobile/common/notifications/cubit/notification_cubit.dart';
 import 'package:bbus_mobile/common/widgets/navigation_drawer_widget.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
@@ -94,42 +95,37 @@ class ParentHomePage extends StatelessWidget {
                 },
               ),
               actions: [
-                  Stack(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.notifications),
-                        onPressed: () {
-                          // Navigate to notifications page
-                          context.pushNamed(RouteNames.parentNotification);
-                        },
-                      ),
-                      // if (unreadNotifications > 0)
-                      Positioned(
-                        right: 11,
-                        top: 11,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: TColors.error,
-                            borderRadius: BorderRadius.circular(6),
+                  BlocBuilder<NotificationCubit, NotificationState>(
+                    builder: (context, state) {
+                      return Stack(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.notifications),
+                            onPressed: () {
+                              // Navigate to notifications page
+                              context
+                                  .read<NotificationCubit>()
+                                  .loadNotifications();
+                              context.pushNamed(RouteNames.parentNotification);
+                            },
                           ),
-                          constraints: const BoxConstraints(
-                            minWidth: 14,
-                            minHeight: 14,
-                          ),
-                          child: Text(
-                            // unreadNotifications.toString(),
-                            "0",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.bold,
+                          // if (unreadNotifications > 0)
+                          if (state.hasUnread)
+                            Positioned(
+                              right: 11,
+                              top: 11,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: TColors.error,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   ),
                 ])
           : null,
