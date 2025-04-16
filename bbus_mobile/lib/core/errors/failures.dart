@@ -12,3 +12,5 @@ class Failure extends Equatable {
 class AuthFailure extends Failure {
   const AuthFailure(super.message);
 }
+
+class EmptyFailure extends Failure {}

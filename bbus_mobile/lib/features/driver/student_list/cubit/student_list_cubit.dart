@@ -20,6 +20,7 @@ class StudentListCubit extends Cubit<StudentListState> {
     _busId = busId;
   }
 
+  Future<void> markStudentAttendance() async {}
   Future<void> loadStudents(int direction) async {
     final currentState = state;
     _currentDirection = direction;
@@ -47,7 +48,7 @@ class StudentListCubit extends Cubit<StudentListState> {
 
   void filterByStatus(String? status) {
     if (status == '1') {
-      _currentFilter = 'picked';
+      _currentFilter = 'in bus';
     } else if (status == '2') {
       _currentFilter = 'absent';
     } else {
@@ -56,12 +57,24 @@ class StudentListCubit extends Cubit<StudentListState> {
     _applyFilter();
   }
 
+  String getCustomStatus(StudentEntity s) {
+    if ((s.checkin == null || s.checkin!.isEmpty) &&
+        (s.checkout == null || s.checkout!.isEmpty)) {
+      return 'absent';
+    } else if (s.checkin != null &&
+        (s.checkout == null || s.checkout!.isEmpty)) {
+      return 'in bus';
+    } else {
+      return 'drop-off';
+    }
+  }
+
   void _applyFilter() {
     if (_currentDirection == null) return;
     final filtered = _currentFilter == null
         ? _allStudents
         : _allStudents
-            .where((s) => s.status?.toLowerCase() == _currentFilter)
+            .where((s) => getCustomStatus(s) == _currentFilter!.toLowerCase())
             .toList();
 
     emit(StudentListLoaded(

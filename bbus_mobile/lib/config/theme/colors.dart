@@ -14,6 +14,25 @@ class TColors {
   static const Color borderColor = Color(0xFF757575);
   static const Color secondaryBackground = Color(0xFF757575);
   static const Color inactive = Color(0xFF757575);
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [
+      Color(0xFFFFCCBC), // lightPrimary
+      Color(0xFFFF5722), // primary
+      Color(0xFFE64A19), // darkPrimary
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const LinearGradient secondaryGradient = LinearGradient(
+    colors: [
+      Color(
+          0xFF81C784), // lightSecondary (lighter shade of the secondary color)
+      Color(0xFF4CAE4F), // secondary
+      Color(0xFF388E3C), // darkSecondary (darker shade of the secondary color)
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
   // Text Colors
   static const Color textPrimary = Color(0xFF212121);
   static const Color textWhite = Colors.white;

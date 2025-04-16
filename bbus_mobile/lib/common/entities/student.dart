@@ -1,76 +1,100 @@
 import 'package:equatable/equatable.dart';
 
 class StudentEntity extends Equatable {
+  String? id;
   String? studentId;
-  String? teacherId;
-  DateTime? date;
-  bool? direction;
-  String? checkpointId;
-  String? busId;
+  String? studentName;
+  String? avatarUrl;
+  DateTime? dob;
+  String? direction;
   String? status;
   dynamic checkin;
   dynamic checkout;
+  String? checkpointId;
+  String? checkpointName;
+  String? parentName;
+  String? parentPhone;
 
   StudentEntity({
+    this.id,
     this.studentId,
-    this.teacherId,
-    this.date,
+    this.studentName,
+    this.avatarUrl,
+    this.dob,
     this.direction,
-    this.checkpointId,
-    this.busId,
     this.status,
     this.checkin,
     this.checkout,
+    this.checkpointId,
+    this.checkpointName,
+    this.parentName,
+    this.parentPhone,
   });
 
   StudentEntity copyWith({
+    String? id,
     String? studentId,
-    String? teacherId,
-    DateTime? date,
-    bool? direction,
-    String? checkpointId,
-    String? busId,
+    String? studentName,
+    String? avatarUrl,
+    DateTime? dob,
+    String? direction,
     String? status,
     dynamic? checkin,
     dynamic? checkout,
+    String? checkpointId,
+    String? checkpointName,
+    String? parentName,
+    String? parentPhone,
   }) {
     return StudentEntity(
+      id: id ?? this.id,
       studentId: studentId ?? this.studentId,
-      teacherId: teacherId ?? this.teacherId,
-      date: date ?? this.date,
+      studentName: studentName ?? this.studentName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      dob: dob ?? this.dob,
       direction: direction ?? this.direction,
-      checkpointId: checkpointId ?? this.checkpointId,
-      busId: busId ?? this.busId,
       status: status ?? this.status,
       checkin: checkin ?? this.checkin,
       checkout: checkout ?? this.checkout,
+      checkpointId: checkpointId ?? this.checkpointId,
+      checkpointName: checkpointName ?? this.checkpointName,
+      parentName: parentName ?? this.parentName,
+      parentPhone: parentPhone ?? this.parentPhone,
     );
   }
 
   factory StudentEntity.fromJson(Map<String, dynamic> json) {
     return StudentEntity(
+      id: json["id"] ?? "",
       studentId: json["studentId"] ?? "",
-      teacherId: json["teacherId"] ?? "",
-      date: DateTime.tryParse(json["date"] ?? ""),
-      direction: json["direction"] ?? false,
-      checkpointId: json["checkpointId"] ?? "",
-      busId: json["busId"] ?? "",
+      studentName: json["studentName"] ?? "",
+      avatarUrl: json["avatarUrl"] ?? "",
+      dob: DateTime.tryParse(json["dob"] ?? ""),
+      direction: json["direction"] ?? "",
       status: json["status"] ?? "",
       checkin: json["checkin"],
       checkout: json["checkout"],
+      checkpointId: json["checkpointId"] ?? "",
+      checkpointName: json["checkpointName"] ?? "",
+      parentName: json["parentName"] ?? "",
+      parentPhone: json["parentPhone"] ?? "",
     );
   }
 
   @override
   List<Object?> get props => [
+        id,
         studentId,
-        teacherId,
-        date,
+        studentName,
+        avatarUrl,
+        dob,
         direction,
-        checkpointId,
-        busId,
         status,
         checkin,
         checkout,
+        checkpointId,
+        checkpointName,
+        parentName,
+        parentPhone,
       ];
 }

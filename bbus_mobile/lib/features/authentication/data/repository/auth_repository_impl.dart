@@ -8,6 +8,7 @@ import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/authentication/data/datasources/auth_local_datasource.dart';
 import 'package:bbus_mobile/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:bbus_mobile/features/authentication/data/models/login_model.dart';
+import 'package:bbus_mobile/features/authentication/data/models/reset_password_model.dart';
 import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
 import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:bbus_mobile/features/authentication/domain/repository/auth_repository.dart';
@@ -34,7 +35,7 @@ class AuthRepositoryImpl implements AuthRepository {
         value: result['access_token'],
       );
       await _secureLocalStorage.save(
-        key: 'refresh_token',
+        key: 'refreshToken',
         value: result['refresh_token'],
       );
       await _secureLocalStorage.save(
@@ -92,6 +93,32 @@ class AuthRepositoryImpl implements AuthRepository {
         key: 'userId',
       );
       return Right(result);
+    } on ServerException catch (e) {
+      return Left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> getOtp(String phoneNumber) async {
+    return Right(true);
+  }
+
+  @override
+  Future<Either<Failure, String>> verifyOtp(
+      {required String phone, required String otp}) async {
+    try {
+      final res = await _authRemoteDatasource.sendOtp(phone: phone, otp: otp);
+      return Right(res['data']);
+    } on ServerException catch (e) {
+      return Left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> resetPassword(ResetPasswordModel params) async {
+    try {
+      final res = await _authRemoteDatasource.resetPassword(params);
+      return Right(true);
     } on ServerException catch (e) {
       return Left(Failure(e.message));
     }

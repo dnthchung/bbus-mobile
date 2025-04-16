@@ -33,13 +33,14 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
                     itemBuilder: (context, index) {
                       final child = state.data[index];
                       return ChildCard(
-                        studentId:
-                            child.id ?? 'N/A', // Default to 'N/A' if null
+                        studentId: child.id ?? 'N/A',
                         busId: child.busId ?? 'Unknown',
                         name: child.name ?? 'No Name',
                         age: child.dob ?? 'No Age Info',
-                        avatar: child.avatar,
-                        address: child.checkpointName ?? '',
+                        avatar: child.avatar ?? '',
+                        address: child.address ?? '',
+                        checkpointId: child.checkpointId ?? '',
+                        checkpointName: child.checkpointName ?? '',
                         status: child.status ?? 'Unknown',
                         isParent: true,
                       );

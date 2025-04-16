@@ -1,5 +1,6 @@
-import 'package:bbus_mobile/common/widgets/child_card.dart';
+import 'package:bbus_mobile/common/widgets/student_card.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/core/utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,6 +13,8 @@ class StudentExpandableCard extends StatefulWidget {
   final String? avatar;
   final String parentName;
   final String parentPhone;
+  final String checkin;
+  final String checkout;
 
   const StudentExpandableCard({
     Key? key,
@@ -23,6 +26,8 @@ class StudentExpandableCard extends StatefulWidget {
     this.avatar,
     required this.parentName,
     required this.parentPhone,
+    required this.checkin,
+    required this.checkout,
   }) : super(key: key);
 
   @override
@@ -57,13 +62,15 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
         children: [
           InkWell(
             onTap: _toggleExpand,
-            child: ChildCard(
+            child: StudentCard(
               studentId: widget.studentId,
               name: widget.name,
-              age: widget.age,
+              age: dobStringToAge(widget.age).toString(),
               address: widget.address,
               status: widget.status,
               avatar: widget.avatar,
+              checkin: widget.checkin,
+              checkout: widget.checkout,
               isParent: false,
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:bbus_mobile/common/widgets/navigation_drawer_widget.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -5,8 +6,8 @@ import 'package:go_router/go_router.dart';
 
 String getAppBarTitle(String currentRoute) {
   Map<String, String> routeTitles = {
-    RoutePaths.driverStudent: "List Student",
-    RoutePaths.driverProfile: "My Profile",
+    RoutePaths.driverStudent: "Danh sách học sinh",
+    RoutePaths.driverProfile: "Hồ sơ cá nhân",
   };
   return routeTitles[currentRoute] ?? "BBUS";
 }
@@ -15,28 +16,28 @@ final List<(int, IconData, String, String, String)> menuItems = [
   (
     1,
     Icons.people_rounded,
-    "List student",
+    "Danh sách học sinh",
     RoutePaths.driverStudent,
     RouteNames.driverStudent
   ),
   (
     2,
     Icons.person_pin_rounded,
-    "Profile",
+    "Hồ sơ",
     RoutePaths.driverProfile,
     RouteNames.driverProfile
   ),
   (
     3,
     Icons.mail,
-    "School Contact",
+    "Liên hệ trường",
     RoutePaths.driverContact,
     RouteNames.driverContact
   ),
   (
     4,
     Icons.logout,
-    "Logout",
+    "Đăng xuất",
     '/logout',
     'logout',
   ),

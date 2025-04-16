@@ -1,5 +1,6 @@
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/core/errors/failures.dart';
 import 'package:bbus_mobile/core/usecases/usecase.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/get_bus_schedule.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
@@ -20,6 +21,7 @@ class _StudentListPageState extends State<StudentListPage>
   late TabController _tabController;
   late String _busId;
   bool _isBusIdReady = false;
+  bool _noSchedule = false;
 
   @override
   void initState() {
@@ -38,9 +40,14 @@ class _StudentListPageState extends State<StudentListPage>
     final res = await sl<GetBusSchedule>().call(NoParams());
     res.fold(
       (l) {
-        // Handle error if needed
+        if (l is EmptyFailure) {
+          setState(() {
+            _noSchedule = true;
+          });
+        }
       },
       (r) {
+        _noSchedule = false;
         _busId = r.busId!;
         context.read<StudentListCubit>().initialize(_busId);
         context.read<StudentListCubit>().loadStudents(0);
@@ -50,6 +57,9 @@ class _StudentListPageState extends State<StudentListPage>
 
   @override
   Widget build(BuildContext context) {
+    if (_noSchedule) {
+      return Center(child: Text('Không có lịch trình hôm nay'));
+    }
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -68,7 +78,7 @@ class _StudentListPageState extends State<StudentListPage>
                   Icons.near_me,
                   color: Colors.white,
                 ),
-                label: const Text('See Map'),
+                label: const Text('Tuyến đường'),
               ),
             ],
           ),
@@ -81,9 +91,9 @@ class _StudentListPageState extends State<StudentListPage>
             labelColor: TColors.primary,
             unselectedLabelColor: Colors.grey,
             tabs: [
-              Tab(text: 'All (20)'),
-              Tab(text: 'Picked (18)'),
-              Tab(text: 'Absent (2)'),
+              Tab(text: 'Tất cả'),
+              Tab(text: 'Đã đón'),
+              Tab(text: 'Chưa đón'),
             ],
           ),
           Expanded(
@@ -101,13 +111,16 @@ class _StudentListPageState extends State<StudentListPage>
                       return StudentExpandableCard(
                         key: ValueKey(student.studentId),
                         studentId: student.studentId ?? "Unknown",
-                        name: "Unknown",
-                        age: "0",
-                        address: "Unknown",
+                        name: student.studentName ?? "Unknown",
+                        age: student.dob.toString(),
+                        address: student.checkpointName ?? "Unknown",
                         status: student.status ?? "Unknown",
-                        // avatar: ,
-                        parentName: "Unknown",
-                        parentPhone: "Unknown",
+                        avatar: student.avatarUrl ??
+                            'assets/images/default_child.png',
+                        checkin: student.checkin ?? '',
+                        checkout: student.checkin ?? '',
+                        parentName: student.parentName ?? "Unknown",
+                        parentPhone: student.parentPhone ?? "Unknown",
                       );
                     },
                   );
@@ -116,6 +129,7 @@ class _StudentListPageState extends State<StudentListPage>
               },
             ),
           ),
+          ElevatedButton(onPressed: () {}, child: Text('Kết thúc chuyến xe'))
         ],
       ),
     );

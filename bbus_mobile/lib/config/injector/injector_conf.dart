@@ -78,7 +78,12 @@ void _initRequest() {
     ..registerLazySingleton<RequestRepository>(
         () => RequestRepositoryImpl(sl()))
     ..registerLazySingleton(() => GetAllRequestType(sl()))
-    ..registerLazySingleton(() => RequestTypeCubit(sl()));
+    ..registerLazySingleton(() => GetRequestList(sl()))
+    ..registerLazySingleton(() => SendAbsentRequest(sl()))
+    ..registerLazySingleton(() => SendChangeCheckpointReq(sl()))
+    ..registerLazySingleton(() => SendNewCheckpointReq(sl()))
+    ..registerLazySingleton(() => RequestTypeCubit(sl()))
+    ..registerLazySingleton(() => RequestListCubit(sl()));
 }
 
 _initDriver() {
@@ -93,5 +98,6 @@ _initDriver() {
         () => StudentListRepositoryImpl(sl(), sl(), sl()))
     ..registerLazySingleton(() => GetBusSchedule(sl()))
     ..registerLazySingleton(() => GetStudentStream(sl()))
+    ..registerLazySingleton(() => MarkAttendance(sl()))
     ..registerLazySingleton(() => StudentListCubit(sl()));
 }

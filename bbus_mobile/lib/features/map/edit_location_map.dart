@@ -7,8 +7,11 @@ import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/features/map/cubit/checkpoint/checkpoint_list_cubit.dart';
 import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/register_checkpoint.dart';
-import 'package:bbus_mobile/features/map/widgets/add_location_form.dart';
+import 'package:bbus_mobile/features/parent/presentation/pages/add_location_page.dart';
+import 'package:bbus_mobile/features/map/widgets/change_checkpoint_dialog.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/send_change_checkpoint_req.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -19,8 +22,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
 class EditLocationMap extends StatefulWidget {
-  final ChildEntity child;
-  const EditLocationMap({super.key, required this.child});
+  final String actionType;
+  const EditLocationMap({super.key, required this.actionType});
 
   @override
   State<EditLocationMap> createState() => _EditLocationMapState();
@@ -94,14 +97,14 @@ class _EditLocationMapState extends State<EditLocationMap> {
   //   _mapController.move(_destination!, 15);
   // }
 
-  Future<void> _onRegisterCheckpoint(LatLng location) async {
+  Future<void> _onRegisterCheckpoint() async {
     bool? confirmRegister = await ResultDialog.show(context,
         title: 'Đăng ký điểm đón',
         message: 'Bạn chắc chắn muốn lựa chọn điểm đón này?',
         cancelText: 'Không');
     if (confirmRegister == true) {
       final result = await sl<RegisterCheckpoint>()
-          .call(RegisterCheckpointParams(widget.child.id!, _selectedLocation!));
+          .call(RegisterCheckpointParams('', _selectedLocation!));
       result.fold(
           (l) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Failed to choose this location: ${l.message}'))),
@@ -119,36 +122,35 @@ class _EditLocationMapState extends State<EditLocationMap> {
     }
   }
 
-  void _showResultDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<ChildrenListCubit>().getAll();
-              context.pop();
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
+  Future<void> _onSendChangeCheckpoint() async {
+    if (_selectedLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng chọn điểm đón')),
+      );
+      return;
+    }
+    final reason = await showChangeCheckpointReasonDialog(context);
+    if (reason == null) return; // user cancelled
+    final result = await sl<SendChangeCheckpointReq>().call(
+      SendChangeCheckpointReqParams(
+          _selectedLocation!, 'a9f42863-57b4-4b82-91fb-227f82ecaa20', reason),
     );
-  }
-
-  void _showAddLocationForm(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddLocationForm(
-        onSubmit: (name, address, description) {
-          // Handle form submission logic here
-          print(
-              'Location: $name, Address: $address, Description: $description');
-        },
-      ),
+    result.fold(
+      (failure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Thay đổi thất bại: ${failure.message}')),
+        );
+      },
+      (success) async {
+        await ResultDialog.show(
+          context,
+          title: 'Yêu cầu thành công',
+          message: 'Yêu cầu thay đổi điểm đón đã được gửi',
+          status: DialogStatus.success,
+        );
+        context.read<RequestListCubit>().getRequestList();
+        context.pop(); // pop the map page
+      },
     );
   }
 
@@ -176,10 +178,6 @@ class _EditLocationMapState extends State<EditLocationMap> {
             context.pop();
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddLocationForm(context),
-        child: Icon(Icons.add_location),
       ),
       body: Column(
         children: [
@@ -282,35 +280,47 @@ class _EditLocationMapState extends State<EditLocationMap> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 12,
                       children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  'assets/images/${widget.child.avatar ?? 'default_child.png'}'),
-                              radius: 24, // Adjust as needed
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.child.name!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                // Text(
-                                //   "ID: ${childId}",
-                                //   style: const TextStyle(
-                                //     fontSize: 14,
-                                //     color: Colors.grey,
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     ClipOval(
+                        //       child: Image.network(
+                        //         widget.child.avatar ?? '',
+                        //         height: 70,
+                        //         width: 70,
+                        //         fit: BoxFit.cover,
+                        //         errorBuilder: (context, error, stackTrace) {
+                        //           return const Image(
+                        //             image: AssetImage(
+                        //                 'assets/images/default_child.png'),
+                        //             height: 70,
+                        //             width: 70,
+                        //             fit: BoxFit.cover,
+                        //           );
+                        //         },
+                        //       ),
+                        //     ),
+                        //     const SizedBox(width: 12),
+                        //     Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         Text(
+                        //           widget.child.name!,
+                        //           style: const TextStyle(
+                        //             fontSize: 16,
+                        //             fontWeight: FontWeight.bold,
+                        //           ),
+                        //         ),
+                        //         // Text(
+                        //         //   "ID: ${childId}",
+                        //         //   style: const TextStyle(
+                        //         //     fontSize: 14,
+                        //         //     color: Colors.grey,
+                        //         //   ),
+                        //         // ),
+                        //       ],
+                        //     ),
+                        //   ],
+                        // ),
                         const Divider(
                             thickness: 1,
                             color: Color.fromARGB(255, 206, 206, 206)),
@@ -381,7 +391,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 20),
-                                  hintText: 'Select a location',
+                                  hintText: 'Hãy chọn 1 điểm đón',
                                 ),
                                 isExpanded: true,
                                 selectedItemBuilder: (BuildContext context) {
@@ -414,7 +424,9 @@ class _EditLocationMapState extends State<EditLocationMap> {
                           SnackBar(content: Text("Must choose a destination")),
                         );
                       } else {
-                        _onRegisterCheckpoint(_destination!);
+                        widget.actionType == 'register'
+                            ? _onRegisterCheckpoint()
+                            : _onSendChangeCheckpoint();
                       }
                     },
                     child: Text('Lưu'),

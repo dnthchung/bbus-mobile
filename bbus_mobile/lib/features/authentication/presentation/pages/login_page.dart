@@ -158,6 +158,18 @@ class __FormContentState extends State<_FormContent> {
                     },
                   )),
             ),
+            Align(
+              alignment: Alignment.topRight,
+              child: GestureDetector(
+                onTap: () {
+                  context.pushNamed(RouteNames.forgotPassword);
+                },
+                child: Text(
+                  'Forgot Password?',
+                  style: TextStyle(color: TColors.darkPrimary),
+                ),
+              ),
+            ),
             // _gap(),
             // CheckboxListTile(
             //   value: _rememberMe,
@@ -187,13 +199,10 @@ class __FormContentState extends State<_FormContent> {
                           borderRadius: BorderRadius.circular(4)),
                     ),
                     onPressed: _login,
-                    child: const Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(
-                        AppText.loginButton,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                    child: Text(
+                      AppText.loginButton,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 );

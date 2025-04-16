@@ -1,4 +1,8 @@
+import 'package:bbus_mobile/config/injector/injector.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/send_absent_request.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class AbsentRequestPage extends StatefulWidget {
@@ -12,14 +16,16 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
   DateTimeRange? absentPeriod;
   String? reason;
 
-  final List<String> children = ['John Doe', 'Emma Smith', 'Liam Brown'];
-
   void _pickAbsentPeriod() async {
     DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 1),
-    );
+        context: context,
+        firstDate: DateTime.now(),
+        lastDate: DateTime(DateTime.now().year + 1),
+        fieldStartLabelText: 'Từ Ngày',
+        fieldEndLabelText: 'Đến Ngày',
+        saveText: 'Lưu',
+        cancelText: 'Hủy',
+        confirmText: 'Chấp nhận');
     if (picked != null) {
       setState(() {
         absentPeriod = picked;
@@ -27,18 +33,24 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
     }
   }
 
-  void _submitRequest() {
+  void _submitRequest() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Absent request submitted successfully!")),
-      );
-
-      // Handle the submission (API call or database save)
-      print("Child: $selectedChild");
-      print("Absent Period: ${absentPeriod?.start} - ${absentPeriod?.end}");
-      print("Reason: $reason");
+      final res = await sl<SendAbsentRequest>().call(SendAbsentRequestParams(
+          selectedChild,
+          '7fba6d6c-137f-428c-958f-fe6160469be8',
+          reason,
+          '${absentPeriod!.start.toString().split(" ")[0]}',
+          '${absentPeriod!.end.toString().split(" ")[0]}'));
+      res.fold((l) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.message)),
+        );
+      }, (r) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Đơn báo nghỉ được gửi thành công!")),
+        );
+      });
     }
   }
 
@@ -46,7 +58,7 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Absent Request"),
+        title: Text("Đơn báo nghỉ"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -62,18 +74,26 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Child Selection
-              DropdownButtonFormField<String>(
-                value: selectedChild,
-                decoration: InputDecoration(labelText: "Select Child"),
-                items: children.map((child) {
-                  return DropdownMenuItem(
-                    value: child,
-                    child: Text(child),
-                  );
-                }).toList(),
-                onChanged: (value) => setState(() => selectedChild = value),
-                validator: (value) =>
-                    value == null ? "Please select a child" : null,
+              BlocBuilder<ChildrenListCubit, ChildrenListState>(
+                builder: (context, state) {
+                  if (state is ChildrenListSuccess) {
+                    return DropdownButtonFormField<String>(
+                      value: selectedChild,
+                      decoration: InputDecoration(labelText: "Chọn con"),
+                      items: state.data.map((child) {
+                        return DropdownMenuItem(
+                          value: child.id,
+                          child: Text(child.name!),
+                        );
+                      }).toList(),
+                      onChanged: (value) =>
+                          setState(() => selectedChild = value),
+                      validator: (value) =>
+                          value == null ? "Xin hay chọn tên 1 con" : null,
+                    );
+                  }
+                  return SizedBox();
+                },
               ),
               SizedBox(height: 16),
 
@@ -81,27 +101,28 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
               TextFormField(
                 readOnly: true,
                 decoration: InputDecoration(
-                  labelText: "Absent Period",
+                  labelText: "Thời gian nghỉ",
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
                 onTap: _pickAbsentPeriod,
                 controller: TextEditingController(
                   text: absentPeriod == null
                       ? ""
-                      : "${absentPeriod!.start.toLocal()} - ${absentPeriod!.end.toLocal()}",
+                      : "${absentPeriod!.start.toString().split(" ")[0]} - ${absentPeriod!.end.toString().split(" ")[0]}",
                 ),
-                validator: (value) =>
-                    absentPeriod == null ? "Please select a period" : null,
+                validator: (value) => absentPeriod == null
+                    ? "XIn hãy chọn khoản thời gian nghỉ"
+                    : null,
               ),
               SizedBox(height: 16),
 
               // Reason Input
               TextFormField(
-                decoration: InputDecoration(labelText: "Reason"),
+                decoration: InputDecoration(labelText: "Lý do"),
                 maxLines: 3,
                 onChanged: (value) => reason = value,
                 validator: (value) => (value == null || value.isEmpty)
-                    ? "Please provide a reason"
+                    ? "Xin hãy điền lý do"
                     : null,
               ),
               SizedBox(height: 20),
@@ -111,7 +132,7 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _submitRequest,
-                  child: Text("Submit Request"),
+                  child: Text("Gửi"),
                 ),
               ),
             ],

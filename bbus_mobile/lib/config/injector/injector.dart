@@ -15,6 +15,7 @@ import 'package:bbus_mobile/features/driver/domain/repository/schedule_repositor
 import 'package:bbus_mobile/features/driver/domain/repository/student_list_repository.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/get_bus_schedule.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/get_student_stream.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/mark_attendance.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
 import 'package:bbus_mobile/features/map/cubit/checkpoint/checkpoint_list_cubit.dart';
 import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
@@ -36,7 +37,12 @@ import 'package:bbus_mobile/features/parent/domain/repository/children_repositor
 import 'package:bbus_mobile/features/parent/domain/repository/request_repository.dart';
 import 'package:bbus_mobile/features/parent/domain/usecases/get_all_request_type.dart';
 import 'package:bbus_mobile/features/parent/domain/usecases/get_children_list.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/get_request_list.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/send_absent_request.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/send_change_checkpoint_req.dart';
+import 'package:bbus_mobile/features/parent/domain/usecases/send_new_checkpoint_req.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_type/request_type_cubit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';

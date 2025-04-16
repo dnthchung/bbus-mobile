@@ -1,5 +1,8 @@
 class RoutePaths {
   static const String login = '/login';
+  static const forgotPassword = '/forgot-password';
+  static const otpVerification = '/otp-verification';
+  static const resetPassword = '/reset-password';
   // Parent
   static const String parentProfile = '/parent/profile';
   static const String parentChildren = '/parent/children';
@@ -11,6 +14,8 @@ class RoutePaths {
   static const String parentChangePassword = '/parent/change-password';
   static const String parentRequest = '/parent/requests';
   static const String parentBusMap = '/parent/bus-map';
+  static const String parentAbsentRequest = '/parent/absent-request';
+  static const String parentOtherRequest = '/parent/other-request';
 
   // Driver
   static const String driverProfile = '/driver/profile';
@@ -21,6 +26,9 @@ class RoutePaths {
 
 class RouteNames {
   static const String login = 'login';
+  static const forgotPassword = 'forgot-password';
+  static const otpVerification = 'otp-verification';
+  static const resetPassword = 'reset-password';
   // Parent
   static const String parentProfile = 'parent_profile';
   static const String parentChangePassword = 'parent_change-password';
@@ -32,6 +40,8 @@ class RouteNames {
   static const String parentEditLocation = 'parent_edit-location';
   static const String parentRequest = 'parent_requests';
   static const String parentBusMap = 'parent_bus-map';
+  static const String parentAbsentRequest = 'parent_absent-request';
+  static const String parentOtherRequest = 'parent_other-request';
 
   // Driver
   static const String driverProfile = 'driver_profile';
