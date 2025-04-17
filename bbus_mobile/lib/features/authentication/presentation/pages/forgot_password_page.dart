@@ -32,14 +32,14 @@ class ForgotPasswordPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Forgot password',
+                'Quên mật khẩu',
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: 16.0,
               ),
               Text(
-                'Please enter your phone number',
+                'Yêu cầu xác thực sẽ được gửi qua email của bạn',
                 style: TextStyle(fontSize: 15.5),
               ),
               Form(
@@ -48,18 +48,20 @@ class ForgotPasswordPage extends StatelessWidget {
                   controller: _phoneController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppText.phoneEmpty;
+                      return 'Vui lòng nhập email';
                     }
-                    bool phoneValid = RegExp(r"^\d{10,15}").hasMatch(value);
+                    bool phoneValid =
+                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                            .hasMatch(value);
                     if (!phoneValid) {
-                      return AppText.phoneValidateError;
+                      return 'Email không hợp lệ';
                     }
                     return null;
                   },
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: 'Phone Number',
-                    prefixIcon: Icon(Icons.call),
+                    hintText: 'Email',
+                    prefixIcon: Icon(Icons.mail),
                     suffixIcon: IconButton(
                       onPressed: () {
                         cubit.phoneController.clear();
@@ -73,17 +75,17 @@ class ForgotPasswordPage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (!_formKey.currentState!.validate()) {
-                      return;
+                    if (_formKey.currentState!.validate()) {
+                      print('validate');
+                      context
+                          .read<ForgotPasswordCubit>()
+                          .sendOtpRequest(_phoneController.text.trim());
+                      context.pushNamed(RouteNames.otpVerification,
+                          pathParameters: {'phone': _phoneController.text});
                     }
-                    context
-                        .read<ForgotPasswordCubit>()
-                        .sendOtpRequest(_phoneController.text);
-                    context.pushNamed(RouteNames.otpVerification,
-                        pathParameters: {'phone': _phoneController.text});
                   },
                   child: Text(
-                    'Send',
+                    'Lấy OTP',
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),

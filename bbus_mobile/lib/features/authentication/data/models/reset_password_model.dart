@@ -16,9 +16,11 @@ class ResetPasswordModel {
         confirmPassword: json["confirmPassword"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "sessionId": sessionId,
-        "password": password,
-        "confirmPassword": confirmPassword,
-      };
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      "sessionId": sessionId,
+      "password": password,
+      "confirmPassword": confirmPassword,
+    };
+  }
 }

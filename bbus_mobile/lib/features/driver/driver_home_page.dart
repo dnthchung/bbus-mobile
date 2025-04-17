@@ -8,6 +8,7 @@ String getAppBarTitle(String currentRoute) {
   Map<String, String> routeTitles = {
     RoutePaths.driverStudent: "Danh sách học sinh",
     RoutePaths.driverProfile: "Hồ sơ cá nhân",
+    RoutePaths.driverProfile: "Thông tin trường",
   };
   return routeTitles[currentRoute] ?? "BBUS";
 }

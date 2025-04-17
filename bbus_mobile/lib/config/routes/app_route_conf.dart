@@ -158,7 +158,7 @@ class AppRouteConf {
         },
       ),
       GoRoute(
-        path: RoutePaths.resetPassword,
+        path: '${RoutePaths.resetPassword}/:sessionId',
         name: RouteNames.resetPassword,
         builder: (_, state) {
           String? sessionId = state.pathParameters['sessionId'];

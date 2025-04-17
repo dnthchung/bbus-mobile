@@ -5,6 +5,7 @@ void initializeDependencies() {
   // Auth
   AuthDependency.initAuth();
   _initChangePassword();
+  _initBus();
   _initMap();
   _initChildren();
   _initCheckpoint();
@@ -42,8 +43,9 @@ void _initMap() {
     ..registerLazySingleton<MapRepository>(() => MapRepositoryImpl(sl()))
     // Usecases
     ..registerLazySingleton(() => GetLiveLocation(sl()))
+    ..registerLazySingleton(() => GetMapRoute(sl()))
     // Bloc
-    ..registerFactory(() => LocationTrackingCubit(sl()));
+    ..registerFactory(() => LocationTrackingCubit(sl(), sl()));
 }
 
 void _initChildren() {
@@ -100,4 +102,11 @@ _initDriver() {
     ..registerLazySingleton(() => GetStudentStream(sl()))
     ..registerLazySingleton(() => MarkAttendance(sl()))
     ..registerLazySingleton(() => StudentListCubit(sl()));
+}
+
+_initBus() {
+  sl
+    ..registerLazySingleton<BusDatasource>(() => BusDatasourceImpl(sl()))
+    ..registerLazySingleton<BusRepository>(() => BusRepositoryImpl(sl()))
+    ..registerLazySingleton(() => GetBusDetail(sl()));
 }

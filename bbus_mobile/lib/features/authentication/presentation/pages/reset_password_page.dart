@@ -17,7 +17,11 @@ class ResetPasswordPage extends StatelessWidget {
       child: BlocListener<ForgotPasswordCubit, ForgotPasswordState>(
         listener: (context, state) {
           if (state is PasswordResetSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Đổi mật khẩu mới thành công!')),
+            );
             context.goNamed(RouteNames.login);
+            context.read<ForgotPasswordCubit>().restart();
           } else if (state is ForgotPasswordError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
@@ -37,7 +41,7 @@ class ResetPasswordPage extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Reset password',
+                  'Đổi mật khẩu mới',
                   style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -46,43 +50,51 @@ class ResetPasswordPage extends StatelessWidget {
                 Form(
                     key: _formKey,
                     child: Column(
+                      spacing: 8.0,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Enter New Password',
+                          'Nhập mật khẩu mới',
                         ),
                         TextFormField(
                           controller: _newPasswordController,
                           decoration: InputDecoration(
-                            hintText: 'New Password',
+                            hintText: 'Mật khẩu mới',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a new password';
-                            } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                              return 'Xin hãy nhập mật khẩu mới';
+                            } else if (value.length < 8) {
+                              return 'Mật khẩu cần ít nhất 8 ký tự';
                             }
                             return null;
                           },
                         ),
+                        SizedBox(
+                          height: 2.0,
+                        ),
                         Text(
-                          'Confirm Password',
+                          'Xác nhận mật khẩu mới',
                         ),
                         TextFormField(
                           controller: _confirmPasswordController,
                           decoration: InputDecoration(
-                            hintText: 'Confirm Password',
+                            hintText: 'Nhập lại mật khẩu',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please confirm your password';
+                              return 'Xin hãy xác nhận mật khẩu mới';
                             } else if (value != _newPasswordController.text) {
-                              return 'Passwords do not match';
+                              return 'Mật khẩu xác nhận không khớp';
                             }
                             return null;
                           },
                         ),
                       ],
                     )),
+                SizedBox(
+                  height: 8.0,
+                ),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -93,7 +105,7 @@ class ResetPasswordPage extends StatelessWidget {
                     }
                   },
                   child: Text(
-                    'Send',
+                    'Gửi',
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),

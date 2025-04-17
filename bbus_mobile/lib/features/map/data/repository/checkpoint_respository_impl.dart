@@ -30,4 +30,15 @@ class CheckpointRespositoryImpl implements CheckpointRepository {
       return Left(Failure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, List<CheckpointEntity>>> getCheckpointByRoute(
+      String routeId) async {
+    try {
+      final res = await _checkpointDatasource.getCheckpointByRoute(routeId);
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(e.message));
+    }
+  }
 }

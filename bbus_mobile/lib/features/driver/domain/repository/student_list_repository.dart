@@ -63,11 +63,14 @@ class StudentListRepositoryImpl implements StudentListRepository {
       if (decoded is List) {
         for (var item in decoded) {
           final student = StudentEntity.fromJson(item);
-          final formatStudent = _students[student.studentId!]?.copyWith(
-              checkin: student.checkin,
-              checkout: student.checkout,
-              status: student.status);
-          _students[student.studentId!] = formatStudent!;
+          if (_students[student.studentId!] != null) {
+            final formatStudent = _students[student.studentId!]?.copyWith(
+                checkin: student.checkin,
+                checkout: student.checkout,
+                status: student.status);
+
+            _students[student.studentId!] = formatStudent!;
+          }
         }
       } else if (decoded is Map<String, dynamic>) {
         final student = StudentEntity.fromJson(decoded);

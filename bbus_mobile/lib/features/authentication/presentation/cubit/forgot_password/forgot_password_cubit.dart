@@ -17,9 +17,13 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
   final TextEditingController phoneController = TextEditingController();
 
   Timer? _otpTimer;
-  static const int _otpDuration = 60;
+  static const int _otpDuration = 300;
   ForgotPasswordCubit(this._getOtpByPhone, this._resetPassword, this._verifyOtp)
       : super(ForgotPasswordInitial());
+  void restart() {
+    emit(ForgotPasswordInitial());
+  }
+
   Future<void> sendOtpRequest(String phoneNumber) async {
     emit(ForgotPasswordLoading());
     final res = await _getOtpByPhone.call(phoneNumber);

@@ -124,7 +124,7 @@ class ChildCard extends StatelessWidget {
                       extra: ChildEntity(
                         id: studentId,
                         name: name,
-                        busId: '', // if needed
+                        busId: busId, // if needed
                         avatar: avatar ?? '',
                       ),
                     );

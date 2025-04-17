@@ -18,8 +18,8 @@ import 'config/injector/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
-  // await FirebaseApi().initNotification();
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotification();
   initializeDependencies();
   runApp(const MyApp());
 }
@@ -54,6 +54,7 @@ class MyApp extends StatelessWidget {
             } else {
               // final cameras = await availableCameras();
               // sl.registerSingleton<List<CameraDescription>>(cameras);
+              router.goNamed(RouteNames.driverStudent);
             }
           }
         },

@@ -74,7 +74,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future getOtp(String phoneNumber) async {
     try {
       final res = await _dioClient
-          .post('${ApiConstants.forgotPassword}?phone=$phoneNumber');
+          .post('${ApiConstants.forgotPassword}?email=$phoneNumber');
       return res;
     } catch (e) {
       logger.e(e);
@@ -98,7 +98,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future sendOtp({required String phone, required String otp}) async {
     try {
       final res = await _dioClient
-          .post('${ApiConstants.otpVerification}?phone=$phone&otp=$otp');
+          .post('${ApiConstants.otpVerification}?email=$phone&otp=$otp');
       return res;
     } catch (e) {
       logger.e(e);

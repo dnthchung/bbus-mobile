@@ -6,10 +6,12 @@ class ApiConstants {
 
   //Endpoints
   static const String loginApiUrl = '/auth/login';
-  static const String forgotPassword = 'auth/forgot-password/request';
-  static const String otpVerification = 'auth/forgot-password/verify';
-  static const String resetPassword = 'forgot-password/reset';
+  static const String forgotPassword = '/auth/forgot-password/request';
+  static const String otpVerification = '/auth/forgot-password/verify';
+  static const String resetPassword = '/auth/forgot-password/reset';
   static const String userApiUrl = '/user';
+  static const String busApiUrl = '/bus';
+  static const String getCheckpointByRoute = '/checkpoint/by-route';
   static const String changePasswordApiUrl = '/user/change-pwd';
   static const String getRefreshTokenUrl = '/auth/refresh-token';
   static const String checkpointUrl = '/checkpoint/list';
@@ -23,7 +25,10 @@ class ApiConstants {
   static const String getAttandance = '/attendance/get-attendance';
 
   static const List<String> publicEndpoints = [
-    '/auth/login',
+    loginApiUrl,
+    forgotPassword,
+    otpVerification,
+    resetPassword,
   ];
   static const String emptyData = 'Bad state: No element';
 }

@@ -4,8 +4,8 @@ class CheckpointEntity extends Equatable {
   String? id;
   String? name;
   String? description;
-  String? latitude;
-  String? longitude;
+  double? latitude;
+  double? longitude;
   String? status;
 
   CheckpointEntity({
@@ -22,8 +22,12 @@ class CheckpointEntity extends Equatable {
       id: json["id"] ?? "",
       name: json["name"] ?? "",
       description: json["description"] ?? "",
-      latitude: json["latitude"] ?? "",
-      longitude: json["longitude"] ?? "",
+      latitude: json["latitude"] != null
+          ? double.tryParse(json["latitude"].toString())
+          : null,
+      longitude: json["longitude"] != null
+          ? double.tryParse(json["longitude"].toString())
+          : null,
       status: json["status"] ?? "",
     );
   }

@@ -5,6 +5,8 @@ import 'package:dartz/dartz.dart';
 
 abstract class CheckpointRepository {
   Future<Either<Failure, List<CheckpointEntity>>> getCheckpointList();
+  Future<Either<Failure, List<CheckpointEntity>>> getCheckpointByRoute(
+      String routeId);
   Future<Either<Failure, BusEntity>> registerCheckpoint(
       String studentId, String checkpointId);
 }

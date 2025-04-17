@@ -47,12 +47,13 @@ class CustomAppbar extends StatelessWidget {
                     },
                   ),
                 )
-              : const Image(
-                  image: AssetImage('assets/images/default_child.png'),
-                  height: 100,
-                  width: 100,
+              : ClipOval(
+                  child: const Image(
+                  image: AssetImage('assets/images/default_avatar.png'),
+                  height: 70,
+                  width: 70,
                   fit: BoxFit.cover,
-                ),
+                )),
           const SizedBox(width: 10),
 
           // Child Name

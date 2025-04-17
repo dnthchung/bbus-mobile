@@ -221,8 +221,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                         _selectedLocation != null &&
                                             _selectedLocation == checkpoint.id;
                                     final location = LatLng(
-                                        double.parse(checkpoint.latitude!),
-                                        double.parse(checkpoint.longitude!));
+                                        checkpoint.latitude!,
+                                        checkpoint.longitude!);
 
                                     return Marker(
                                       point: location,
@@ -377,9 +377,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                       .firstWhere((c) => c.id == checkpointId);
                                   setState(() {
                                     _selectedLocation = checkpointId;
-                                    _destination = LatLng(
-                                        double.parse(selected.latitude!),
-                                        double.parse(selected.longitude!));
+                                    _destination = LatLng(selected.latitude!,
+                                        selected.longitude!);
                                   });
                                   _mapController.move(_destination!, 13);
                                 },

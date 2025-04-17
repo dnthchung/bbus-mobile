@@ -15,6 +15,7 @@ String getAppBarTitle(String currentRoute) {
     RoutePaths.parentEditLocation: "Gửi yêu cầu",
     RoutePaths.parentChangePassword: "Đổi mật khẩu",
     RoutePaths.parentSetting: "Cài đặt",
+    RoutePaths.parentRequest: "Các loại đơn",
   };
   return routeTitles[currentRoute] ?? "BBUS";
 }

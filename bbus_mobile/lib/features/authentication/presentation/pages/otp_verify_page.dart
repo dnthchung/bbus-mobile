@@ -51,12 +51,12 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
               // ), // Add your logo here
               const SizedBox(height: 20),
               Text(
-                'OTP Verification',
+                'Xác nhận OTP',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               Text(
-                'We have sent an OTP on given number ${widget.phoneNumber}',
+                'Chúng tôi đã gửi mã OTP đến email của bạn ${widget.phoneNumber}',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
@@ -64,23 +64,27 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
               BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
                   builder: (context, state) {
                 if (state is OtpCountdownTick) {
+                  final minutes =
+                      (state.secondsRemaining ~/ 60).toString().padLeft(2, '0');
+                  final seconds =
+                      (state.secondsRemaining % 60).toString().padLeft(2, '0');
                   return Text(
-                    '00:${state.secondsRemaining.toString().padLeft(2, '0')}',
+                    '$minutes:$seconds',
                     style: TextStyle(color: TColors.primary),
                   );
                 } else if (state is OtpExpired) {
-                  return Text('Your otp has expired please resend');
+                  return Text('Mã OTP của bạn đã hết hạn, xin hãy gửi lại.');
                 }
                 return SizedBox.shrink();
               }),
               SizedBox(height: MediaQuery.of(context).size.width * 0.04),
               PinCodeTextField(
                 appContext: context,
-                length: 4,
+                length: 6,
                 controller: _otpController,
                 onChanged: (value) {
                   setState(() {
-                    _isOtpComplete = value.length == 4;
+                    _isOtpComplete = value.length == 6;
                   });
                 },
                 autoDismissKeyboard: true,
@@ -89,7 +93,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                   shape: PinCodeFieldShape.box,
                   borderRadius: BorderRadius.circular(15),
                   fieldHeight: 75,
-                  fieldWidth: 75,
+                  fieldWidth: 55,
                   activeColor: TColors.accent,
                   activeFillColor: Colors.white,
                   selectedColor: TColors.accent,
@@ -101,7 +105,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Text('Dont receive the OTP? '),
+                  Text('Chưa nhận được OTP? '),
                   GestureDetector(
                     onTap: () {
                       _otpController.clear();
@@ -110,7 +114,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                           .sendOtpRequest(widget.phoneNumber);
                     },
                     child: Text(
-                      'RESEND OTP',
+                      'Gửi lại OTP',
                       style: TextStyle(
                         color: TColors.primary,
                         fontWeight: FontWeight.bold,
@@ -129,7 +133,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                             .verifyOtp(_otpController.text);
                       }
                     : null,
-                child: Text('VERIFY'),
+                child: Text('Xác nhận'),
               )
             ],
           ),

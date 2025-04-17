@@ -100,7 +100,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, bool>> getOtp(String phoneNumber) async {
-    return Right(true);
+    try {
+      final res = await _authRemoteDatasource.getOtp(phoneNumber);
+      return Right(true);
+    } on ServerException catch (e) {
+      return Left(Failure(e.message));
+    }
   }
 
   @override
@@ -108,7 +113,7 @@ class AuthRepositoryImpl implements AuthRepository {
       {required String phone, required String otp}) async {
     try {
       final res = await _authRemoteDatasource.sendOtp(phone: phone, otp: otp);
-      return Right(res['data']);
+      return Right(res['sessionId']);
     } on ServerException catch (e) {
       return Left(Failure(e.message));
     }

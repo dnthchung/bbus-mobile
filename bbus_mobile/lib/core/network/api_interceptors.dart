@@ -6,9 +6,11 @@ import 'package:dio/dio.dart';
 
 // ignore: constant_identifier_names
 final List<String> publicEndpoints = [
-  '/auth/login',
-  '/register',
-  '/public-data'
+  ApiConstants.loginApiUrl,
+  '/public-data',
+  ApiConstants.forgotPassword,
+  ApiConstants.otpVerification,
+  ApiConstants.resetPassword,
 ];
 
 //* Request methods PUT, POST, PATCH, DELETE needs access token,
@@ -37,17 +39,12 @@ class ApiInterceptors extends Interceptor {
     }
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
       final refreshToken = await _secureLocalStorage.load(key: 'refreshToken');
-      final token = await _secureLocalStorage.load(key: 'token');
-      logger.i(refreshToken);
-      logger.i(token);
-      final userId = await _secureLocalStorage.load(key: 'userId');
       try {
         Dio retryDio = Dio(
           BaseOptions(
             baseUrl: ApiConstants.baseApiUrl,
           ),
         );
-        logger.i(userId);
         var response = await retryDio.post(
           ApiConstants.getRefreshTokenUrl,
           data: {refreshToken},
@@ -79,7 +76,11 @@ class ApiInterceptors extends Interceptor {
       final refreshToken = await _secureLocalStorage.load(key: 'refreshToken');
       Dio retryDio = Dio(
         BaseOptions(
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
           baseUrl: ApiConstants.baseApiUrl,
+          responseType: ResponseType.json,
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
         ),
       );
       var res = await retryDio.post(
@@ -91,9 +92,9 @@ class ApiInterceptors extends Interceptor {
       );
       if (res.statusCode == 200) {
         await _secureLocalStorage.save(
-            key: 'token', value: res.data['access_token']);
+            key: 'token', value: res.data['data']['access_token']);
         await _secureLocalStorage.save(
-            key: 'refreshToken', value: res.data['refresh_token']);
+            key: 'refreshToken', value: res.data['data']['refresh_token']);
         return handler.resolve(res);
       }
     }

@@ -110,17 +110,7 @@ class _StudentListPageState extends State<StudentListPage>
 
                       return StudentExpandableCard(
                         key: ValueKey(student.studentId),
-                        studentId: student.studentId ?? "Unknown",
-                        name: student.studentName ?? "Unknown",
-                        age: student.dob.toString(),
-                        address: student.checkpointName ?? "Unknown",
-                        status: student.status ?? "Unknown",
-                        avatar: student.avatarUrl ??
-                            'assets/images/default_child.png',
-                        checkin: student.checkin ?? '',
-                        checkout: student.checkin ?? '',
-                        parentName: student.parentName ?? "Unknown",
-                        parentPhone: student.parentPhone ?? "Unknown",
+                        student: student,
                       );
                     },
                   );

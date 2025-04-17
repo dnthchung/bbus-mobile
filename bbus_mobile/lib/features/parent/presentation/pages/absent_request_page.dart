@@ -118,7 +118,8 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
 
               // Reason Input
               TextFormField(
-                decoration: InputDecoration(labelText: "Lý do"),
+                decoration: InputDecoration(
+                    labelText: "Lý do", alignLabelWithHint: true),
                 maxLines: 3,
                 onChanged: (value) => reason = value,
                 validator: (value) => (value == null || value.isEmpty)

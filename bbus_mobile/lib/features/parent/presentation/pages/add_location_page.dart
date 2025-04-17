@@ -54,10 +54,16 @@ class _AddLocationPageState extends State<AddLocationPage> {
         child: Form(
           key: _formKey,
           child: Column(
+            spacing: 4.0,
             children: [
+              Text(
+                'Bộ phận xử lý sẽ phản hồi trong vòng 48 giờ. Để tránh bị xem là SPAM, nếu gửi nhiều đơn/email cho cùng một nội dung, thời gian phản hồi sẽ tính theo công thức: Số đơn x 48h. Vì vậy, phụ huynh vui lòng cân nhắc trước khi gửi lặp lại để được hỗ trợ nhanh chóng.',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
               TextFormField(
                 controller: _reasonController,
                 decoration: const InputDecoration(
+                  alignLabelWithHint: true,
                   labelText: 'Nội dung',
                   border: OutlineInputBorder(),
                 ),

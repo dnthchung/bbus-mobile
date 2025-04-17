@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bbus_mobile/common/entities/child.dart';
+import 'package:bbus_mobile/common/entities/student.dart';
 import 'package:bbus_mobile/common/widgets/camera_popup.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
@@ -14,36 +15,18 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class StudentCard extends StatelessWidget {
-  final String studentId;
-  final String? busId;
-  final String name;
-  final String age;
-  final String? address;
-  final String status;
-  final String? avatar;
-  final bool? isParent;
-  final String? checkin;
-  final String? checkout;
+  final StudentEntity student;
   const StudentCard({
     super.key,
-    required this.studentId,
-    this.busId,
-    required this.name,
-    required this.age,
-    required this.address,
-    required this.status,
-    this.avatar,
-    this.isParent,
-    this.checkin,
-    this.checkout,
+    required this.student,
   });
   String getCustomStatus() {
-    logger.i((checkin != null && checkin!.isNotEmpty));
-    if ((checkin == null || checkin!.isEmpty) &&
-        (checkout == null || checkout!.isEmpty)) {
+    logger.i(student.checkin);
+    if ((student.checkin == null || student.checkin!.isEmpty) &&
+        (student.checkout == null || student.checkout!.isEmpty)) {
       return 'Vắng';
-    } else if ((checkin != null && checkin!.isNotEmpty) &&
-        (checkout == null || checkout!.isEmpty)) {
+    } else if ((student.checkin != null && student.checkin!.isNotEmpty) &&
+        (student.checkout == null || student.checkout!.isEmpty)) {
       return 'Trên xe';
     } else {
       return 'Đã trả về';
@@ -83,7 +66,7 @@ class StudentCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Image.network(
-                    avatar!,
+                    student.avatarUrl!,
                     height: 100,
                     width: 100,
                     fit: BoxFit.cover,
@@ -105,7 +88,7 @@ class StudentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '$name ($age)',
+                          '${student.studentName} (${student.dob.toString().split(' ')[0]})',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w500),
                         ),
@@ -120,7 +103,7 @@ class StudentCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
-                                address ?? 'N/A',
+                                student.checkpointName ?? 'N/A',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -152,12 +135,22 @@ class StudentCard extends StatelessWidget {
                               ],
                             ),
                             const Spacer(),
-                            ElevatedButton(
-                              onPressed: () {
-                                _openMarkAttendanceModal(context);
-                              },
-                              child: Text('Mark Attendance'),
-                            )
+
+                            (student.checkin == null &&
+                                    student.checkout == null)
+                                ? ElevatedButton(
+                                    onPressed: () {
+                                      _openMarkAttendanceModal(context);
+                                    },
+                                    child: Text('Checkin'))
+                                : (student.checkin != null &&
+                                        student.checkout == null)
+                                    ? ElevatedButton(
+                                        onPressed: () {
+                                          _openMarkAttendanceModal(context);
+                                        },
+                                        child: Text('Checkin'))
+                                    : SizedBox(),
                             // else
                             //   Container(
                             //     padding: const EdgeInsets.symmetric(

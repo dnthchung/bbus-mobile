@@ -165,7 +165,7 @@ class __FormContentState extends State<_FormContent> {
                   context.pushNamed(RouteNames.forgotPassword);
                 },
                 child: Text(
-                  'Forgot Password?',
+                  'Quên mật khẩu?',
                   style: TextStyle(color: TColors.darkPrimary),
                 ),
               ),
@@ -212,7 +212,7 @@ class __FormContentState extends State<_FormContent> {
               listener: (context, state) {
                 if (state is AuthLoginSucess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Login Successful!')),
+                    const SnackBar(content: Text('Đăng nhập thành công!')),
                   );
                   print(state.data.role);
                   if (state.data.role?.toLowerCase() == 'parent')
