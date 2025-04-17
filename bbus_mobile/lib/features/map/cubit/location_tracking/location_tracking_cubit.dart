@@ -1,5 +1,6 @@
 import 'package:bbus_mobile/common/entities/bus.dart';
 import 'package:bbus_mobile/common/entities/location.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/get_live_location.dart';
 import 'package:bbus_mobile/features/parent/domain/usecases/get_bus_detail.dart';
 import 'package:bloc/bloc.dart';
@@ -16,8 +17,9 @@ class LocationTrackingCubit extends Cubit<LocationTrackingState> {
       : super(LocationTrackingInitial());
   Future<void> listenForLocationUpdates(busId) async {
     await _getLiveLocation.openLiveTracking((location) {
+      logger.i('Location updated: $location');
       emit(LocationUpdated(location));
-    }, busId);
+    }, busDetail!.espId);
   }
 
   Future<void> getBusDetail(busId) async {
