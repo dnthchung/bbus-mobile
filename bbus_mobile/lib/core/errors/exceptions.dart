@@ -11,3 +11,5 @@ class CacheException implements Exception {
 class AuthException implements Exception {}
 
 class TokenExpireException implements Exception {}
+
+class EmptyException implements Exception {}

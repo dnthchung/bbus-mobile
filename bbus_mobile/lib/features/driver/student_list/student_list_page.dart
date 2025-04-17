@@ -1,5 +1,8 @@
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/core/errors/failures.dart';
+import 'package:bbus_mobile/core/usecases/usecase.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/get_bus_schedule.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
 import 'package:bbus_mobile/features/driver/student_list/widgets/pickup_drop_toggle.dart';
 import 'package:bbus_mobile/features/driver/student_list/widgets/student_expandable_card.dart';
@@ -16,11 +19,15 @@ class StudentListPage extends StatefulWidget {
 class _StudentListPageState extends State<StudentListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late String _busId;
+  bool _isBusIdReady = false;
+  bool _noSchedule = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    initialize();
   }
 
   @override
@@ -29,8 +36,30 @@ class _StudentListPageState extends State<StudentListPage>
     super.dispose();
   }
 
+  Future<void> initialize() async {
+    final res = await sl<GetBusSchedule>().call(NoParams());
+    res.fold(
+      (l) {
+        if (l is EmptyFailure) {
+          setState(() {
+            _noSchedule = true;
+          });
+        }
+      },
+      (r) {
+        _noSchedule = false;
+        _busId = r.busId!;
+        context.read<StudentListCubit>().initialize(_busId);
+        context.read<StudentListCubit>().loadStudents(0);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_noSchedule) {
+      return Center(child: Text('Không có lịch trình hôm nay'));
+    }
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -49,20 +78,22 @@ class _StudentListPageState extends State<StudentListPage>
                   Icons.near_me,
                   color: Colors.white,
                 ),
-                label: const Text('See Map'),
+                label: const Text('Tuyến đường'),
               ),
             ],
           ),
           TabBar(
             controller: _tabController,
-            onTap: (index) => context.read<StudentListCubit>().changeTab(index),
+            onTap: (index) => context
+                .read<StudentListCubit>()
+                .filterByStatus(index.toString()),
             indicatorColor: TColors.primary,
             labelColor: TColors.primary,
             unselectedLabelColor: Colors.grey,
             tabs: [
-              Tab(text: 'All (20)'),
-              Tab(text: 'Picked (18)'),
-              Tab(text: 'Absent (2)'),
+              Tab(text: 'Tất cả'),
+              Tab(text: 'Đã đón'),
+              Tab(text: 'Chưa đón'),
             ],
           ),
           Expanded(
@@ -78,14 +109,8 @@ class _StudentListPageState extends State<StudentListPage>
                       final student = studentList[index];
 
                       return StudentExpandableCard(
-                        key: ValueKey(student["name"]),
-                        name: student["name"] ?? "Unknown",
-                        age: student["age"] ?? "0",
-                        address: student["address"] ?? "Unknown",
-                        status: student["status"] ?? "Unknown",
-                        avatar: student["avatar"],
-                        parentName: student["parentName"] ?? "Unknown",
-                        parentPhone: student["parentPhone"] ?? "Unknown",
+                        key: ValueKey(student.studentId),
+                        student: student,
                       );
                     },
                   );
@@ -94,6 +119,7 @@ class _StudentListPageState extends State<StudentListPage>
               },
             ),
           ),
+          ElevatedButton(onPressed: () {}, child: Text('Kết thúc chuyến xe'))
         ],
       ),
     );

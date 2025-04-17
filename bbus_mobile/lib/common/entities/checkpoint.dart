@@ -1,29 +1,33 @@
 import 'package:equatable/equatable.dart';
 
 class CheckpointEntity extends Equatable {
-  CheckpointEntity({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.latitude,
-    required this.longitude,
-    required this.status,
-  });
+  String? id;
+  String? name;
+  String? description;
+  double? latitude;
+  double? longitude;
+  String? status;
 
-  final String id;
-  final String name;
-  final String description;
-  final String latitude;
-  final String longitude;
-  final String status;
+  CheckpointEntity({
+    this.id,
+    this.name,
+    this.description,
+    this.latitude,
+    this.longitude,
+    this.status,
+  });
 
   factory CheckpointEntity.fromJson(Map<String, dynamic> json) {
     return CheckpointEntity(
       id: json["id"] ?? "",
       name: json["name"] ?? "",
       description: json["description"] ?? "",
-      latitude: json["latitude"] ?? "",
-      longitude: json["longitude"] ?? "",
+      latitude: json["latitude"] != null
+          ? double.tryParse(json["latitude"].toString())
+          : null,
+      longitude: json["longitude"] != null
+          ? double.tryParse(json["longitude"].toString())
+          : null,
       status: json["status"] ?? "",
     );
   }

@@ -30,23 +30,41 @@ class CustomAppbar extends StatelessWidget {
           ),
 
           // Child Avatar
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: avatarUrl != null
-                ? NetworkImage(avatarUrl!)
-                : const AssetImage("assets/images/default_child.png")
-                    as ImageProvider,
-          ),
-
+          avatarUrl != null && avatarUrl!.startsWith('http')
+              ? ClipOval(
+                  child: Image.network(
+                    avatarUrl!,
+                    height: 70,
+                    width: 70,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Image(
+                        image: AssetImage('assets/images/default_avatar.png'),
+                        height: 70,
+                        width: 70,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                )
+              : ClipOval(
+                  child: const Image(
+                  image: AssetImage('assets/images/default_avatar.png'),
+                  height: 70,
+                  width: 70,
+                  fit: BoxFit.cover,
+                )),
           const SizedBox(width: 10),
 
           // Child Name
-          Text(
-            childName,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+          Expanded(
+            child: Text(
+              childName,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  overflow: TextOverflow.clip),
             ),
           ),
         ],

@@ -23,7 +23,7 @@ class StatusTabView extends StatelessWidget {
           TimelinePoint(
             icon: Icons.location_pin,
             time: trackingSchedule.pickup?.time,
-            title: 'Pick Up',
+            title: 'Lên xe',
             address: trackingSchedule.pickup?.address ?? 'N/A',
             isLast: false,
             reachedNext: trackingSchedule.attendance?.time != null,
@@ -31,7 +31,7 @@ class StatusTabView extends StatelessWidget {
           TimelinePoint(
             icon: Icons.apartment,
             time: trackingSchedule.attendance?.time,
-            title: 'Attend School',
+            title: 'Đến trường',
             address: trackingSchedule.attendance?.address ?? 'N/A',
             isLast: false,
             reachedNext: trackingSchedule.drop?.time != null,
@@ -39,7 +39,7 @@ class StatusTabView extends StatelessWidget {
           TimelinePoint(
             icon: Icons.location_pin,
             time: trackingSchedule.drop?.time,
-            title: 'Drop',
+            title: 'Xuống điểm đón',
             address: trackingSchedule.drop?.address ?? 'N/A',
             isLast: true,
           ),

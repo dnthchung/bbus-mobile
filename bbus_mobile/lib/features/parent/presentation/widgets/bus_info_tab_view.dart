@@ -1,10 +1,12 @@
+import 'package:bbus_mobile/common/entities/bus.dart';
 import 'package:bbus_mobile/features/parent/presentation/widgets/bus_info_item.dart';
 import 'package:flutter/material.dart';
 
 List<(String, String, String, String, String)> busInfoList = [];
 
 class BusInfoTabView extends StatelessWidget {
-  const BusInfoTabView({super.key});
+  final BusEntity busDetail;
+  const BusInfoTabView({super.key, required this.busDetail});
 
   @override
   Widget build(BuildContext context) {
@@ -16,25 +18,25 @@ class BusInfoTabView extends StatelessWidget {
         children: [
           BusInfoItem(
               firstIcon: Icons.airline_seat_recline_normal_rounded,
-              middleTitle: 'Driver Name',
-              middleInfo: 'David Hood'),
+              middleTitle: 'Tài xế',
+              middleInfo: busDetail.driverName),
           BusInfoItem(
               firstIcon: Icons.directions_bus,
-              middleTitle: 'Bus Number',
-              middleInfo: '46269-BA'),
+              middleTitle: 'Số hiệu',
+              middleInfo: busDetail.espId),
           BusInfoItem(
               firstIcon: Icons.info,
-              middleTitle: 'Lience Number',
-              middleInfo: 'BS5231-5321'),
+              middleTitle: 'Biển số xe',
+              middleInfo: busDetail.licensePlate),
           BusInfoItem(
             firstIcon: Icons.account_box_rounded,
-            middleTitle: 'Helper Name',
-            middleInfo: 'Michael Hopson',
+            middleTitle: 'Phụ xe',
+            middleInfo: busDetail.assistantName,
             lastIcon: Icons.call,
           ),
           BusInfoItem(
             firstIcon: Icons.location_city,
-            middleTitle: 'School Contact',
+            middleTitle: 'Liên hệ trường',
             middleInfo: '+1 987 654 4310',
             lastIcon: Icons.call,
           ),

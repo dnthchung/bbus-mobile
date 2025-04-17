@@ -32,7 +32,7 @@ class UserModel extends UserEntity {
       username: json['username'],
       name: json['name'],
       gender: json['gender'],
-      dob: json['dob'],
+      dob: json['dob'].toString(),
       email: json['email'],
       avatar: json['avatar'],
       phone: json['phone'],

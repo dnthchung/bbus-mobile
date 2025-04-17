@@ -6,9 +6,11 @@ import 'package:dio/dio.dart';
 
 // ignore: constant_identifier_names
 final List<String> publicEndpoints = [
-  '/auth/login',
-  '/register',
-  '/public-data'
+  ApiConstants.loginApiUrl,
+  '/public-data',
+  ApiConstants.forgotPassword,
+  ApiConstants.otpVerification,
+  ApiConstants.resetPassword,
 ];
 
 //* Request methods PUT, POST, PATCH, DELETE needs access token,
@@ -30,31 +32,72 @@ class ApiInterceptors extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    logger.e(err);
     if (ApiConstants.publicEndpoints
         .any((endpoint) => err.requestOptions.path.contains(endpoint))) {
       return handler.next(err);
     }
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
-      final refreshToken = await _secureLocalStorage.load(key: 'refresh_token');
+      final refreshToken = await _secureLocalStorage.load(key: 'refreshToken');
+      try {
+        Dio retryDio = Dio(
+          BaseOptions(
+            baseUrl: ApiConstants.baseApiUrl,
+          ),
+        );
+        var response = await retryDio.post(
+          ApiConstants.getRefreshTokenUrl,
+          data: {refreshToken},
+          options: Options(
+            headers: {"Content-Type": 'application/json'},
+          ),
+        );
+        logger.i(response);
+        if (response.statusCode == 200) {
+          await _secureLocalStorage.save(
+              key: 'token', value: response.data['data']['access_token']);
+          await _secureLocalStorage.save(
+              key: 'refreshToken',
+              value: response.data['data']['refresh_token']);
+          handler.resolve(response);
+        }
+      } catch (e) {
+        logger.e(e);
+        throw Exception();
+      }
+    }
+    super.onError(err, handler);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) async {
+    if (response.data['status'] == 403) {
+      logger.i(response.data);
+      final refreshToken = await _secureLocalStorage.load(key: 'refreshToken');
       Dio retryDio = Dio(
         BaseOptions(
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
           baseUrl: ApiConstants.baseApiUrl,
+          responseType: ResponseType.json,
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
         ),
       );
-      var response = await retryDio.post(
+      var res = await retryDio.post(
         ApiConstants.getRefreshTokenUrl,
-        data: {refreshToken},
+        data: {"refreshToken": refreshToken},
         options: Options(
           headers: {"Content-Type": 'application/json'},
         ),
       );
-      if (response.statusCode == 200) {
-        await _secureLocalStorage.save(key: 'token', value: 'access_token');
+      if (res.statusCode == 200) {
         await _secureLocalStorage.save(
-            key: 'refresh_token', value: 'refresh_token');
-        handler.resolve(response);
+            key: 'token', value: res.data['data']['access_token']);
+        await _secureLocalStorage.save(
+            key: 'refreshToken', value: res.data['data']['refresh_token']);
+        return handler.resolve(res);
       }
     }
-    super.onError(err, handler);
+    super.onResponse(response, handler);
   }
 }

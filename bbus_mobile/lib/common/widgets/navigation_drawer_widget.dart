@@ -1,3 +1,5 @@
+import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
+import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
@@ -8,8 +10,11 @@ import 'package:go_router/go_router.dart';
 class NavigationDrawerWidget extends StatelessWidget {
   final String currentRoute;
   final List menuItems;
-  const NavigationDrawerWidget(
-      {super.key, required this.currentRoute, required this.menuItems});
+  const NavigationDrawerWidget({
+    super.key,
+    required this.currentRoute,
+    required this.menuItems,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,26 +24,46 @@ class NavigationDrawerWidget extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 35, // Adjust size
-                    backgroundImage:
-                        AssetImage("assets/images/default_avatar.png"),
-                  ),
-                  SizedBox(width: 12), // Space between image and text
-                  Text(
-                    "John Doe",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "john.doe@example.com",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ],
-              ),
+            BlocBuilder<CurrentUserCubit, CurrentUserState>(
+              builder: (context, state) {
+                if (state is CurrentUserLoggedIn) {
+                  return DrawerHeader(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipOval(
+                          child: Image.network(
+                            state.user.avatar ?? '',
+                            height: 70,
+                            width: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Image(
+                                image: AssetImage(
+                                    'assets/images/default_avatar.png'),
+                                height: 70,
+                                width: 70,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 12), // Space between image and text
+                        Text(
+                          state.user.name ?? 'Unknown User',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          state.user.email ?? "john.doe@example.com",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return DrawerHeader(child: SizedBox());
+              },
             ),
             ...menuItems.map(
               (item) => MenuItem(

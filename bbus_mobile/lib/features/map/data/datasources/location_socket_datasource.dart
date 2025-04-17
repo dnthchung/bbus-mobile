@@ -7,7 +7,7 @@ import 'package:bbus_mobile/core/constants/api_constants.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 
 abstract class LocationSocketDatasource {
-  Future<void> startListening(Function(LocationEntity location));
+  Future<void> startListening(Function(LocationEntity location), String busId);
   Future<void> stopListening();
 }
 
@@ -16,9 +16,10 @@ class LocationSocketDatasourceImpl implements LocationSocketDatasource {
   LocationSocketDatasourceImpl(this._webSocketService);
   @override
   Future<void> startListening(
-      Function(LocationEntity location) onLocationReceived) async {
+      Function(LocationEntity location) onLocationReceived,
+      String busId) async {
     print('start');
-    _webSocketService.connect(ApiConstants.socketAddress);
+    _webSocketService.connect('${ApiConstants.socketAddress}/$busId');
 
     _webSocketService.messageStream.listen((message) {
       logger.i(message);
