@@ -8,7 +8,7 @@ import 'package:bbus_mobile/core/utils/logger.dart';
 abstract class CheckpointDatasource {
   Future<List<CheckpointEntity>> getCheckpointList();
   Future<List<CheckpointEntity>> getCheckpointByRoute(String routeID);
-  Future<dynamic> registerCheckpoint(String studentId, String checkpointId);
+  Future<dynamic> registerCheckpoint(String? studentId, String checkpointId);
 }
 
 class CheckpointDatasourceImpl implements CheckpointDatasource {
@@ -28,14 +28,27 @@ class CheckpointDatasourceImpl implements CheckpointDatasource {
 
   @override
   Future<dynamic> registerCheckpoint(
-      String studentId, String checkpointId) async {
+      String? studentId, String checkpointId) async {
     try {
-      final result = await _dioClient.post(
-          '${ApiConstants.registerCheckpointUrl}?checkpointId=$checkpointId');
+      var result;
+      if (studentId == null) {
+        result = await _dioClient.post(
+            '${ApiConstants.registerCheckpointUrl}?checkpointId=$checkpointId');
+      } else {
+        result = await _dioClient.post(
+            '${ApiConstants.registerCheckpointForSingleUrl}?studentId=$studentId&checkpointId=$checkpointId');
+      }
+
+      if (result['status'] != 200) {
+        throw ServerException(result['message']);
+      }
       return result['data'];
+    } on ServerException catch (e) {
+      rethrow;
     } catch (e) {
-      logger.e(e.toString());
-      throw ServerException(e.toString());
+      // Other unknown errors
+      logger.e('Unexpected error: $e');
+      throw ServerException('Unexpected error: $e');
     }
   }
 
