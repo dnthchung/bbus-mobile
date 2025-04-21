@@ -8,5 +8,5 @@ abstract class CheckpointRepository {
   Future<Either<Failure, List<CheckpointEntity>>> getCheckpointByRoute(
       String routeId);
   Future<Either<Failure, dynamic>> registerCheckpoint(
-      String studentId, String checkpointId);
+      String? studentId, String checkpointId);
 }
