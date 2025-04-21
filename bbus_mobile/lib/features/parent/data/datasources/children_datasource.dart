@@ -7,6 +7,7 @@ import 'package:bbus_mobile/core/utils/logger.dart';
 
 abstract class ChildrenDatasource {
   Future<List<ChildEntity>> getChildrenList();
+  Future<dynamic> updateChild(ChildEntity child);
 }
 
 class ChildrenDatasourceImpl implements ChildrenDatasource {
@@ -20,6 +21,24 @@ class ChildrenDatasourceImpl implements ChildrenDatasource {
       final result = await _dioClient.get(ApiConstants.childrenListUrl);
       final List<dynamic> data = result['data'];
       return data.map((child) => ChildEntity.fromJson(child)).toList();
+    } catch (e) {
+      logger.e(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<dynamic> updateChild(ChildEntity child) async {
+    try {
+      final result = await _dioClient
+          .put(ApiConstants.updateChild, data: <String, dynamic>{
+        'id': child.id,
+        'name': child.name,
+        'dob': child.dob,
+        'address': child.address,
+        'gender': child.gender
+      });
+      return result;
     } catch (e) {
       logger.e(e.toString());
       throw ServerException(e.toString());

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bbus_mobile/common/entities/checkpoint.dart';
 import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/common/widgets/result_dialog.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
@@ -37,6 +38,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
   LatLng? _destination;
   List<LatLng> _route = [];
   StreamSubscription<LocationData>? _locationSubscription;
+  bool _isSubmitting = false;
 
   String? _selectedLocation;
 
@@ -103,8 +105,15 @@ class _EditLocationMapState extends State<EditLocationMap> {
         message: 'Bạn chắc chắn muốn lựa chọn điểm đón này?',
         cancelText: 'Không');
     if (confirmRegister == true) {
+      setState(() {
+        _isSubmitting = true;
+      });
       final result = await sl<RegisterCheckpoint>()
           .call(RegisterCheckpointParams('', _selectedLocation!));
+      setState(() {
+        _isSubmitting = false;
+      });
+
       result.fold(
           (l) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Failed to choose this location: ${l.message}'))),
@@ -114,6 +123,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
             message: 'Bạn đã đăng kí điểm đón cho con thành công',
             status: DialogStatus.success);
         if (isOk!) {
+          context.read<ChildrenListCubit>().getAll();
           context.pop();
         }
       });
@@ -129,12 +139,20 @@ class _EditLocationMapState extends State<EditLocationMap> {
       );
       return;
     }
+
     final reason = await showChangeCheckpointReasonDialog(context);
     if (reason == null) return; // user cancelled
+    setState(() {
+      _isSubmitting = false;
+    });
     final result = await sl<SendChangeCheckpointReq>().call(
       SendChangeCheckpointReqParams(
           _selectedLocation!, 'a9f42863-57b4-4b82-91fb-227f82ecaa20', reason),
     );
+    setState(() {
+      _isSubmitting = false;
+    });
+
     result.fold(
       (failure) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,7 +166,6 @@ class _EditLocationMapState extends State<EditLocationMap> {
           message: 'Yêu cầu thay đổi điểm đón đã được gửi',
           status: DialogStatus.success,
         );
-        context.read<RequestListCubit>().getRequestList();
         context.pop(); // pop the map page
       },
     );
@@ -329,80 +346,107 @@ class _EditLocationMapState extends State<EditLocationMap> {
                             if (state is CheckpointListLoading) {
                               return Center(child: CircularProgressIndicator());
                             } else if (state is CheckpointListSuccess) {
-                              return DropdownButtonFormField<String>(
-                                value: _selectedLocation,
-                                items: state.data.map((checkpoint) {
-                                  return DropdownMenuItem<String>(
-                                    value: checkpoint.id,
-                                    child: Container(
-                                      width: double.infinity,
-                                      alignment: Alignment.centerLeft,
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 8.0, 0, 6.0),
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          top: BorderSide(
-                                            color: state.data
-                                                        .indexOf(checkpoint) ==
-                                                    0
-                                                ? Colors.transparent
-                                                : Colors.grey,
-                                            width: 1,
+                              return LayoutBuilder(
+                                  builder: (context, constraints) {
+                                return RawAutocomplete<String>(
+                                  optionsBuilder:
+                                      (TextEditingValue textEditingValue) {
+                                    if (textEditingValue.text == '') {
+                                      return const Iterable<String>.empty();
+                                    }
+                                    return state.data
+                                        .where((checkpoint) => checkpoint.name!
+                                            .toLowerCase()
+                                            .contains(textEditingValue.text
+                                                .toLowerCase()))
+                                        .map((e) => e.name!);
+                                  },
+                                  onSelected: (String selectedName) {
+                                    final selected = state.data.firstWhere(
+                                        (c) => c.name == selectedName);
+                                    setState(() {
+                                      _selectedLocation = selected.id;
+                                      _destination = LatLng(selected.latitude!,
+                                          selected.longitude!);
+                                    });
+                                    _mapController.move(_destination!, 15);
+                                  },
+                                  fieldViewBuilder: (BuildContext context,
+                                      TextEditingController
+                                          textEditingController,
+                                      FocusNode focusNode,
+                                      VoidCallback onFieldSubmitted) {
+                                    return TextFormField(
+                                      controller: textEditingController,
+                                      focusNode: focusNode,
+                                      decoration: InputDecoration(
+                                        hintText: 'Tìm điểm đón',
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                      ),
+                                    );
+                                  },
+                                  optionsViewBuilder: (BuildContext context,
+                                      AutocompleteOnSelected<String> onSelected,
+                                      Iterable<String> options) {
+                                    return Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Material(
+                                        child: Container(
+                                          height: 52.0 * options.length,
+                                          width: constraints.biggest.width,
+                                          color: Colors.white,
+                                          child: ListView.builder(
+                                            padding: EdgeInsets.zero,
+                                            itemCount: options.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              final option =
+                                                  options.elementAt(index);
+                                              CheckpointEntity?
+                                                  selectedCheckpoint;
+                                              for (var c in state.data) {
+                                                if (c.id == _selectedLocation) {
+                                                  selectedCheckpoint = c;
+                                                  break;
+                                                }
+                                              }
+
+                                              final selectedName =
+                                                  selectedCheckpoint?.name;
+                                              return ListTile(
+                                                title: Text(
+                                                  option,
+                                                  style: TextStyle(
+                                                    color: option ==
+                                                            selectedCheckpoint
+                                                                ?.name
+                                                        ? TColors.primary
+                                                        : Colors.black,
+                                                    fontWeight: option ==
+                                                            selectedCheckpoint
+                                                                ?.name
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal,
+                                                  ),
+                                                ),
+                                                onTap: () => onSelected(option),
+                                              );
+                                            },
                                           ),
                                         ),
                                       ),
-                                      child: Text(
-                                        checkpoint.name!,
-                                        softWrap: true,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontWeight: _selectedLocation ==
-                                                  checkpoint.id
-                                              ? FontWeight.bold
-                                              : FontWeight
-                                                  .normal, // Highlight selected
-                                          color: _selectedLocation ==
-                                                  checkpoint.id
-                                              ? Colors.blue
-                                              : Colors
-                                                  .black, // Change color for selected
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (checkpointId) {
-                                  final selected = state.data
-                                      .firstWhere((c) => c.id == checkpointId);
-                                  setState(() {
-                                    _selectedLocation = checkpointId;
-                                    _destination = LatLng(selected.latitude!,
-                                        selected.longitude!);
-                                  });
-                                  _mapController.move(_destination!, 13);
-                                },
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  hintText: 'Hãy chọn 1 điểm đón',
-                                ),
-                                isExpanded: true,
-                                selectedItemBuilder: (BuildContext context) {
-                                  return state.data.map<Widget>((checkpoint) {
-                                    return Text(
-                                      checkpoint.name!,
-                                      softWrap: true,
-                                      overflow: TextOverflow.ellipsis,
                                     );
-                                  }).toList();
-                                },
-                              );
+                                  },
+                                );
+                              });
                             } else {
                               return Text("Failed to load locations");
                             }
@@ -431,6 +475,13 @@ class _EditLocationMapState extends State<EditLocationMap> {
                     child: Text('Lưu'),
                   ),
                 ),
+                if (_isSubmitting)
+                  Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
               ],
             ),
           ),

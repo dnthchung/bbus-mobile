@@ -16,11 +16,8 @@ abstract class StudentListRepository {
   Future<void> start(String busId, int direction);
   Future<void> stop();
   Future<List<StudentEntity>> fetchInitialList(String busId, int direction);
-  Future<Either<Failure, void>> markAttendance({
-    required String studentId,
-    required String busId,
-    required File image,
-  });
+  Future<Either<Failure, void>> markAttendance(
+      {required String attendanceId, DateTime? checkin, DateTime? checkout});
 }
 
 class StudentListRepositoryImpl implements StudentListRepository {
@@ -58,29 +55,31 @@ class StudentListRepositoryImpl implements StudentListRepository {
   void _handleMessage(String message) {
     try {
       logger.i(message);
-      final decoded = json.decode(message);
+      if (!message.startsWith('Connected to topic:')) {
+        final decoded = json.decode(message);
 
-      if (decoded is List) {
-        for (var item in decoded) {
-          final student = StudentEntity.fromJson(item);
-          if (_students[student.studentId!] != null) {
-            final formatStudent = _students[student.studentId!]?.copyWith(
-                checkin: student.checkin,
-                checkout: student.checkout,
-                status: student.status);
+        if (decoded is List) {
+          for (var item in decoded) {
+            final student = StudentEntity.fromJson(item);
+            if (_students[student.studentId!] != null) {
+              final formatStudent = _students[student.studentId!]?.copyWith(
+                  checkin: student.checkin,
+                  checkout: student.checkout,
+                  status: student.status);
 
-            _students[student.studentId!] = formatStudent!;
+              _students[student.studentId!] = formatStudent!;
+            }
           }
+        } else if (decoded is Map<String, dynamic>) {
+          final student = StudentEntity.fromJson(decoded);
+          final formatStudent = _students[student.studentId!]?.copyWith(
+              checkin: student.checkin,
+              checkout: student.checkout,
+              status: student.status);
+          _students[student.studentId!] = formatStudent!;
+        } else if (decoded is String) {
+          return;
         }
-      } else if (decoded is Map<String, dynamic>) {
-        final student = StudentEntity.fromJson(decoded);
-        final formatStudent = _students[student.studentId!]?.copyWith(
-            checkin: student.checkin,
-            checkout: student.checkout,
-            status: student.status);
-        _students[student.studentId!] = formatStudent!;
-      } else if (decoded is String) {
-        return;
       }
 
       _controller?.add(_students.values.toList());
@@ -123,12 +122,14 @@ class StudentListRepositoryImpl implements StudentListRepository {
 
   @override
   Future<Either<Failure, void>> markAttendance(
-      {required String studentId,
-      required String busId,
-      required File image}) async {
+      {required String attendanceId,
+      DateTime? checkin,
+      DateTime? checkout}) async {
     try {
-      final response =
-          await _studentListDatasource.markAttendance(busId, studentId, image);
+      logger.i('response');
+      final response = await _studentListDatasource.markAttendance(
+          attendanceId, checkin, checkout);
+      logger.i(response);
       if (response['status'] == 200) {
         return Right(null);
       } else {

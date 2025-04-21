@@ -22,7 +22,7 @@ class LoginModel extends UserEntity {
     };
   }
 
-  LoginModel copyWith({
+  LoginModel loginCopyWith({
     String? phone,
     String? password,
     String? platform,

@@ -8,7 +8,7 @@ import 'package:bbus_mobile/core/utils/logger.dart';
 abstract class CheckpointDatasource {
   Future<List<CheckpointEntity>> getCheckpointList();
   Future<List<CheckpointEntity>> getCheckpointByRoute(String routeID);
-  Future<BusEntity> registerCheckpoint(String studentId, String checkpointId);
+  Future<dynamic> registerCheckpoint(String studentId, String checkpointId);
 }
 
 class CheckpointDatasourceImpl implements CheckpointDatasource {
@@ -18,7 +18,7 @@ class CheckpointDatasourceImpl implements CheckpointDatasource {
   Future<List<CheckpointEntity>> getCheckpointList() async {
     try {
       final result = await _dioClient.get(ApiConstants.checkpointUrl);
-      final List<dynamic> data = result['data']['checkpoints'];
+      final List<dynamic> data = result['data'];
       return data.map((c) => CheckpointEntity.fromJson(c)).toList();
     } catch (e) {
       logger.e(e.toString());
@@ -27,12 +27,12 @@ class CheckpointDatasourceImpl implements CheckpointDatasource {
   }
 
   @override
-  Future<BusEntity> registerCheckpoint(
+  Future<dynamic> registerCheckpoint(
       String studentId, String checkpointId) async {
     try {
       final result = await _dioClient.post(
-          '${ApiConstants.registerCheckpointUrl}?studentId=$studentId&checkpointId=$checkpointId');
-      return BusEntity.fromJson(result['data']);
+          '${ApiConstants.registerCheckpointUrl}?checkpointId=$checkpointId');
+      return result['data'];
     } catch (e) {
       logger.e(e.toString());
       throw ServerException(e.toString());

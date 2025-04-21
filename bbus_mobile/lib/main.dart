@@ -1,8 +1,10 @@
 import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
+import 'package:bbus_mobile/common/notifications/notification_service.dart';
 import 'package:bbus_mobile/config/routes/app_route_conf.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/theme.dart';
-import 'package:bbus_mobile/core/network/firebase_api.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
+import 'package:bbus_mobile/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/forgot_password/forgot_password_cubit.dart';
 import 'package:bbus_mobile/features/change_password/cubit/change_password_cubit.dart';
@@ -19,7 +21,6 @@ import 'config/injector/injector.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseApi().initNotification();
   initializeDependencies();
   runApp(const MyApp());
 }
@@ -41,19 +42,20 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<ForgotPasswordCubit>()),
         BlocProvider(create: (_) => sl<ChildrenListCubit>()),
         BlocProvider(create: (_) => sl<StudentListCubit>()),
-        BlocProvider(create: (_) => sl<RequestListCubit>()),
         BlocProvider(create: (_) => sl<CheckpointListCubit>()),
         BlocProvider(create: (_) => sl<ChangePasswordCubit>())
       ],
-      child: BlocListener<CurrentUserCubit, CurrentUserState>(
-        listenWhen: (_, current) => current is CurrentUserLoggedIn,
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (_, current) => current is AuthLoggedInStatusSuccess,
         listener: (context, state) async {
-          if (state is CurrentUserLoggedIn) {
-            if (state.user.role?.toLowerCase() == 'parent') {
+          if (state is AuthLoggedInStatusSuccess) {
+            if (state.data.role?.toLowerCase() == 'parent') {
+              await sl<NotificationService>().init();
+              final fcmToken = await sl<NotificationService>().getFcmToken();
+              logger.i('FCM Token: $fcmToken');
+              await sl<AuthRemoteDatasource>().updatDeviceToken(fcmToken!);
               router.goNamed(RouteNames.parentChildren);
             } else {
-              // final cameras = await availableCameras();
-              // sl.registerSingleton<List<CameraDescription>>(cameras);
               router.goNamed(RouteNames.driverStudent);
             }
           }

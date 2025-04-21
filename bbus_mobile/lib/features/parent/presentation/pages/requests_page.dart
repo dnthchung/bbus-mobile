@@ -26,74 +26,71 @@ class RequestsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<RequestListCubit>()..getRequestList(),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          spacing: 20,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // UserInfoCard(),
-            SizedBox(height: 20),
-            // Top section: Request Type Selection
-            Text(
-              'Chọn loại yêu cầu',
-              style: TextStyle(
-                  fontSize: 27.0,
-                  fontWeight: FontWeight.bold,
-                  color: TColors.darkPrimary),
-            ),
-            Wrap(
-              spacing: 10,
-              children: getRequestTypeList().map((request) {
-                return GestureDetector(
-                  onTap: () {
-                    if (request.id == 'changeLocation') {
-                      print('change location');
-                      context.pushNamed(request.pathName,
-                          pathParameters: {'actionType': 'change'});
-                    } else
-                      context.pushNamed(request.pathName);
-                  },
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: TColors.secondary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(request.icon, size: 40, color: Colors.white),
-                        SizedBox(height: 5),
-                        Text(
-                          request.typeName,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        spacing: 20,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // UserInfoCard(),
+          SizedBox(height: 20),
+          // Top section: Request Type Selection
+          Text(
+            'Chọn loại yêu cầu',
+            style: TextStyle(
+                fontSize: 27.0,
+                fontWeight: FontWeight.bold,
+                color: TColors.darkPrimary),
+          ),
+          Wrap(
+            spacing: 10,
+            children: getRequestTypeList().map((request) {
+              return GestureDetector(
+                onTap: () {
+                  if (request.id == 'changeLocation') {
+                    print('change location');
+                    context.pushNamed(request.pathName,
+                        pathParameters: {'actionType': 'change'});
+                  } else
+                    context.pushNamed(request.pathName);
+                },
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: TColors.secondary,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                );
-              }).toList(),
-            ),
-            // Bottom section: Request History
-            Text(
-              'Danh sách yêu cầu đã gửi',
-              style: TextStyle(
-                  fontSize: 27.0,
-                  fontWeight: FontWeight.bold,
-                  color: TColors.darkPrimary),
-            ),
-            Expanded(child: RequestList()),
-          ],
-        ),
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(request.icon, size: 40, color: Colors.white),
+                      SizedBox(height: 5),
+                      Text(
+                        request.typeName,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          // Bottom section: Request History
+          Text(
+            'Danh sách yêu cầu đã gửi',
+            style: TextStyle(
+                fontSize: 27.0,
+                fontWeight: FontWeight.bold,
+                color: TColors.darkPrimary),
+          ),
+          Expanded(child: RequestList()),
+        ],
       ),
     );
   }
@@ -211,197 +208,97 @@ class _RequestListState extends State<RequestList> {
             } else if (state is RequestListFailure) {
               return Center(child: Text('Error: ${state.message}'));
             } else if (state is RequestListLoaded) {
-              return Expanded(
-                child: ListView.builder(
-                  itemCount: state.filteredRequests.length,
-                  itemBuilder: (context, index) {
-                    final request = state.filteredRequests[index];
+              return state.allRequests.isNotEmpty
+                  ? Expanded(
+                      child: ListView.builder(
+                        itemCount: state.filteredRequests.length,
+                        itemBuilder: (context, index) {
+                          final request = state.filteredRequests[index];
 
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    request.requestTypeName ?? 'No Type Name',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          request.requestTypeName ??
+                                              'No Type Name',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              _getStatusColor(request.status!)
+                                                  .withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          request.status!,
+                                          style: TextStyle(
+                                            color: _getStatusColor(
+                                                request.status!),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 4, horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: _getStatusColor(request.status!)
-                                        .withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    request.status!,
-                                    style: TextStyle(
-                                      color: _getStatusColor(request.status!),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                  const SizedBox(height: 5),
+                                  Text(request.reason ?? 'No content'),
+                                  const SizedBox(height: 5),
+                                  if (request.reply != null &&
+                                      request.reply!.isNotEmpty) ...[
+                                    Text(
+                                      'Replied:',
+                                      style: TextStyle(
+                                          color: TColors.secondary,
+                                          fontWeight: FontWeight.w600),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                            Text(request.reason ?? 'No content'),
-                            const SizedBox(height: 5),
-                            if (request.reply != null &&
-                                request.reply!.isNotEmpty) ...[
-                              Text(
-                                'Replied:',
-                                style: TextStyle(
-                                    color: TColors.secondary,
-                                    fontWeight: FontWeight.w600),
+                                    Text(request.reply!),
+                                    const SizedBox(height: 5),
+                                  ],
+                                  // Text('Created: ${'request['createdAt']'}',
+                                  Text('Created: 22/02/2025',
+                                      style: TextStyle(
+                                          color: Colors.grey.shade600)),
+                                ],
                               ),
-                              Text(request.reply!),
-                              const SizedBox(height: 5),
-                            ],
-                            // Text('Created: ${'request['createdAt']'}',
-                            Text('Created: 22/02/2025',
-                                style: TextStyle(color: Colors.grey.shade600)),
-                          ],
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : const Center(
+                      child: Text(
+                        'Chưa có yêu cầu nào',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
                         ),
                       ),
                     );
-                  },
-                ),
-              );
             }
             return const SizedBox();
           },
         ),
       ],
-    );
-  }
-}
-
-class UserInfoCard extends StatefulWidget {
-  const UserInfoCard({super.key});
-
-  @override
-  State<UserInfoCard> createState() => _UserInfoCardState();
-}
-
-class _UserInfoCardState extends State<UserInfoCard> {
-  ChildEntity? selectedChild;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = context.read<ChildrenListCubit>().state;
-      if (state is ChildrenListSuccess && state.data.isNotEmpty) {
-        setState(() {
-          selectedChild = state.data.first;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              TColors.secondary,
-              TColors.darkSecondary
-            ], // Use your colors here
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/default_child.png'),
-                radius: 30,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BlocBuilder<ChildrenListCubit, ChildrenListState>(
-                      builder: (context, state) {
-                        if (state is ChildrenListSuccess) {
-                          return DropdownButton<String>(
-                            underline: Container(
-                              height: 1,
-                              color: Colors.white,
-                            ),
-                            icon: Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.white,
-                            ),
-                            value: selectedChild?.id,
-                            onChanged: (val) {
-                              if (val != null) {
-                                final selected = (state as ChildrenListSuccess)
-                                    .data
-                                    .firstWhere((child) => child.id == val);
-                                setState(() {
-                                  selectedChild = selected;
-                                });
-                              }
-                            },
-                            items: state.data.map((child) {
-                              return DropdownMenuItem<String>(
-                                value: child.id,
-                                child: Text(
-                                  child.name!,
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              );
-                            }).toList(),
-                            selectedItemBuilder: (BuildContext context) {
-                              return state.data.map<Widget>((child) {
-                                return Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    child.name!,
-                                    style: TextStyle(
-                                        color: Colors
-                                            .white, // White text for the selected value
-                                        fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                );
-                              }).toList();
-                            },
-                            isExpanded: true,
-                          );
-                        }
-                        return SizedBox();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

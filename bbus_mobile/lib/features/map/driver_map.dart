@@ -1,53 +1,39 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:bbus_mobile/common/entities/checkpoint.dart';
 import 'package:bbus_mobile/common/entities/location.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
-import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/get_map_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
-class BusTrackingMap extends StatefulWidget {
-  const BusTrackingMap({super.key});
+class DriverMap extends StatefulWidget {
+  final String routeId;
+  const DriverMap({super.key, required this.routeId});
 
   @override
-  State<BusTrackingMap> createState() => _BusTrackingMapState();
+  State<DriverMap> createState() => _DriverMapState();
 }
 
-class _BusTrackingMapState extends State<BusTrackingMap> {
-  late LocationTrackingCubit _locationTrackingCubit;
+class _DriverMapState extends State<DriverMap> {
   final MapController _mapController = MapController();
   final Location _location = Location();
   LatLng? _currentLocation = LatLng(35.761648, 51.399856);
   LatLng? _destination = LatLng(35.761641, 51.399850);
   List<LatLng> _route = [];
   List<LatLng> _checkpoints = [];
+  List<CheckpointEntity> _busStops = [];
   Marker? _marker;
-
-  // Future<void> _fetchCoordinatesPoint(String location) async {
-  //   final url =
-  //       'https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1';
-  //   final data = await sl<DioClient>().get(url);
-  //   if (data.isNotEmpty) {
-  //     final lat = double.parse(data[0]['lat']);
-  //     final lng = double.parse(data[0]['lon']);
-  //     setState(() {
-  //       _destination = LatLng(lat, lng);
-  //       print(_destination);
-  //     });
-  //     _mapController.move(_destination!, 15);
-  //     await _fetchRoute();
-  //   }
-  // }
 
   Future<void> _fetchRoute(String coordinates) async {
     if (_currentLocation == null || _destination == null) return;
@@ -88,8 +74,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   }
 
   void _fetchBusRoute() async {
-    final cubit = context.read<LocationTrackingCubit>();
-    final res = await sl<GetMapRoute>().call(cubit.busDetail!.routeId!);
+    final res = await sl<GetMapRoute>().call(widget.routeId);
     res.fold((l) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l.message)),
@@ -101,6 +86,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
               .map(
                   (location) => LatLng(location.latitude!, location.longitude!))
               .toList();
+          _busStops = r;
         });
         final coordinates = r
             .map((location) => '${location.longitude},${location.latitude}')
@@ -126,6 +112,43 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
         }
       }
     });
+  }
+
+  void _showCheckpointList() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: _busStops.isEmpty
+              ? const Center(child: Text("No checkpoints found"))
+              : ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _busStops.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final stop = _busStops[index];
+                    return ListTile(
+                      leading: Icon(
+                        index == _busStops.length - 1
+                            ? Icons.flag
+                            : Icons.location_on,
+                        color: index == _busStops.length - 1
+                            ? Colors.green
+                            : Colors.red,
+                      ),
+                      title: Text(stop.name ?? "Bus Stop ${index + 1}"),
+                      subtitle:
+                          Text("Lat: ${stop.latitude}, Lng: ${stop.longitude}"),
+                    );
+                  },
+                ),
+        );
+      },
+    );
   }
 
   @override
@@ -158,31 +181,22 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Tuyến đường"),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.pop();
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCheckpointList,
+        child: const Icon(Icons.list),
+      ),
       body: Stack(
-        children: [
-          BlocBuilder<LocationTrackingCubit, LocationTrackingState>(
-            builder: (context, state) {
-              if (state is LocationTrackingOpened) {
-                return _buildMap();
-              } else if (state is LocationUpdated) {
-                _addMarker(state.location);
-                return _buildMap();
-              } else if (state is LocationTrackingError) {
-                return Center(
-                  child: Text('Error: ${state.message}'),
-                );
-              } else if (state is LocationTrackingClosed) {
-                return const SnackBar(
-                  content: Text('Dừng theo dõi!'),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          )
-        ],
+        children: [_buildMap()],
       ),
     );
   }
@@ -191,7 +205,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: _currentLocation ?? LatLng(21.0047205, 105.8014499),
+        initialCenter: _currentLocation ?? LatLng(35.761648, 51.399856),
         initialZoom: 20,
         minZoom: 2,
         maxZoom: 100,
@@ -212,10 +226,6 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
             markerDirection: MarkerDirection.heading,
           ),
         ),
-        if (_destination != null)
-          MarkerLayer(
-            markers: [_marker!],
-          ),
         if (_checkpoints.isNotEmpty)
           MarkerLayer(
             markers: _checkpoints.asMap().entries.map((entry) {

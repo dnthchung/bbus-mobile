@@ -26,7 +26,7 @@ class LocationSocketDatasourceImpl implements LocationSocketDatasource {
       // final List<String> splited = message.split(',');
       // var loc = LocationEntity(
       //     double.tryParse(splited[0]) ?? 0, double.tryParse(splited[1]) ?? 0);
-      var loc = LocationEntity(35.761648, 51.399856);
+      var loc = LocationEntity(21.0047205, 105.8014499);
       onLocationReceived(loc);
     });
   }

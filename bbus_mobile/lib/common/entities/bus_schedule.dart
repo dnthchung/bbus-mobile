@@ -10,6 +10,8 @@ class BusScheduleEntity extends Equatable {
   String? assistantId;
   String? assistantName;
   String? route;
+  String? routeId;
+  String? busScheduleStatus;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -23,6 +25,8 @@ class BusScheduleEntity extends Equatable {
     this.assistantId,
     this.assistantName,
     this.route,
+    this.routeId,
+    this.busScheduleStatus,
     this.createdAt,
     this.updatedAt,
   });
@@ -37,6 +41,8 @@ class BusScheduleEntity extends Equatable {
     String? assistantId,
     String? assistantName,
     String? route,
+    String? routeId,
+    String? busScheduleStatus,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -50,6 +56,8 @@ class BusScheduleEntity extends Equatable {
       assistantId: assistantId ?? this.assistantId,
       assistantName: assistantName ?? this.assistantName,
       route: route ?? this.route,
+      routeId: routeId ?? this.routeId,
+      busScheduleStatus: busScheduleStatus ?? this.busScheduleStatus,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -65,7 +73,8 @@ class BusScheduleEntity extends Equatable {
       driverName: json["driverName"] ?? "",
       assistantId: json["assistantId"] ?? "",
       assistantName: json["assistantName"] ?? "",
-      route: json["route"] ?? "",
+      routeId: json["routeId"] ?? "",
+      busScheduleStatus: json["busScheduleStatus"] ?? "",
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
@@ -80,8 +89,9 @@ class BusScheduleEntity extends Equatable {
         driverId,
         driverName,
         assistantId,
-        assistantName,
         route,
+        routeId,
+        busScheduleStatus,
         createdAt,
         updatedAt,
       ];

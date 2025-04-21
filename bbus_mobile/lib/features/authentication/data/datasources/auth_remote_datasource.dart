@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:bbus_mobile/common/notifications/notification_service.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/core/constants/api_constants.dart';
 import 'package:bbus_mobile/core/errors/exceptions.dart';
 import 'package:bbus_mobile/core/network/api_exception.dart';
@@ -10,15 +13,20 @@ import 'package:bbus_mobile/features/authentication/data/models/login_model.dart
 import 'package:bbus_mobile/features/authentication/data/models/reset_password_model.dart';
 import 'package:bbus_mobile/features/authentication/data/models/user_model.dart';
 import 'package:bbus_mobile/features/change_password/data/models/change_password_model.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 abstract class AuthRemoteDatasource {
   Future<Map<String, dynamic>> login(LoginModel loginModel);
   Future<UserModel> getUserDetail(String userId);
+  Future<dynamic> updateUserProfile(UserModel userModel);
   // Future<String> getEntityId(String userId);
   Future<void> logout();
+  Future<void> updatDeviceToken(String fcmToken);
   Future<dynamic> getOtp(String phoneNumber);
   Future<dynamic> sendOtp({required String phone, required String otp});
   Future<dynamic> resetPassword(ResetPasswordModel model);
+  Future<dynamic> updateAvatar(Uint8List imageBytes);
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
@@ -27,9 +35,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   @override
   Future<Map<String, dynamic>> login(LoginModel loginModel) async {
     try {
-      final DeviceDetails details = await getDeviceDetails();
+      final fcmToken = await sl<NotificationService>().getFcmToken();
       LoginModel loginWithDeviceToken =
-          loginModel.copyWith(deviceToken: details.deviceId);
+          loginModel.loginCopyWith(deviceToken: fcmToken);
       var res = await _dioClient.post(ApiConstants.loginApiUrl,
           data: loginWithDeviceToken.toMap());
       return res;
@@ -99,6 +107,57 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     try {
       final res = await _dioClient
           .post('${ApiConstants.otpVerification}?email=$phone&otp=$otp');
+      return res;
+    } catch (e) {
+      logger.e(e);
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> updatDeviceToken(String fcmToken) async {
+    try {
+      final res =
+          await _dioClient.post('${ApiConstants.updatDeviceToken}', data: {
+        'deviceId': fcmToken,
+      });
+      return res;
+    } catch (e) {
+      logger.e(e);
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<dynamic> updateUserProfile(UserModel userModel) async {
+    try {
+      var res = await _dioClient.put(ApiConstants.updateProfile,
+          data: userModel.toMap());
+      logger.i(res['data']);
+      return res;
+    } on SocketException {
+      throw FetchDataException('No Internet Connection!');
+    } catch (e) {
+      logger.e(e);
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future updateAvatar(Uint8List imageBytes) {
+    try {
+      final fileName = "avatar_${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final formData = FormData.fromMap({
+        'avatar': MultipartFile.fromBytes(imageBytes,
+            filename: fileName, contentType: DioMediaType('image', 'jpg')),
+      });
+      final res = _dioClient.patch(
+        ApiConstants.updateAvatar,
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+        }),
+      );
       return res;
     } catch (e) {
       logger.e(e);

@@ -20,7 +20,7 @@ class CheckpointRespositoryImpl implements CheckpointRepository {
   }
 
   @override
-  Future<Either<Failure, BusEntity>> registerCheckpoint(
+  Future<Either<Failure, dynamic>> registerCheckpoint(
       String studentId, String checkpointId) async {
     try {
       final res = await _checkpointDatasource.registerCheckpoint(

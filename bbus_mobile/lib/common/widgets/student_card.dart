@@ -4,24 +4,28 @@ import 'dart:typed_data';
 import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/common/entities/student.dart';
 import 'package:bbus_mobile/common/widgets/camera_popup.dart';
+import 'package:bbus_mobile/common/widgets/result_dialog.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
+import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
 // import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class StudentCard extends StatelessWidget {
   final StudentEntity student;
+  final bool routeEnded;
   const StudentCard({
     super.key,
     required this.student,
+    required this.routeEnded,
   });
   String getCustomStatus() {
-    logger.i(student.checkin);
     if ((student.checkin == null || student.checkin!.isEmpty) &&
         (student.checkout == null || student.checkout!.isEmpty)) {
       return 'Vắng';
@@ -33,7 +37,8 @@ class StudentCard extends StatelessWidget {
     }
   }
 
-  void _openMarkAttendanceModal(BuildContext context) async {
+  void _openMarkAttendanceModal(
+      BuildContext context, String attendanceType) async {
     // showDialog(
     //   context: context,
     //   builder: (_) => CameraPopup(
@@ -48,6 +53,25 @@ class StudentCard extends StatelessWidget {
     //     },
     //   ),
     // );
+    final result = await ResultDialog.show(
+      context,
+      title: 'Điểm danh',
+      message:
+          'Bạn có chắc chắn muốn điểm danh học sinh ${student.studentName}?',
+      cancelText: 'Hủy',
+    );
+    print('User Ok: $result');
+    if (result!) {
+      if (attendanceType == 'checkin') {
+        context
+            .read<StudentListCubit>()
+            .markAttendance(student.id!, DateTime.now(), null);
+      } else {
+        context
+            .read<StudentListCubit>()
+            .markAttendance(student.id!, null, DateTime.now());
+      }
+    }
   }
 
   @override
@@ -136,20 +160,25 @@ class StudentCard extends StatelessWidget {
                             ),
                             const Spacer(),
 
-                            (student.checkin == null &&
-                                    student.checkout == null)
+                            (student.checkin == null && student.checkout == null
+                                // &&!routeEnded)
+                                )
                                 ? ElevatedButton(
                                     onPressed: () {
-                                      _openMarkAttendanceModal(context);
+                                      _openMarkAttendanceModal(
+                                          context, 'checkin');
                                     },
                                     child: Text('Checkin'))
                                 : (student.checkin != null &&
-                                        student.checkout == null)
+                                        student.checkout == null
+                                    // &&!routeEnded)
+                                    )
                                     ? ElevatedButton(
                                         onPressed: () {
-                                          _openMarkAttendanceModal(context);
+                                          _openMarkAttendanceModal(
+                                              context, 'checkout');
                                         },
-                                        child: Text('Checkin'))
+                                        child: Text('Checkout'))
                                     : SizedBox(),
                             // else
                             //   Container(

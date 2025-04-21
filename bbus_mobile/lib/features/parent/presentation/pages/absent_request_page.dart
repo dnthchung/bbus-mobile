@@ -1,6 +1,7 @@
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/features/parent/domain/usecases/send_absent_request.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
   String? selectedChild;
   DateTimeRange? absentPeriod;
   String? reason;
+  bool _isLoading = false;
 
   void _pickAbsentPeriod() async {
     DateTimeRange? picked = await showDateRangePicker(
@@ -36,22 +38,36 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
   void _submitRequest() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        _isLoading = true;
+      });
       final res = await sl<SendAbsentRequest>().call(SendAbsentRequestParams(
           selectedChild,
           '7fba6d6c-137f-428c-958f-fe6160469be8',
           reason,
           '${absentPeriod!.start.toString().split(" ")[0]}',
           '${absentPeriod!.end.toString().split(" ")[0]}'));
+      setState(() {
+        _isLoading = false;
+      });
       res.fold((l) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l.message)),
         );
-      }, (r) {
+      }, (r) async {
+        context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Đơn báo nghỉ được gửi thành công!")),
         );
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final cubit = context.read<RequestListCubit>();
+    print('Cubit found: $cubit');
   }
 
   @override
@@ -133,7 +149,17 @@ class _AbsentRequestPageState extends State<AbsentRequestPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _submitRequest,
-                  child: Text("Gửi"),
+                  child: _isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text("Gửi"),
                 ),
               ),
             ],

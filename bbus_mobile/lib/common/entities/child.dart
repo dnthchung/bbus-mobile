@@ -4,6 +4,7 @@ class ChildEntity extends Equatable {
   String? id;
   String? rollNumber;
   String? name;
+  String? className;
   dynamic avatar;
   dynamic dob;
   dynamic address;
@@ -21,6 +22,7 @@ class ChildEntity extends Equatable {
     this.id,
     this.rollNumber,
     this.name,
+    this.className,
     this.avatar,
     this.dob,
     this.address,
@@ -39,6 +41,7 @@ class ChildEntity extends Equatable {
     String? id,
     String? rollNumber,
     String? name,
+    String? className,
     String? avatar,
     String? dob,
     String? address,
@@ -56,6 +59,7 @@ class ChildEntity extends Equatable {
       id: id ?? this.id,
       rollNumber: rollNumber ?? this.rollNumber,
       name: name ?? this.name,
+      className: className ?? this.className,
       avatar: avatar ?? this.avatar,
       dob: dob ?? this.dob,
       address: address ?? this.address,
@@ -77,6 +81,7 @@ class ChildEntity extends Equatable {
       id: json["id"],
       rollNumber: json["rollNumber"],
       name: json["name"],
+      className: json["className"],
       avatar: json["avatar"],
       dob: json["dob"].toString(),
       address: json["address"],
@@ -97,6 +102,7 @@ class ChildEntity extends Equatable {
         id,
         rollNumber,
         name,
+        className,
         avatar,
         dob,
         address,

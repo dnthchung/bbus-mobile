@@ -29,4 +29,10 @@ class SecureLocalStorage implements LocalStorage {
 
     return;
   }
+
+  /// Add this method to get all keys
+  Future<List<String>> getAllKeys() async {
+    final allData = await _storage.readAll();
+    return allData.keys.toList();
+  }
 }

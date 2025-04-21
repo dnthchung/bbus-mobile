@@ -1,10 +1,12 @@
+import 'package:bbus_mobile/common/entities/bus_schedule.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
 
 class PickupDropToggle extends StatelessWidget {
-  const PickupDropToggle({super.key});
+  final List<BusScheduleEntity> busSchedules;
+  const PickupDropToggle({super.key, required this.busSchedules});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,9 @@ class PickupDropToggle extends StatelessWidget {
             showSelectedIcon: false,
             selected: {selected},
             onSelectionChanged: (newSelection) {
+              cubit.initialize(newSelection.first == 0
+                  ? busSchedules.last
+                  : busSchedules.first);
               cubit.loadStudents(newSelection.first);
             },
             style: ButtonStyle(

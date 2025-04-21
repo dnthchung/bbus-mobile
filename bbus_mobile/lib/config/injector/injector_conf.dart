@@ -15,9 +15,25 @@ void initializeDependencies() {
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(
       () => SecureLocalStorage(sl<FlutterSecureStorage>()));
+  sl.registerLazySingleton<NotificationService>(() => NotificationService());
   sl.registerSingleton<DioClient>(DioClient());
   sl.registerLazySingleton(() => WebSocketService());
+  sl.registerLazySingleton(() => MultiWebSocketService());
   sl.registerLazySingleton(() => CurrentUserCubit());
+}
+
+void _initNotificaiton() {
+  sl
+    // Datasource
+    ..registerLazySingleton<ChangePasswordRemoteDatasource>(
+        () => ChangePasswordRemoteDatasourceImpl(sl()))
+    // Repo
+    ..registerLazySingleton<ChangePasswordRepository>(
+        () => ChangePasswordRepositoryImpl(sl(), sl()))
+    // Usecases
+    ..registerLazySingleton(() => ChangePasswordUsecase(sl()))
+    // Bloc
+    ..registerFactory(() => ChangePasswordCubit(sl()));
 }
 
 void _initChangePassword() {
@@ -85,7 +101,7 @@ void _initRequest() {
     ..registerLazySingleton(() => SendChangeCheckpointReq(sl()))
     ..registerLazySingleton(() => SendNewCheckpointReq(sl()))
     ..registerLazySingleton(() => RequestTypeCubit(sl()))
-    ..registerLazySingleton(() => RequestListCubit(sl()));
+    ..registerFactory(() => RequestListCubit(sl()));
 }
 
 _initDriver() {
@@ -101,7 +117,8 @@ _initDriver() {
     ..registerLazySingleton(() => GetBusSchedule(sl()))
     ..registerLazySingleton(() => GetStudentStream(sl()))
     ..registerLazySingleton(() => MarkAttendance(sl()))
-    ..registerLazySingleton(() => StudentListCubit(sl()));
+    ..registerLazySingleton(() => EndSchedule(sl()))
+    ..registerLazySingleton(() => StudentListCubit(sl(), sl(), sl()));
 }
 
 _initBus() {

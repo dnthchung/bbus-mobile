@@ -28,6 +28,9 @@ class RequestRepositoryImpl implements RequestRepository {
       SendAbsentRequestParams params) async {
     try {
       final res = await _requestRemoteDatasource.createAbsentRequest(params);
+      if (res['status'] == 409) {
+        return Left(Failure(res['message']));
+      }
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(e.message));
@@ -50,6 +53,9 @@ class RequestRepositoryImpl implements RequestRepository {
     try {
       final res =
           await _requestRemoteDatasource.createChangeCheckpointReq(params);
+      if (res['status'] == 409) {
+        return Left(Failure(res['message']));
+      }
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(e.message));
@@ -61,6 +67,9 @@ class RequestRepositoryImpl implements RequestRepository {
       SendNewCheckpointReqParams params) async {
     try {
       final res = await _requestRemoteDatasource.createNewCheckpointReq(params);
+      if (res['status'] == 409) {
+        return Left(Failure(res['message']));
+      }
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(e.message));

@@ -39,7 +39,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
     try {
       final response = await _dioClient.post(ApiConstants.addRequestUrl,
           data: params.toJson());
-      return response['data'];
+      return response;
     } catch (e) {
       logger.e(e);
       throw ServerException(e.toString());
@@ -50,7 +50,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
   Future<List<RequestEntity>> getRequestList() async {
     try {
       final response = await _dioClient.get(ApiConstants.requestListUrl);
-      final List<dynamic> data = response['data']['requests'];
+      final List<dynamic> data = response['data'];
       return data.map((request) => RequestEntity.fromJson(request)).toList();
     } catch (e) {
       logger.e(e);
@@ -63,7 +63,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
     try {
       final response = await _dioClient.post(ApiConstants.addRequestUrl,
           data: params.toJson());
-      return response['data'];
+      return response;
     } catch (e) {
       logger.e(e);
       throw ServerException(e.toString());
@@ -75,7 +75,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
     try {
       final response = await _dioClient.post(ApiConstants.addRequestUrl,
           data: params.toJson());
-      return response['data'];
+      return response;
     } catch (e) {
       logger.e(e);
       throw ServerException(e.toString());

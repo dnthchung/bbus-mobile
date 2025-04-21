@@ -9,9 +9,19 @@ sealed class CurrentUserState extends Equatable {
 
 final class CurrentUserInitial extends CurrentUserState {}
 
+final class CurrentUserUpdating extends CurrentUserState {}
+
 final class CurrentUserLoggedIn extends CurrentUserState {
   final UserEntity user;
   CurrentUserLoggedIn(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}
+
+final class CurrentUserUpdated extends CurrentUserState {
+  final UserEntity user;
+  CurrentUserUpdated(this.user);
 
   @override
   List<Object?> get props => [user];

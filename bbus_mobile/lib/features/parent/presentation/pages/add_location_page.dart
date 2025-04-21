@@ -14,7 +14,7 @@ class AddLocationPage extends StatefulWidget {
 class _AddLocationPageState extends State<AddLocationPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _reasonController = TextEditingController();
-
+  bool _isLoading = false;
   @override
   void dispose() {
     _reasonController.dispose();
@@ -23,12 +23,18 @@ class _AddLocationPageState extends State<AddLocationPage> {
 
   void _handleSubmit() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       final reason = _reasonController.text.trim();
       final res =
           await sl<SendNewCheckpointReq>().call(SendNewCheckpointReqParams(
         '5c8da669-43e7-4e20-91a2-d53234ddd2f0',
         reason,
       ));
+      setState(() {
+        _isLoading = false;
+      });
       res.fold((l) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l.message)),
@@ -75,7 +81,17 @@ class _AddLocationPageState extends State<AddLocationPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _handleSubmit,
-                child: const Text('Gửi'),
+                child: _isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text("Gửi"),
               ),
             ],
           ),
