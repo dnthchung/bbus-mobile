@@ -12,7 +12,12 @@ class ChildrenListCubit extends Cubit<ChildrenListState> {
   ChildrenListCubit(this._getchildrenlist) : super(ChildrenListInitial());
   void getAll() async {
     final res = await _getchildrenlist(NoParams());
-    res.fold((l) => emit(ChildrenListFailure(l.message)),
-        (r) => emit(ChildrenListSuccess(r)));
+    res.fold((l) => emit(ChildrenListFailure(l.message)), (r) {
+      if (r.isEmpty) {
+        emit(ChildrenListFailure('Không có dữ liệu'));
+      } else {
+        emit(ChildrenListSuccess(r));
+      }
+    });
   }
 }
