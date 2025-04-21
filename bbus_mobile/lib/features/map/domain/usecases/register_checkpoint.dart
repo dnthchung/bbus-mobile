@@ -16,7 +16,7 @@ class RegisterCheckpoint implements UseCase<dynamic, RegisterCheckpointParams> {
 }
 
 class RegisterCheckpointParams {
-  final String studentId;
+  final String? studentId;
   final String checkpointId;
   RegisterCheckpointParams(this.studentId, this.checkpointId);
 }
