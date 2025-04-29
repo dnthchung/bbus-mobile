@@ -4,6 +4,7 @@ class StudentEntity extends Equatable {
   String? id;
   String? studentId;
   String? studentName;
+  String? rollNumber;
   String? avatarUrl;
   DateTime? dob;
   String? direction;
@@ -19,6 +20,7 @@ class StudentEntity extends Equatable {
     this.id,
     this.studentId,
     this.studentName,
+    this.rollNumber,
     this.avatarUrl,
     this.dob,
     this.direction,
@@ -35,6 +37,7 @@ class StudentEntity extends Equatable {
     String? id,
     String? studentId,
     String? studentName,
+    String? rollNumber,
     String? avatarUrl,
     DateTime? dob,
     String? direction,
@@ -50,6 +53,7 @@ class StudentEntity extends Equatable {
       id: id ?? this.id,
       studentId: studentId ?? this.studentId,
       studentName: studentName ?? this.studentName,
+      rollNumber: rollNumber ?? this.rollNumber,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       dob: dob ?? this.dob,
       direction: direction ?? this.direction,
@@ -68,6 +72,7 @@ class StudentEntity extends Equatable {
       id: json["id"] ?? "",
       studentId: json["studentId"] ?? "",
       studentName: json["studentName"] ?? "",
+      rollNumber: json["rollNumber"] ?? "",
       avatarUrl: json["avatarUrl"] ?? "",
       dob: DateTime.tryParse(json["dob"] ?? ""),
       direction: json["direction"] ?? "",
@@ -86,6 +91,7 @@ class StudentEntity extends Equatable {
         id,
         studentId,
         studentName,
+        rollNumber,
         avatarUrl,
         dob,
         direction,
