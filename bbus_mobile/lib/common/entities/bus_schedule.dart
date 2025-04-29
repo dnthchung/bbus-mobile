@@ -4,6 +4,7 @@ class BusScheduleEntity extends Equatable {
   String? id;
   String? busId;
   String? name;
+  String? licensePlate;
   DateTime? date;
   String? driverId;
   String? driverName;
@@ -19,6 +20,7 @@ class BusScheduleEntity extends Equatable {
     this.id,
     this.busId,
     this.name,
+    this.licensePlate,
     this.date,
     this.driverId,
     this.driverName,
@@ -35,6 +37,7 @@ class BusScheduleEntity extends Equatable {
     String? id,
     String? busId,
     String? name,
+    String? licensePlate,
     DateTime? date,
     String? driverId,
     String? driverName,
@@ -50,6 +53,7 @@ class BusScheduleEntity extends Equatable {
       id: id ?? this.id,
       busId: busId ?? this.busId,
       name: name ?? this.name,
+      licensePlate: licensePlate ?? this.licensePlate,
       date: date ?? this.date,
       driverId: driverId ?? this.driverId,
       driverName: driverName ?? this.driverName,
@@ -68,6 +72,7 @@ class BusScheduleEntity extends Equatable {
       id: json["id"] ?? "",
       busId: json["busId"] ?? "",
       name: json["name"] ?? "",
+      licensePlate: json["licensePlate"] ?? "",
       date: DateTime.tryParse(json["date"] ?? ""),
       driverId: json["driverId"] ?? "",
       driverName: json["driverName"] ?? "",
@@ -85,6 +90,7 @@ class BusScheduleEntity extends Equatable {
         id,
         busId,
         name,
+        licensePlate,
         date,
         driverId,
         driverName,
