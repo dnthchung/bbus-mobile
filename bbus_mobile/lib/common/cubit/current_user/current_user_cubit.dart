@@ -17,7 +17,6 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
     if (user == null) {
       emit(CurrentUserInitial());
     } else {
-      logger.i('current user logged in');
       emit(CurrentUserLoggedIn(user));
     }
   }
@@ -41,6 +40,12 @@ class CurrentUserCubit extends Cubit<CurrentUserState> {
 
   void updateAvatar(Uint8List? imageBytes) async {
     final res = await sl<AuthRemoteDatasource>().updateAvatar(imageBytes!);
-    logger.i(res);
+    if (state is CurrentUserLoggedIn) {
+      final currentUser =
+          (state as CurrentUserLoggedIn).user.copyWith(avatar: res['data']);
+      emit(CurrentUserLoggedIn(currentUser));
+    } else {
+      logger.e('Current user is not logged in');
+    }
   }
 }
