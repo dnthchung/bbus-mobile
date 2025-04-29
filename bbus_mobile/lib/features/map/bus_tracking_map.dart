@@ -6,7 +6,8 @@ import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
-import 'package:bbus_mobile/features/map/cubit/location_tracking_cubit.dart';
+import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
+import 'package:bbus_mobile/features/map/domain/usecases/get_map_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -29,6 +30,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   LatLng? _currentLocation = LatLng(35.761648, 51.399856);
   LatLng? _destination = LatLng(35.761641, 51.399850);
   List<LatLng> _route = [];
+  List<LatLng> _checkpoints = [];
   Marker? _marker;
 
   // Future<void> _fetchCoordinatesPoint(String location) async {
@@ -47,7 +49,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   //   }
   // }
 
-  Future<void> _fetchRoute() async {
+  Future<void> _fetchRoute(String coordinates) async {
     if (_currentLocation == null || _destination == null) return;
     final url = "http://router.project-osrm.org/route/v1/driving/"
         '${_currentLocation!.longitude},${_currentLocation!.latitude};'
@@ -85,16 +87,56 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
     return true;
   }
 
+  void _fetchBusRoute() async {
+    final cubit = context.read<LocationTrackingCubit>();
+    final res = await sl<GetMapRoute>().call(cubit.busDetail!.routeId!);
+    res.fold((l) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.message)),
+      );
+    }, (r) async {
+      if (r.length >= 2) {
+        setState(() {
+          _checkpoints = r
+              .map(
+                  (location) => LatLng(location.latitude!, location.longitude!))
+              .toList();
+        });
+        final coordinates = r
+            .map((location) => '${location.longitude},${location.latitude}')
+            .join(';');
+
+        final url =
+            'http://router.project-osrm.org/route/v1/driving/$coordinates'
+            '?overview=full&geometries=polyline';
+
+        try {
+          final data = await sl<DioClient>().get(url);
+          final geometry = data['routes'][0]['geometry'];
+          _decodePolyline(geometry);
+
+          setState(() {
+            _currentLocation = LatLng(r.first.latitude!, r.first.longitude!);
+            _destination = LatLng(r.last.latitude!, r.last.longitude!);
+          });
+          _mapController.move(
+              LatLng(r.first.latitude!, r.first.longitude!), 15);
+        } catch (e) {
+          print("Failed to fetch OSRM route: $e");
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-    _locationTrackingCubit = sl<LocationTrackingCubit>();
+    _fetchBusRoute();
     super.initState();
   }
 
   @override
   void dispose() {
-    _locationTrackingCubit.stopListening();
     // TODO: implement dispose
     super.dispose();
   }
@@ -106,7 +148,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
         width: 50,
         height: 50,
         child: const Icon(
-          Icons.location_pin,
+          Icons.directions_bus,
           size: 40,
           color: TColors.darkPrimary,
         ));
@@ -119,7 +161,6 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
       body: Stack(
         children: [
           BlocBuilder<LocationTrackingCubit, LocationTrackingState>(
-            bloc: _locationTrackingCubit,
             builder: (context, state) {
               if (state is LocationTrackingOpened) {
                 return _buildMap();
@@ -132,7 +173,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
                 );
               } else if (state is LocationTrackingClosed) {
                 return const SnackBar(
-                  content: Text('Stop Tracking!'),
+                  content: Text('Dừng theo dõi!'),
                 );
               } else {
                 return const Center(
@@ -150,7 +191,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: _currentLocation ?? LatLng(35.761648, 51.399856),
+        initialCenter: _currentLocation ?? LatLng(21.0047205, 105.8014499),
         initialZoom: 20,
         minZoom: 2,
         maxZoom: 100,
@@ -175,14 +216,31 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
           MarkerLayer(
             markers: [_marker!],
           ),
-        if (_currentLocation != null &&
-            _destination != null &&
-            _route.isNotEmpty)
+        if (_checkpoints.isNotEmpty)
+          MarkerLayer(
+            markers: _checkpoints.asMap().entries.map((entry) {
+              final index = entry.key;
+              final point = entry.value;
+              final isLast = index == _checkpoints.length - 1;
+
+              return Marker(
+                point: point,
+                width: 50,
+                height: 50,
+                child: Icon(
+                  isLast ? Icons.flag : Icons.location_on,
+                  color: isLast ? Colors.green : Colors.red,
+                  size: 40,
+                ),
+              );
+            }).toList(),
+          ),
+        if (_route.length >= 2)
           PolylineLayer(
             polylines: [
               Polyline(
                 points: _route,
-                strokeWidth: 5,
+                strokeWidth: 4,
                 color: TColors.darkPrimary,
               ),
             ],

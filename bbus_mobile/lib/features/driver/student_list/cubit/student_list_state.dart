@@ -5,34 +5,57 @@ sealed class StudentListState extends Equatable {
   const StudentListState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class StudentListInitial extends StudentListState {}
 
-final class StudentListLoaded extends StudentListState {
-  final int selectedTabIndex;
-  final PickupDrop pickupDrop;
-  final List<Map<String, String>> filteredStudents;
+final class StudentListLoading extends StudentListState {}
+
+class StudentListLoaded extends StudentListState {
+  final List<StudentEntity> filteredStudents;
+  final List<StudentEntity> allStudents;
+  final String? currentFilter;
+  final String? message;
+  final bool? routeEnded;
+  final int currentDirection;
 
   const StudentListLoaded({
-    required this.selectedTabIndex,
-    required this.pickupDrop,
     required this.filteredStudents,
+    required this.allStudents,
+    required this.currentDirection,
+    this.currentFilter,
+    this.message,
+    this.routeEnded = false,
   });
 
+  @override
+  List<Object?> get props =>
+      [filteredStudents, currentDirection, currentFilter, allStudents, message];
   StudentListLoaded copyWith({
-    int? selectedTabIndex,
-    PickupDrop? pickupDrop,
-    List<Map<String, String>>? filteredStudents,
+    List<StudentEntity>? filteredStudents,
+    List<StudentEntity>? allStudents,
+    int? currentDirection,
+    String? currentFilter,
+    String? message,
+    bool? routeEnded,
   }) {
     return StudentListLoaded(
-      selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
-      pickupDrop: pickupDrop ?? this.pickupDrop,
       filteredStudents: filteredStudents ?? this.filteredStudents,
+      allStudents: allStudents ?? this.allStudents,
+      currentDirection: currentDirection ?? this.currentDirection,
+      currentFilter: currentFilter ?? this.currentFilter,
+      message: message ?? this.message,
+      routeEnded: routeEnded ?? this.routeEnded,
     );
   }
+}
+
+class StudentLoadFailure extends StudentListState {
+  final String message;
+
+  const StudentLoadFailure(this.message);
 
   @override
-  List<Object> get props => [selectedTabIndex, pickupDrop, filteredStudents];
+  List<Object> get props => [message];
 }

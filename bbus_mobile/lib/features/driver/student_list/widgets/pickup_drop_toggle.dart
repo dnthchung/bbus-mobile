@@ -1,36 +1,40 @@
+import 'package:bbus_mobile/common/entities/bus_schedule.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
 
 class PickupDropToggle extends StatelessWidget {
-  const PickupDropToggle({super.key});
+  final List<BusScheduleEntity> busSchedules;
+  const PickupDropToggle({super.key, required this.busSchedules});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StudentListCubit, StudentListState>(
       builder: (context, state) {
         if (state is! StudentListLoaded) return SizedBox.shrink();
-
+        final cubit = context.read<StudentListCubit>();
+        final selected = state.currentDirection;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SegmentedButton<PickupDrop>(
+          child: SegmentedButton<int>(
             segments: const [
               ButtonSegment(
-                value: PickupDrop.pickup,
-                label: Text("Pickup"),
+                value: 0,
+                label: Text("Đón"),
               ),
               ButtonSegment(
-                value: PickupDrop.drop,
-                label: Text("Drop"),
+                value: 1,
+                label: Text("Trả"),
               ),
             ],
             showSelectedIcon: false,
-            selected: {state.pickupDrop},
+            selected: {selected},
             onSelectionChanged: (newSelection) {
-              context
-                  .read<StudentListCubit>()
-                  .togglePickupDrop(newSelection.first);
+              cubit.initialize(newSelection.first == 0
+                  ? busSchedules.last
+                  : busSchedules.first);
+              cubit.loadStudents(newSelection.first);
             },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.resolveWith((states) {

@@ -1,69 +1,142 @@
+import 'dart:async';
+
+import 'package:bbus_mobile/common/entities/bus_schedule.dart';
+import 'package:bbus_mobile/common/entities/student.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/end_schedule.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/get_student_stream.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/mark_attendance.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 part 'student_list_state.dart';
 
-enum PickupDrop { pickup, drop }
-
 class StudentListCubit extends Cubit<StudentListState> {
-  final List<Map<String, String>> allStudents = [
-    {
-      "name": "Alice Johnson",
-      "age": "10",
-      "address": "Address1",
-      "status": "In Bus",
-      "avatar": "null",
-      "parentName": "Dave",
-      "parentPhone": "0912345672",
-    },
-    {
-      "name": "Bob Johnson",
-      "age": "9",
-      "address": "Address2",
-      "status": "At Home",
-      "avatar": "null"
-    },
-    {
-      "name": "Tom Johnson",
-      "age": "9",
-      "address": "Address3",
-      "status": "At School",
-      "avatar": "null"
-    },
-  ];
-
-  StudentListCubit() : super(StudentListInitial()) {
-    _filterStudents(0, PickupDrop.pickup);
+  final GetStudentStream _getStudentStream;
+  final MarkAttendance _markAttendance;
+  final EndSchedule _endSchedule;
+  StreamSubscription<List<StudentEntity>>? _subscription;
+  List<StudentEntity> _allStudents = [];
+  String? _currentFilter;
+  int? _currentDirection;
+  BusScheduleEntity? _busSchedule;
+  String? _message;
+  bool? _routeEnded;
+  StudentListCubit(
+      this._getStudentStream, this._markAttendance, this._endSchedule)
+      : super(StudentListInitial());
+  void initialize(BusScheduleEntity busSchedule) {
+    _busSchedule = busSchedule;
+    _routeEnded = busSchedule.busScheduleStatus!.toLowerCase() == 'completed';
   }
 
-  void changeTab(int index) {
-    if (state is StudentListLoaded) {
-      final currentState = state as StudentListLoaded;
-      _filterStudents(index, currentState.pickupDrop);
+  Future<void> markStudentAttendance() async {}
+  Future<void> loadStudents(int direction) async {
+    final currentState = state;
+    _currentDirection = direction;
+    if (currentState is StudentListLoaded &&
+        currentState.currentDirection == direction) {
+      return; // already showing this direction
+    }
+    emit(StudentListLoading());
+    await _subscription?.cancel();
+    final result = await _getStudentStream(
+        StudentStreamParams(_busSchedule!.busId!, direction));
+    result.fold(
+      (failure) => emit(StudentLoadFailure(failure.message)),
+      (stream) {
+        _subscription = stream.listen(
+          (studentList) {
+            _allStudents = studentList;
+            _applyFilter();
+          },
+          onError: (e) => emit(StudentLoadFailure(e.toString())),
+        );
+      },
+    );
+  }
+
+  void filterByStatus(String? status) {
+    if (status == '1') {
+      _currentFilter = 'in bus';
+    } else if (status == '2') {
+      _currentFilter = 'absent';
+    } else {
+      _currentFilter = null;
+    }
+    _applyFilter();
+  }
+
+  String getCustomStatus(StudentEntity s) {
+    if ((s.checkin == null || s.checkin!.isEmpty) &&
+        (s.checkout == null || s.checkout!.isEmpty)) {
+      return 'absent';
+    } else if (s.checkin != null &&
+        (s.checkout == null || s.checkout!.isEmpty)) {
+      return 'in bus';
+    } else {
+      return 'drop-off';
     }
   }
 
-  void togglePickupDrop(PickupDrop newPickupDrop) {
-    if (state is StudentListLoaded) {
-      final currentState = state as StudentListLoaded;
-      _filterStudents(currentState.selectedTabIndex, newPickupDrop);
-    }
-  }
-
-  void _filterStudents(int tabIndex, PickupDrop pickupDrop) {
-    List<Map<String, String>> filtered = allStudents;
-
-    if (tabIndex == 1) {
-      filtered = allStudents.where((s) => s["status"] == "In Bus").toList();
-    } else if (tabIndex == 2) {
-      filtered = allStudents.where((s) => s["status"] == "At School").toList();
-    }
+  void _applyFilter() {
+    if (_currentDirection == null) return;
+    final filtered = _currentFilter == null
+        ? _allStudents
+        : _allStudents
+            .where((s) => getCustomStatus(s) == _currentFilter!.toLowerCase())
+            .toList();
 
     emit(StudentListLoaded(
-      selectedTabIndex: tabIndex,
-      pickupDrop: pickupDrop,
       filteredStudents: filtered,
+      allStudents: List<StudentEntity>.from(_allStudents),
+      currentDirection: _currentDirection!,
+      currentFilter: _currentFilter,
+      routeEnded: _routeEnded,
     ));
+  }
+
+  Future<void> markAttendance(
+      String attendanceId, DateTime? checkin, DateTime? checkout) async {
+    final res = await _markAttendance(
+        MarkAttendanceParams(attendanceId, checkin, checkout));
+    res.fold((l) {
+      final currentState = state;
+      if (currentState is StudentListLoaded) {
+        emit(currentState.copyWith(message: l.message));
+      }
+    }, (r) {
+      final index = _allStudents.indexWhere((s) => s.id == attendanceId);
+      if (index != -1) {
+        final updatedStudent = _allStudents[index].copyWith(
+          checkin: checkin?.toIso8601String(),
+          checkout: checkout?.toIso8601String(),
+        );
+        _allStudents[index] = updatedStudent;
+        _applyFilter(); // Refresh UI with updated data
+      }
+    });
+  }
+
+  Future<void> endRoute(String feedback) async {
+    if (state is StudentListLoaded) {
+      final currentState = state as StudentListLoaded;
+      final res = await _endSchedule
+          .call(EndScheduleParams(_busSchedule!.id!, feedback));
+      res.fold((l) {
+        emit(currentState.copyWith(message: l.message));
+      }, (r) {
+        _routeEnded = true;
+        emit(currentState.copyWith(routeEnded: true, message: 'Route ended'));
+      });
+      emit(currentState.copyWith(routeEnded: true));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }

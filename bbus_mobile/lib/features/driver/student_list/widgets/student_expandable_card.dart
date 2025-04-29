@@ -1,25 +1,17 @@
-import 'package:bbus_mobile/common/widgets/child_card.dart';
+import 'package:bbus_mobile/common/entities/student.dart';
+import 'package:bbus_mobile/common/widgets/student_card.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/core/utils/date_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StudentExpandableCard extends StatefulWidget {
-  final String name;
-  final String age;
-  final String address;
-  final String status;
-  final String? avatar;
-  final String parentName;
-  final String parentPhone;
-
+  final StudentEntity student;
+  final bool routeEnded;
   const StudentExpandableCard({
     Key? key,
-    required this.name,
-    required this.age,
-    required this.address,
-    required this.status,
-    this.avatar,
-    required this.parentName,
-    required this.parentPhone,
+    required this.student,
+    required this.routeEnded,
   }) : super(key: key);
 
   @override
@@ -37,6 +29,14 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
 
   void _callParent() async {
     // Handle phone call logic
+    final Uri phoneUri = Uri(scheme: 'tel', path: widget.student.parentPhone);
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch phone dialer')),
+      );
+    }
   }
 
   @override
@@ -46,13 +46,9 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
         children: [
           InkWell(
             onTap: _toggleExpand,
-            child: ChildCard(
-              name: widget.name,
-              age: widget.age,
-              address: widget.address,
-              status: widget.status,
-              avatar: widget.avatar,
-              isParent: false,
+            child: StudentCard(
+              student: widget.student,
+              routeEnded: widget.routeEnded,
             ),
           ),
           if (isExpanded) ...[
@@ -71,11 +67,11 @@ class _StudentExpandableCardState extends State<StudentExpandableCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.parentName,
+                        Text(widget.student.parentName!,
                             style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 5),
-                        Text(widget.parentPhone,
+                        Text(widget.student.parentPhone!,
                             style: const TextStyle(fontSize: 13)),
                       ],
                     ),

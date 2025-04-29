@@ -1,4 +1,4 @@
-import 'package:bbus_mobile/features/change_password/domain/cubit/change_password_cubit.dart';
+import 'package:bbus_mobile/features/change_password/cubit/change_password_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +24,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           listener: (context, state) {
             if (state is ChangePasswordSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Password successfully changed!')),
+                SnackBar(content: Text('Đổi mật khẩu thành công!')),
               );
             } else if (state is ChangePasswordFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -38,27 +38,28 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               children: [
                 TextFormField(
                   controller: _currentPasswordController,
-                  decoration: InputDecoration(labelText: 'Current Password'),
+                  decoration: InputDecoration(labelText: 'Mật khẩu cũ'),
                   obscureText: true,
                   validator: (value) =>
-                      value!.isEmpty ? 'Enter current password' : null,
+                      value!.isEmpty ? 'Mật khẩu cũ trống!' : null,
                 ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: InputDecoration(labelText: 'New Password'),
+                  decoration: InputDecoration(labelText: 'Mật khẩu mới'),
                   obscureText: true,
                   validator: (value) => value!.length < 6
-                      ? 'Password must be at least 6 characters'
+                      ? 'Mật khẩu cần chứa ít nhất 6 ký tự'
                       : null,
                 ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: InputDecoration(labelText: 'Confirm Password'),
+                  decoration:
+                      InputDecoration(labelText: 'Xác nhận mật khẩu mới'),
                   obscureText: true,
                   validator: (value) => value != _passwordController.text
-                      ? 'Passwords do not match'
+                      ? 'Mật khẩu không khớp'
                       : null,
                 ),
                 SizedBox(height: 20),
@@ -79,7 +80,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             },
                       child: state is ChangePasswordLoading
                           ? CircularProgressIndicator()
-                          : Text('Change Password'),
+                          : Text('Thay đổi'),
                     );
                   },
                 ),

@@ -158,6 +158,18 @@ class __FormContentState extends State<_FormContent> {
                     },
                   )),
             ),
+            Align(
+              alignment: Alignment.topRight,
+              child: GestureDetector(
+                onTap: () {
+                  context.pushNamed(RouteNames.forgotPassword);
+                },
+                child: Text(
+                  'Quên mật khẩu?',
+                  style: TextStyle(color: TColors.darkPrimary),
+                ),
+              ),
+            ),
             // _gap(),
             // CheckboxListTile(
             //   value: _rememberMe,
@@ -187,13 +199,10 @@ class __FormContentState extends State<_FormContent> {
                           borderRadius: BorderRadius.circular(4)),
                     ),
                     onPressed: _login,
-                    child: const Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(
-                        AppText.loginButton,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                    child: Text(
+                      AppText.loginButton,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 );
@@ -203,7 +212,7 @@ class __FormContentState extends State<_FormContent> {
               listener: (context, state) {
                 if (state is AuthLoginSucess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Login Successful!')),
+                    const SnackBar(content: Text('Đăng nhập thành công!')),
                   );
                   print(state.data.role);
                   if (state.data.role?.toLowerCase() == 'parent')

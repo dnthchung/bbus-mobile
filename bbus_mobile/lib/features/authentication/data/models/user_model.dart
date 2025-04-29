@@ -28,11 +28,11 @@ class UserModel extends UserEntity {
         );
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      userId: json['id'].toString(),
+      userId: json['userId'],
       username: json['username'],
       name: json['name'],
       gender: json['gender'],
-      dob: json['dob'],
+      dob: json['dob'].toString(),
       email: json['email'],
       avatar: json['avatar'],
       phone: json['phone'],
@@ -43,14 +43,14 @@ class UserModel extends UserEntity {
   }
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.userId;
-    data['username'] = this.username;
-    data['name'] = this.name;
-    data['gender'] = this.gender;
-    data['dob'] = this.dob;
-    data['email'] = this.email;
-    data['avatar'] = this.avatar;
-    data['phone'] = this.phone;
+    data['id'] = this.userId ?? '';
+    data['username'] = this.username ?? '';
+    data['name'] = this.name ?? '';
+    data['gender'] = this.gender ?? '';
+    data['dob'] = this.dob ?? '';
+    data['email'] = this.email ?? '';
+    data['avatar'] = this.avatar ?? '';
+    data['phone'] = this.phone ?? "";
     data['address'] = this.address;
     data['status'] = this.status;
     data['role'] = this.role;

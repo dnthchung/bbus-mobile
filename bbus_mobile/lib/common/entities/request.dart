@@ -1,51 +1,66 @@
 import 'package:equatable/equatable.dart';
 
 class RequestEntity extends Equatable {
-  const RequestEntity({
+  RequestEntity({
     required this.requestId,
     required this.requestTypeId,
     required this.requestTypeName,
     required this.studentId,
     required this.studentName,
     required this.sendByUserId,
+    required this.sendByName,
     required this.checkpointId,
     required this.checkpointName,
     required this.approvedByUserId,
     required this.approvedByName,
+    required this.fromDate,
+    required this.toDate,
     required this.reason,
     required this.reply,
     required this.status,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   final String requestId;
   final String requestTypeId;
   final String requestTypeName;
-  final dynamic studentId;
-  final dynamic studentName;
+  final String studentId;
+  final String studentName;
   final String sendByUserId;
-  final String checkpointId;
-  final String checkpointName;
-  final String approvedByUserId;
-  final String approvedByName;
+  final String sendByName;
+  final dynamic checkpointId;
+  final dynamic checkpointName;
+  final dynamic approvedByUserId;
+  final dynamic approvedByName;
+  final DateTime? fromDate;
+  final DateTime? toDate;
   final String reason;
-  final String reply;
+  final dynamic reply;
   final String status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   factory RequestEntity.fromJson(Map<String, dynamic> json) {
     return RequestEntity(
       requestId: json["requestId"] ?? "",
       requestTypeId: json["requestTypeId"] ?? "",
       requestTypeName: json["requestTypeName"] ?? "",
-      studentId: json["studentId"],
-      studentName: json["studentName"],
+      studentId: json["studentId"] ?? "",
+      studentName: json["studentName"] ?? "",
       sendByUserId: json["sendByUserId"] ?? "",
-      checkpointId: json["checkpointId"] ?? "",
-      checkpointName: json["checkpointName"] ?? "",
-      approvedByUserId: json["approvedByUserId"] ?? "",
-      approvedByName: json["approvedByName"] ?? "",
+      sendByName: json["sendByName"] ?? "",
+      checkpointId: json["checkpointId"],
+      checkpointName: json["checkpointName"],
+      approvedByUserId: json["approvedByUserId"],
+      approvedByName: json["approvedByName"],
+      fromDate: DateTime.tryParse(json["fromDate"] ?? ""),
+      toDate: DateTime.tryParse(json["toDate"] ?? ""),
       reason: json["reason"] ?? "",
-      reply: json["reply"] ?? "",
+      reply: json["reply"],
       status: json["status"] ?? "",
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
   }
 
@@ -57,12 +72,17 @@ class RequestEntity extends Equatable {
         studentId,
         studentName,
         sendByUserId,
+        sendByName,
         checkpointId,
         checkpointName,
         approvedByUserId,
         approvedByName,
+        fromDate,
+        toDate,
         reason,
         reply,
         status,
+        createdAt,
+        updatedAt,
       ];
 }
