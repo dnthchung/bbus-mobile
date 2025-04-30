@@ -7,7 +7,6 @@ import 'package:bbus_mobile/core/constants/api_constants.dart';
 import 'package:bbus_mobile/core/errors/exceptions.dart';
 import 'package:bbus_mobile/core/network/api_exception.dart';
 import 'package:bbus_mobile/core/network/dio_client.dart';
-import 'package:bbus_mobile/core/utils/device_utils.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/authentication/data/models/login_model.dart';
 import 'package:bbus_mobile/features/authentication/data/models/reset_password_model.dart';

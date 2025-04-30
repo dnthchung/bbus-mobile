@@ -1,3 +1,4 @@
+import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:intl/intl.dart';
 
 int dobStringToAge(String dobString) {
@@ -25,4 +26,27 @@ DateTime fromStringToDate(String date) {
 
 String fromDatetoString(DateTime date) {
   return df.format(date);
+}
+
+String formatStringDate(String date) {
+  try {
+    final dateTime = df.parse(date);
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime);
+  } catch (e) {
+    logger.e('Error formatting date: $date', error: e);
+    return date; // Return the original string if parsing fails
+  }
+}
+
+bool isNowBetween(DateTime start, DateTime end) {
+  final now = DateTime.now();
+  logger.d('isNowBetween: $now, start: $start, end: $end');
+  return now.isAfter(start) && now.isBefore(end);
+}
+
+DateTime parseAsLocal(String input) {
+  // Remove timezone part if exists
+  final cleanedInput = input.split('+').first;
+  print(cleanedInput);
+  return DateTime.parse(cleanedInput);
 }

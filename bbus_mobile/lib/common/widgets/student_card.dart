@@ -1,29 +1,19 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/common/entities/student.dart';
-import 'package:bbus_mobile/common/widgets/camera_popup.dart';
 import 'package:bbus_mobile/common/widgets/result_dialog.dart';
-import 'package:bbus_mobile/config/injector/injector.dart';
-import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
-import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/driver/student_list/cubit/student_list_cubit.dart';
-// import 'package:camera/camera.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 class StudentCard extends StatelessWidget {
   final StudentEntity student;
   final bool routeEnded;
+  final bool isAssistant;
   const StudentCard({
     super.key,
     required this.student,
     required this.routeEnded,
+    required this.isAssistant,
   });
   String getCustomStatus() {
     if ((student.checkin == null || student.checkin!.isEmpty) &&
@@ -112,7 +102,7 @@ class StudentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${student.studentName} (${student.dob.toString().split(' ')[0]})',
+                          '${student.studentName} (${student.rollNumber})',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w500),
                         ),
@@ -159,27 +149,29 @@ class StudentCard extends StatelessWidget {
                               ],
                             ),
                             const Spacer(),
-
-                            (student.checkin == null && student.checkout == null
-                                // &&!routeEnded)
-                                )
-                                ? ElevatedButton(
-                                    onPressed: () {
-                                      _openMarkAttendanceModal(
-                                          context, 'checkin');
-                                    },
-                                    child: Text('Checkin'))
-                                : (student.checkin != null &&
-                                        student.checkout == null
-                                    // &&!routeEnded)
-                                    )
+                            !isAssistant
+                                ? SizedBox()
+                                : (student.checkin == null &&
+                                        student.checkout == null &&
+                                        !routeEnded)
+                                    // )
                                     ? ElevatedButton(
                                         onPressed: () {
                                           _openMarkAttendanceModal(
-                                              context, 'checkout');
+                                              context, 'checkin');
                                         },
-                                        child: Text('Checkout'))
-                                    : SizedBox(),
+                                        child: Text('Checkin'))
+                                    : (student.checkin != null &&
+                                            student.checkout == null &&
+                                            !routeEnded)
+                                        // )
+                                        ? ElevatedButton(
+                                            onPressed: () {
+                                              _openMarkAttendanceModal(
+                                                  context, 'checkout');
+                                            },
+                                            child: Text('Checkout'))
+                                        : SizedBox(),
                             // else
                             //   Container(
                             //     padding: const EdgeInsets.symmetric(

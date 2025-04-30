@@ -16,7 +16,7 @@ class ChildCard extends StatelessWidget {
   final String? checkpointName;
   final String status;
   final String? avatar;
-  final bool? isParent;
+  final bool? isRegisterOpened;
   const ChildCard(
       {super.key,
       required this.studentId,
@@ -26,7 +26,7 @@ class ChildCard extends StatelessWidget {
       required this.address,
       required this.status,
       this.avatar,
-      this.isParent,
+      this.isRegisterOpened,
       this.checkpointId,
       this.checkpointName,
       required this.gender});
@@ -116,25 +116,32 @@ class ChildCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(gradient: TColors.secondaryGradient),
           child: InkWell(
-            onTap: isParent == true
-                ? () {
-                    if (checkpointId == null || checkpointId!.isEmpty) {
-                      _showAddressDialog(context);
-                    } else {
-                      context.pushNamed(
-                        RouteNames.childFeature,
-                        pathParameters: {'id': studentId},
-                        extra: ChildEntity(
-                          id: studentId,
-                          name: name,
-                          checkpointName: checkpointName,
-                          busId: busId, // if needed
-                          avatar: avatar ?? '',
-                        ),
-                      );
-                    }
-                  }
-                : null,
+            onTap: () {
+              if (checkpointId == null || checkpointId!.isEmpty) {
+                if (isRegisterOpened!) {
+                  _showAddressDialog(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Con chưa đăng ký điểm đón, vui lòng chờ đến thời gian mở đăng ký sau'),
+                    ),
+                  );
+                }
+              } else {
+                context.pushNamed(
+                  RouteNames.childFeature,
+                  pathParameters: {'id': studentId},
+                  extra: ChildEntity(
+                    id: studentId,
+                    name: name,
+                    checkpointName: checkpointName,
+                    busId: busId, // if needed
+                    avatar: avatar ?? '',
+                  ),
+                );
+              }
+            },
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -189,23 +196,23 @@ class ChildCard extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: status == "In Bus"
-                                            ? Colors.blue
-                                            : status == 'At Home'
-                                                ? Colors.grey
-                                                : Colors.orange,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
+                                    // Container(
+                                    //   width: 10,
+                                    //   height: 10,
+                                    //   decoration: BoxDecoration(
+                                    //     color: status == "In Bus"
+                                    //         ? Colors.blue
+                                    //         : status == 'At Home'
+                                    //             ? Colors.grey
+                                    //             : Colors.orange,
+                                    //     shape: BoxShape.circle,
+                                    //   ),
+                                    // ),
                                     const SizedBox(width: 8),
-                                    Text(
-                                      status,
-                                      style: TextStyle(color: Colors.white),
-                                    ),
+                                    // Text(
+                                    //   status,
+                                    //   style: TextStyle(color: Colors.white),
+                                    // ),
                                   ],
                                 ),
                                 const Spacer(),

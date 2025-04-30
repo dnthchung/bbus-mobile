@@ -23,6 +23,7 @@ class RoutePaths {
   static const String driverProfile = '/driver/profile';
   static const String driverStudent = '/driver/student';
   static const String driverContact = '/driver/contact';
+  static const String driverSchedule = '/driver/schedule';
   static const String driverChangePassword = '/driver/change-password';
 }
 
@@ -51,5 +52,6 @@ class RouteNames {
   static const String driverStudent = 'driver_student';
   static const String driverContact = 'driver_contact';
   static const String driverBusMap = 'driver_bus-map';
+  static const String driverSchedule = 'driver_schedule';
   static const String driverChangePassword = 'driver_change-password';
 }
