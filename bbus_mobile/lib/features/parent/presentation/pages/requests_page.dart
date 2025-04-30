@@ -2,6 +2,8 @@ import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/core/utils/date_utils.dart';
+import 'package:bbus_mobile/features/parent/data/datasources/request_remote_datasource.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_type/request_type_cubit.dart';
@@ -104,24 +106,6 @@ class RequestList extends StatefulWidget {
 }
 
 class _RequestListState extends State<RequestList> {
-  final List<Map<String, String>> requestHistory = [
-    {
-      'type': 'Leave',
-      'typeName': 'Sửa điểm đón',
-      'status': 'Approved',
-      'content':
-          'Điểm đón được sửa thành Nhân Chính, Thanh Xuân, Hà Nội, Việt Nam',
-      'createdAt': '22/02/2025'
-    },
-    {
-      'type': 'Expense',
-      'typeName': 'Báo nghỉ',
-      'status': 'Pending',
-      'content':
-          'Đơn xin báo nghỉ: do bé có lịch khám riêng nên bé sẽ không đi xe buýt ngày 12/03/2025',
-      'createdAt': '22/02/2025'
-    },
-  ];
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
@@ -131,16 +115,23 @@ class _RequestListState extends State<RequestList> {
       case 'rejected':
         return Colors.red;
       default:
-        return Colors.black;
+        return Colors.grey;
+    }
+  }
+
+  void onCancelRequest(String requestId) async {
+    try {
+      final res = await sl<RequestRemoteDatasource>().cancelRequest(requestId);
+      await context.read<RequestListCubit>().getRequestList();
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Lỗi xảy ra!')));
     }
   }
 
   String? selectedType;
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> filteredHistory = requestHistory.where((request) {
-      return selectedType == null || request['type'] == selectedType;
-    }).toList();
     return Column(
       children: [
         Padding(
@@ -185,8 +176,13 @@ class _RequestListState extends State<RequestList> {
                     {'type': 'PENDING', 'typeName': 'Đang chờ'}, // 'All' option
                     {
                       'type': 'APPROVED',
-                      'typeName': 'Đã trả lời'
+                      'typeName': 'Đã đồng ý'
                     }, // 'All' option
+                    {
+                      'type': 'REJECTED',
+                      'typeName': 'Đã từ chối'
+                    }, // 'All' option
+                    {'type': 'CANCELLED', 'typeName': 'Đã hủy'}, // 'All' option
                   ].map((entry) {
                     return DropdownMenuItem(
                       value: entry['type'], // Keep the actual value as 'type'
@@ -215,69 +211,152 @@ class _RequestListState extends State<RequestList> {
                         itemBuilder: (context, index) {
                           final request = state.filteredRequests[index];
 
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 15),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          request.requestTypeName ??
-                                              'No Type Name',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
+                          return InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text(
+                                      'Chi tiết yêu cầu',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 4, horizontal: 8),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _getStatusColor(request.status!)
-                                                  .withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          request.status!,
-                                          style: TextStyle(
-                                            color: _getStatusColor(
-                                                request.status!),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
+                                    ),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: [
+                                          _buildLabelValue(
+                                              'Loại yêu cầu',
+                                              request.requestTypeName ??
+                                                  'Không có'),
+                                          const SizedBox(height: 10),
+                                          if (request.checkpointName != null &&
+                                              request
+                                                  .checkpointName!.isNotEmpty)
+                                            _buildLabelValue('Điểm đón',
+                                                request.checkpointName!),
+                                          const SizedBox(height: 10),
+                                          _buildLabelValue(
+                                              'Lý do', request.reason ?? ''),
+                                          const SizedBox(height: 10),
+                                          _buildLabelValue(
+                                              'Ngày tạo',
+                                              fromDatetoString(
+                                                  request.createdAt!)),
+                                          const SizedBox(height: 10),
+                                          if (request.reply != null &&
+                                              request.reply!.isNotEmpty)
+                                            _buildLabelValue(
+                                                'Phản hồi', request.reply!),
+                                          const SizedBox(height: 10),
+                                          _buildLabelValue('Trạng thái',
+                                              request.status ?? '',
+                                              valueColor: _getStatusColor(
+                                                  request.status)),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      if (request.status?.toLowerCase() ==
+                                          'pending')
+                                        TextButton(
+                                          onPressed: () {
+                                            // TODO: Call cancel request function
+                                            onCancelRequest(request.requestId);
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            'Hủy yêu cầu',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
+                                        ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text(
+                                          'Đóng',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(request.reason ?? 'No content'),
-                                  const SizedBox(height: 5),
-                                  if (request.reply != null &&
-                                      request.reply!.isNotEmpty) ...[
-                                    Text(
-                                      'Replied:',
-                                      style: TextStyle(
-                                          color: TColors.secondary,
-                                          fontWeight: FontWeight.w600),
+                                  );
+                                },
+                              );
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 15),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            request.requestTypeName ??
+                                                'No Type Name',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4, horizontal: 8),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                _getStatusColor(request.status!)
+                                                    .withOpacity(0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Text(
+                                            request.status!,
+                                            style: TextStyle(
+                                              color: _getStatusColor(
+                                                  request.status!),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Text(request.reply!),
                                     const SizedBox(height: 5),
+                                    request.checkpointName != null &&
+                                            request.checkpointName!.isNotEmpty
+                                        ? Text(
+                                            'Đổi sang điểm đón: ${request.checkpointName}')
+                                        : const SizedBox(),
+                                    Text(request.reason),
+                                    const SizedBox(height: 5),
+                                    if (request.reply != null &&
+                                        request.reply!.isNotEmpty) ...[
+                                      Text(
+                                        'Replied:',
+                                        style: TextStyle(
+                                            color: TColors.secondary,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      Text(request.reply!),
+                                      const SizedBox(height: 5),
+                                    ],
+                                    // Text('Created: ${'request['createdAt']'}',
+                                    Text(fromDatetoString(request.createdAt!),
+                                        style: TextStyle(
+                                            color: Colors.grey.shade600)),
                                   ],
-                                  // Text('Created: ${'request['createdAt']'}',
-                                  Text('Created: 22/02/2025',
-                                      style: TextStyle(
-                                          color: Colors.grey.shade600)),
-                                ],
+                                ),
                               ),
                             ),
                           );
@@ -301,4 +380,28 @@ class _RequestListState extends State<RequestList> {
       ],
     );
   }
+}
+
+Widget _buildLabelValue(String label, String value, {Color? valueColor}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: Colors.black87,
+        ),
+      ),
+      const SizedBox(height: 2),
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: 14,
+          color: valueColor ?? Colors.black,
+        ),
+      ),
+    ],
+  );
 }

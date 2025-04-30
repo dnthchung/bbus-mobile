@@ -15,6 +15,7 @@ class EndRouteModal extends StatefulWidget {
 }
 
 class _EndRouteModalState extends State<EndRouteModal> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _feedbackController = TextEditingController();
 
   @override
@@ -33,18 +34,24 @@ class _EndRouteModalState extends State<EndRouteModal> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'End Route',
+              'Kết thúc chuyến',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _feedbackController,
-              decoration: const InputDecoration(
-                labelText: 'Feedback',
-                hintText: 'Write your feedback here...',
-                border: OutlineInputBorder(),
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: _feedbackController,
+                decoration: const InputDecoration(
+                  labelText: 'Phản hồi',
+                  hintText: 'Viết phản hồi tại đây...',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Vui lòng nhập phản hồi'
+                    : null,
+                maxLines: 3,
               ),
-              maxLines: 3,
             ),
             const SizedBox(height: 20),
             Row(
@@ -55,7 +62,13 @@ class _EndRouteModalState extends State<EndRouteModal> {
                       Navigator.of(context).pop();
                       widget.onCancel?.call();
                     },
-                    child: const Text('Cancel'),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(12), // Rounded corners
+                      ),
+                    ),
+                    child: const Text('Hủy'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -63,10 +76,12 @@ class _EndRouteModalState extends State<EndRouteModal> {
                   child: ElevatedButton(
                     onPressed: () {
                       final feedback = _feedbackController.text.trim();
-                      Navigator.of(context).pop();
-                      widget.onSubmit?.call(feedback);
+                      if (_formKey.currentState?.validate() ?? false) {
+                        Navigator.of(context).pop();
+                        widget.onSubmit?.call(feedback);
+                      }
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Xác nhận'),
                   ),
                 ),
               ],

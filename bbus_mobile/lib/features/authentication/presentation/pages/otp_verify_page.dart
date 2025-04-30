@@ -24,7 +24,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         if (state is OtpVerified) {
           context.pushReplacementNamed(RouteNames.resetPassword,
               pathParameters: {'sessionId': state.sessionId});
-        } else if (state is ForgotPasswordError) {
+        } else if (state is OtpVerifiedError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
           );

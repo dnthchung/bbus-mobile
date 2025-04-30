@@ -87,7 +87,9 @@ class _ChildFeatureLayoutState extends State<ChildFeatureLayout> {
                           ),
                         ),
                       ),
-                      MenuTabs(), // Now it's safe to access busDetail
+                      MenuTabs(
+                        childId: widget.child.id!,
+                      ), // Now it's safe to access busDetail
                     ],
                   ),
                 );

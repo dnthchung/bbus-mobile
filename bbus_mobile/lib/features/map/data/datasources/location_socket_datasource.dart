@@ -23,10 +23,26 @@ class LocationSocketDatasourceImpl implements LocationSocketDatasource {
 
     _webSocketService.messageStream.listen((message) {
       logger.i(message);
-      // final List<String> splited = message.split(',');
-      // var loc = LocationEntity(
-      //     double.tryParse(splited[0]) ?? 0, double.tryParse(splited[1]) ?? 0);
+      if (message.isEmpty) {
+        logger.w('Received empty message from WebSocket');
+        return;
+      }
+      final latLngRegex = RegExp(r'lat=([0-9\.\-]+), lng=([0-9\.\-]+)');
+      final match = latLngRegex.firstMatch(message);
       var loc = LocationEntity(21.0047205, 105.8014499);
+      if (match != null) {
+        double? lat = double.tryParse(match.group(1)!);
+        double? lng = double.tryParse(match.group(2)!);
+
+        if (lat != null && lng != null) {
+          loc = LocationEntity(lat, lng);
+          onLocationReceived(loc);
+        } else {
+          logger.w('Invalid lat/lng parsed.');
+        }
+      } else {
+        logger.w('Message does not match expected format.');
+      }
       onLocationReceived(loc);
     });
   }

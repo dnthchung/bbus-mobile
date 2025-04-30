@@ -58,7 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException {
       return Left(Failure());
     } on AuthException {
-      return Left((Failure('Wrong Email or Password')));
+      return Left((Failure('Sai số điện thoại hoặc mật khẩu')));
     }
   }
 
@@ -102,6 +102,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, bool>> getOtp(String phoneNumber) async {
     try {
       final res = await _authRemoteDatasource.getOtp(phoneNumber);
+      if (res['status'] == 404) {
+        return Left(Failure(res['message']));
+      }
       return Right(true);
     } on ServerException catch (e) {
       return Left(Failure(e.message));
@@ -113,6 +116,9 @@ class AuthRepositoryImpl implements AuthRepository {
       {required String phone, required String otp}) async {
     try {
       final res = await _authRemoteDatasource.sendOtp(phone: phone, otp: otp);
+      if (res['status'] == 409) {
+        return Left(Failure(res['message']));
+      }
       return Right(res['sessionId']);
     } on ServerException catch (e) {
       return Left(Failure(e.message));

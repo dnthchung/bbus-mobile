@@ -40,6 +40,8 @@ class _ProfilePageState extends State<ProfilePage> {
         context
             .read<CurrentUserCubit>()
             .updateAvatar(img); // <- implement this method
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Update avatar successfully!')));
       }
     }
   }
@@ -162,12 +164,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Positioned(
+                              top: -10,
+                              left: 80,
                               child: IconButton(
                                 onPressed: _selectImage,
                                 icon: Icon(Icons.add_a_photo),
                               ),
-                              top: -10,
-                              left: 80,
                             )
                           ],
                         ),
@@ -191,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             if (value == null || value.trim().isEmpty) {
                               return 'Vui lòng nhập số điện thoại';
                             }
-                            if (!RegExp(r'^\d{9,11}$').hasMatch(value)) {
+                            if (!RegExp(r'^\d{10,11}$').hasMatch(value)) {
                               return 'Số điện thoại không hợp lệ';
                             }
                             return null;

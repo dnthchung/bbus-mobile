@@ -17,12 +17,14 @@ class SendChangeCheckpointReq
 class SendChangeCheckpointReqParams {
   String? requestTypeId;
   String? checkpointId;
+  String? studentId;
   String? reason;
   SendChangeCheckpointReqParams(
-      this.checkpointId, this.requestTypeId, this.reason);
+      this.checkpointId, this.requestTypeId, this.studentId, this.reason);
   SendChangeCheckpointReqParams.fromJson(Map<String, dynamic> json) {
     requestTypeId = json['requestTypeId'];
     checkpointId = json['checkpointId'];
+    studentId = json['studentId'];
     reason = json['reason'];
   }
 
@@ -30,6 +32,7 @@ class SendChangeCheckpointReqParams {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['requestTypeId'] = this.requestTypeId;
     data['checkpointId'] = this.checkpointId;
+    data['studentId'] = this.studentId;
     data['reason'] = this.reason;
     return data;
   }

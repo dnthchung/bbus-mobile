@@ -33,12 +33,12 @@ class StudentListCubit extends Cubit<StudentListState> {
 
   Future<void> markStudentAttendance() async {}
   Future<void> loadStudents(int direction) async {
-    final currentState = state;
+    // final currentState = state;
     _currentDirection = direction;
-    if (currentState is StudentListLoaded &&
-        currentState.currentDirection == direction) {
-      return; // already showing this direction
-    }
+    // if (currentState is StudentListLoaded &&
+    //     currentState.currentDirection == direction) {
+    //   return; // already showing this direction
+    // }
     emit(StudentListLoading());
     await _subscription?.cancel();
     final result = await _getStudentStream(
@@ -128,7 +128,9 @@ class StudentListCubit extends Cubit<StudentListState> {
         emit(currentState.copyWith(message: l.message));
       }, (r) {
         _routeEnded = true;
-        emit(currentState.copyWith(routeEnded: true, message: 'Route ended'));
+        emit(currentState.copyWith(
+            routeEnded: true,
+            message: 'Xác nhận kết thúc chuyến xe thành công'));
       });
       emit(currentState.copyWith(routeEnded: true));
     }

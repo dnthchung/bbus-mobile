@@ -211,18 +211,17 @@ class __FormContentState extends State<_FormContent> {
             BlocListener<AuthCubit, AuthState>(
               listener: (context, state) {
                 if (state is AuthLoginSucess) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đăng nhập thành công!')),
-                  );
                   print(state.data.role);
                   if (state.data.role?.toLowerCase() == 'parent')
                     context.goNamed(RouteNames.parentChildren);
                   else
                     context.goNamed(RouteNames.driverStudent);
                 } else if (state is AuthLoginFailure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
+                  });
                 }
               },
               child: const SizedBox.shrink(),

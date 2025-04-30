@@ -25,8 +25,8 @@ class StudentListDatasourceImpl implements StudentListDatasource {
       final date = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
       final res = await _dioClient.get(
-          // '${ApiConstants.getAttandance}?busId=$busId&busDirection=$direction&date=$formattedDate');
-          '${ApiConstants.getAttandance}?busId=$busId&busDirection=$direction&date=2025-04-18');
+          '${ApiConstants.getAttandance}?busId=$busId&busDirection=$direction&date=$formattedDate');
+      // '${ApiConstants.getAttandance}?busId=$busId&busDirection=$direction&date=2025-04-18');
       final List<dynamic> data = res['data'];
       return data.map((student) => StudentEntity.fromJson(student)).toList();
     } catch (e) {
