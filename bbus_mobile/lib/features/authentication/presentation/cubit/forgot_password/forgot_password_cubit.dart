@@ -29,19 +29,20 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
     final res = await _getOtpByPhone.call(phoneNumber);
     res.fold((l) => emit(ForgotPasswordError(l.message)), (r) {
       _startOtpCountdown();
+      emit(ForgotPasswordSuccess());
     });
   }
 
   Future<void> verifyOtp(String otp) async {
     emit(ForgotPasswordLoading());
     if (state is OtpExpired) {
-      emit(ForgotPasswordError('Otp Expired'));
+      emit(OtpVerifiedError('Otp Expired'));
       return;
     }
     final res =
         await _verifyOtp.call(VerifyOtpParams(phoneController.text, otp));
     res.fold((l) {
-      emit(ForgotPasswordError(l.message));
+      emit(OtpVerifiedError(l.message));
       _otpTimer?.cancel();
     }, (r) => emit(OtpVerified(r)));
   }
@@ -70,7 +71,7 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
         sessionId: sessionId,
         password: newPassword,
         confirmPassword: confirmPassword));
-    res.fold((l) => emit(ForgotPasswordError(l.message)),
+    res.fold((l) => emit(PasswordResetError(l.message)),
         (r) => emit(PasswordResetSuccess()));
   }
 

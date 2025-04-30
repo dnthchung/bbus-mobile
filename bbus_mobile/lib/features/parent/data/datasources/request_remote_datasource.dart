@@ -15,6 +15,7 @@ abstract class RequestRemoteDatasource {
   Future<dynamic> createChangeCheckpointReq(
       SendChangeCheckpointReqParams params);
   Future<dynamic> createNewCheckpointReq(SendNewCheckpointReqParams params);
+  Future<dynamic> cancelRequest(String requestId);
 }
 
 class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
@@ -39,7 +40,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
     try {
       final response = await _dioClient.post(ApiConstants.addRequestUrl,
           data: params.toJson());
-      return response['data'];
+      return response;
     } catch (e) {
       logger.e(e);
       throw ServerException(e.toString());
@@ -50,11 +51,11 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
   Future<List<RequestEntity>> getRequestList() async {
     try {
       final response = await _dioClient.get(ApiConstants.requestListUrl);
-      final List<dynamic> data = response['data']['requests'];
+      final List<dynamic> data = response['data'];
       return data.map((request) => RequestEntity.fromJson(request)).toList();
     } catch (e) {
       logger.e(e);
-      throw ServerException(e.toString());
+      throw ServerException('Some error occurred!');
     }
   }
 
@@ -63,7 +64,7 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
     try {
       final response = await _dioClient.post(ApiConstants.addRequestUrl,
           data: params.toJson());
-      return response['data'];
+      return response;
     } catch (e) {
       logger.e(e);
       throw ServerException(e.toString());
@@ -75,7 +76,19 @@ class RequestRemoteDatasourceImpl implements RequestRemoteDatasource {
     try {
       final response = await _dioClient.post(ApiConstants.addRequestUrl,
           data: params.toJson());
-      return response['data'];
+      return response;
+    } catch (e) {
+      logger.e(e);
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future cancelRequest(String requestId) async {
+    try {
+      final response = await _dioClient.patch(ApiConstants.cancelRequest,
+          data: {"requestId": requestId, "status": "CANCELLED"});
+      return response;
     } catch (e) {
       logger.e(e);
       throw ServerException(e.toString());

@@ -4,12 +4,15 @@ class BusScheduleEntity extends Equatable {
   String? id;
   String? busId;
   String? name;
+  String? licensePlate;
   DateTime? date;
   String? driverId;
   String? driverName;
   String? assistantId;
   String? assistantName;
   String? route;
+  String? routeId;
+  String? busScheduleStatus;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -17,12 +20,15 @@ class BusScheduleEntity extends Equatable {
     this.id,
     this.busId,
     this.name,
+    this.licensePlate,
     this.date,
     this.driverId,
     this.driverName,
     this.assistantId,
     this.assistantName,
     this.route,
+    this.routeId,
+    this.busScheduleStatus,
     this.createdAt,
     this.updatedAt,
   });
@@ -31,12 +37,15 @@ class BusScheduleEntity extends Equatable {
     String? id,
     String? busId,
     String? name,
+    String? licensePlate,
     DateTime? date,
     String? driverId,
     String? driverName,
     String? assistantId,
     String? assistantName,
     String? route,
+    String? routeId,
+    String? busScheduleStatus,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -44,12 +53,15 @@ class BusScheduleEntity extends Equatable {
       id: id ?? this.id,
       busId: busId ?? this.busId,
       name: name ?? this.name,
+      licensePlate: licensePlate ?? this.licensePlate,
       date: date ?? this.date,
       driverId: driverId ?? this.driverId,
       driverName: driverName ?? this.driverName,
       assistantId: assistantId ?? this.assistantId,
       assistantName: assistantName ?? this.assistantName,
       route: route ?? this.route,
+      routeId: routeId ?? this.routeId,
+      busScheduleStatus: busScheduleStatus ?? this.busScheduleStatus,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -60,12 +72,14 @@ class BusScheduleEntity extends Equatable {
       id: json["id"] ?? "",
       busId: json["busId"] ?? "",
       name: json["name"] ?? "",
+      licensePlate: json["licensePlate"] ?? "",
       date: DateTime.tryParse(json["date"] ?? ""),
       driverId: json["driverId"] ?? "",
       driverName: json["driverName"] ?? "",
       assistantId: json["assistantId"] ?? "",
       assistantName: json["assistantName"] ?? "",
-      route: json["route"] ?? "",
+      routeId: json["routeId"] ?? "",
+      busScheduleStatus: json["busScheduleStatus"] ?? "",
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
@@ -76,12 +90,14 @@ class BusScheduleEntity extends Equatable {
         id,
         busId,
         name,
+        licensePlate,
         date,
         driverId,
         driverName,
         assistantId,
-        assistantName,
         route,
+        routeId,
+        busScheduleStatus,
         createdAt,
         updatedAt,
       ];

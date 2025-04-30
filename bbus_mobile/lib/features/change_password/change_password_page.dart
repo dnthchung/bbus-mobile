@@ -48,9 +48,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   controller: _passwordController,
                   decoration: InputDecoration(labelText: 'Mật khẩu mới'),
                   obscureText: true,
-                  validator: (value) => value!.length < 6
-                      ? 'Mật khẩu cần chứa ít nhất 6 ký tự'
-                      : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Vui lòng nhập mật khẩu';
+                    }
+                    if (value.length < 8) {
+                      return 'Mật khẩu cần chứa ít nhất 8 ký tự';
+                    }
+                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                      return 'Mật khẩu cần chứa ít nhất 1 chữ cái viết hoa';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 10),
                 TextFormField(

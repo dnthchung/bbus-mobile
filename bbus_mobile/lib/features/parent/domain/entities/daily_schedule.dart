@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
 class DailyScheduleEntity extends Equatable {
   int? id;
@@ -20,6 +21,19 @@ class DailyScheduleEntity extends Equatable {
     attendance = json['attendance'] != null
         ? new EventDetail.fromJson(json['attendance'])
         : null;
+  }
+  DailyScheduleEntity copyWith({
+    EventDetail? pickup,
+    EventDetail? drop,
+    EventDetail? attendance,
+  }) {
+    return DailyScheduleEntity(
+      id: this.id,
+      date: this.date,
+      pickup: pickup ?? this.pickup,
+      attendance: attendance ?? this.attendance,
+      drop: drop ?? this.drop,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -45,15 +59,47 @@ class DailyScheduleEntity extends Equatable {
 
 class EventDetail {
   String? time;
+  String? timeLeave;
   String? address;
   String? verifier;
 
-  EventDetail({this.time, this.address, this.verifier});
+  EventDetail({this.time, this.address, this.verifier, this.timeLeave});
+  factory EventDetail.withFormattedTime({
+    String? time,
+    String? timeLeave,
+    String? address,
+    String? verifier,
+  }) {
+    return EventDetail(
+      time: _formatTime(time),
+      timeLeave: _formatTime(timeLeave),
+      address: address,
+      verifier: verifier,
+    );
+  }
+  static String? _formatTime(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      final parsed = DateTime.parse(raw);
+      return DateFormat('HH:mm').format(parsed);
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  EventDetail copyWith({String? time, String? timeLeave}) {
+    return EventDetail.withFormattedTime(
+        time: time ?? this.time,
+        timeLeave: timeLeave ?? this.timeLeave,
+        address: this.address,
+        verifier: this.verifier);
+  }
 
   EventDetail.fromJson(Map<String, dynamic> json) {
     time = json['time'];
     address = json['address'];
     verifier = json['verifier'];
+    verifier = json['timeLeave'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,6 +107,7 @@ class EventDetail {
     data['time'] = this.time;
     data['address'] = this.address;
     data['verifier'] = this.verifier;
+    data['timeLeave'] = this.verifier;
     return data;
   }
 }

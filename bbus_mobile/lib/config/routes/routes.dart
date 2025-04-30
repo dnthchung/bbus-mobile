@@ -14,13 +14,16 @@ class RoutePaths {
   static const String parentChangePassword = '/parent/change-password';
   static const String parentRequest = '/parent/requests';
   static const String parentBusMap = '/parent/bus-map';
+  static const String driverBusMap = '/driver/bus-map';
   static const String parentAbsentRequest = '/parent/absent-request';
   static const String parentOtherRequest = '/parent/other-request';
+  static const String parentEditChild = '/edit-child';
 
   // Driver
   static const String driverProfile = '/driver/profile';
   static const String driverStudent = '/driver/student';
   static const String driverContact = '/driver/contact';
+  static const String driverSchedule = '/driver/schedule';
   static const String driverChangePassword = '/driver/change-password';
 }
 
@@ -42,10 +45,13 @@ class RouteNames {
   static const String parentBusMap = 'parent_bus-map';
   static const String parentAbsentRequest = 'parent_absent-request';
   static const String parentOtherRequest = 'parent_other-request';
+  static const String parentEditChild = 'parent_edit-child';
 
   // Driver
   static const String driverProfile = 'driver_profile';
   static const String driverStudent = 'driver_student';
   static const String driverContact = 'driver_contact';
+  static const String driverBusMap = 'driver_bus-map';
+  static const String driverSchedule = 'driver_schedule';
   static const String driverChangePassword = 'driver_change-password';
 }

@@ -36,6 +36,10 @@ class TAppTheme {
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
     ),
+    dialogTheme: DialogTheme(
+      backgroundColor:
+          Colors.white, // Set the background color of the dialog to white
+    ),
     inputDecorationTheme: InputDecorationTheme(
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: TColors.borderColor, width: 2),

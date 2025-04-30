@@ -6,7 +6,9 @@ import 'package:bbus_mobile/features/driver/datasources/schedule_datasource.dart
 import 'package:dartz/dartz.dart';
 
 abstract class ScheduleRepository {
-  Future<Either<Failure, BusScheduleEntity>> getBusSchedule();
+  Future<Either<Failure, List<BusScheduleEntity>>> getBusSchedule();
+  Future<Either<Failure, void>> completeBusSchedule(
+      String busScheduleId, String note);
 }
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
@@ -14,7 +16,7 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   ScheduleRepositoryImpl(this._scheduleDatasource);
 
   @override
-  Future<Either<Failure, BusScheduleEntity>> getBusSchedule() async {
+  Future<Either<Failure, List<BusScheduleEntity>>> getBusSchedule() async {
     try {
       final res = await _scheduleDatasource.getBusSchedule();
       return right(res);
@@ -22,6 +24,20 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       return left(EmptyFailure());
     } catch (e) {
       return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> completeBusSchedule(
+      String busScheduleId, String note) async {
+    try {
+      final res =
+          await _scheduleDatasource.completeSchedule(busScheduleId, note);
+      return Right(res);
+    } on ServerException catch (e) {
+      throw Left(Failure(e.message));
+    } catch (e) {
+      throw Left(Failure(e.toString()));
     }
   }
 }

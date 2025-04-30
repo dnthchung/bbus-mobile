@@ -25,6 +25,7 @@ class ApiInterceptors extends Interceptor {
       return handler.next(options); // Skip authentication
     }
     final token = await _secureLocalStorage.load(key: 'token');
+    logger.i(token);
     options.headers['Authorization'] = 'Bearer $token';
     logger.i(options.headers);
     handler.next(options);
@@ -47,7 +48,7 @@ class ApiInterceptors extends Interceptor {
         );
         var response = await retryDio.post(
           ApiConstants.getRefreshTokenUrl,
-          data: {refreshToken},
+          data: refreshToken,
           options: Options(
             headers: {"Content-Type": 'application/json'},
           ),
@@ -55,10 +56,9 @@ class ApiInterceptors extends Interceptor {
         logger.i(response);
         if (response.statusCode == 200) {
           await _secureLocalStorage.save(
-              key: 'token', value: response.data['data']['access_token']);
+              key: 'token', value: response.data['access_token']);
           await _secureLocalStorage.save(
-              key: 'refreshToken',
-              value: response.data['data']['refresh_token']);
+              key: 'refreshToken', value: response.data['refresh_token']);
           handler.resolve(response);
         }
       } catch (e) {
@@ -74,6 +74,7 @@ class ApiInterceptors extends Interceptor {
     if (response.data['status'] == 403) {
       logger.i(response.data);
       final refreshToken = await _secureLocalStorage.load(key: 'refreshToken');
+      logger.i(refreshToken);
       Dio retryDio = Dio(
         BaseOptions(
           headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -85,16 +86,18 @@ class ApiInterceptors extends Interceptor {
       );
       var res = await retryDio.post(
         ApiConstants.getRefreshTokenUrl,
-        data: {"refreshToken": refreshToken},
+        data: refreshToken,
         options: Options(
           headers: {"Content-Type": 'application/json'},
         ),
       );
+      logger.i(res.data);
       if (res.statusCode == 200) {
+        logger.i(res.data);
         await _secureLocalStorage.save(
-            key: 'token', value: res.data['data']['access_token']);
+            key: 'token', value: res.data['access_token']);
         await _secureLocalStorage.save(
-            key: 'refreshToken', value: res.data['data']['refresh_token']);
+            key: 'refreshToken', value: res.data['refresh_token']);
         return handler.resolve(res);
       }
     }

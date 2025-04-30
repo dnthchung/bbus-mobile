@@ -89,7 +89,8 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
 
   void _fetchBusRoute() async {
     final cubit = context.read<LocationTrackingCubit>();
-    final res = await sl<GetMapRoute>().call(cubit.busDetail!.routeId!);
+    final res =
+        await sl<GetMapRoute>().call('efd29829-782a-44fe-a30c-429f70c39e49');
     res.fold((l) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l.message)),
@@ -144,14 +145,30 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   void _addMarker(LocationEntity location) {
     logger.i(location);
     final marker = Marker(
-        point: LatLng(location.latitude, location.longitude),
-        width: 50,
-        height: 50,
-        child: const Icon(
-          Icons.directions_bus,
-          size: 40,
+      point: LatLng(location.latitude, location.longitude),
+      width: 45,
+      height: 45,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: TColors.darkPrimary, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Icon(
+          Icons.directions_bus_filled, // slightly better bus icon
+          size: 30,
           color: TColors.darkPrimary,
-        ));
+        ),
+      ),
+    );
     _marker = marker;
   }
 
@@ -191,7 +208,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: _currentLocation ?? LatLng(35.761648, 51.399856),
+        initialCenter: _currentLocation ?? LatLng(21.0047205, 105.8014499),
         initialZoom: 20,
         minZoom: 2,
         maxZoom: 100,

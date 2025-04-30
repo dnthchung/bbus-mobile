@@ -1,5 +1,4 @@
 import 'package:bbus_mobile/common/entities/user.dart';
-import 'package:bbus_mobile/core/utils/device_utils.dart';
 
 class LoginModel extends UserEntity {
   final String platform;
@@ -22,7 +21,7 @@ class LoginModel extends UserEntity {
     };
   }
 
-  LoginModel copyWith({
+  LoginModel loginCopyWith({
     String? phone,
     String? password,
     String? platform,

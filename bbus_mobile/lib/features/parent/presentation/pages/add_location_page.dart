@@ -3,6 +3,7 @@ import 'package:bbus_mobile/features/parent/domain/usecases/send_new_checkpoint_
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AddLocationPage extends StatefulWidget {
   const AddLocationPage({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class AddLocationPage extends StatefulWidget {
 class _AddLocationPageState extends State<AddLocationPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _reasonController = TextEditingController();
-
+  bool _isLoading = false;
   @override
   void dispose() {
     _reasonController.dispose();
@@ -23,12 +24,18 @@ class _AddLocationPageState extends State<AddLocationPage> {
 
   void _handleSubmit() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       final reason = _reasonController.text.trim();
       final res =
           await sl<SendNewCheckpointReq>().call(SendNewCheckpointReqParams(
         '5c8da669-43e7-4e20-91a2-d53234ddd2f0',
         reason,
       ));
+      setState(() {
+        _isLoading = false;
+      });
       res.fold((l) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l.message)),
@@ -38,7 +45,7 @@ class _AddLocationPageState extends State<AddLocationPage> {
           SnackBar(content: Text("Yêu cầu đã được gửi thành công!")),
         );
         _reasonController.clear();
-        context.read<RequestListCubit>().getRequestList();
+        context.pop();
       });
     }
   }
@@ -75,7 +82,17 @@ class _AddLocationPageState extends State<AddLocationPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _handleSubmit,
-                child: const Text('Gửi'),
+                child: _isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text("Gửi"),
               ),
             ],
           ),

@@ -10,14 +10,22 @@ class MarkAttendance implements UseCase<void, MarkAttendanceParams> {
   MarkAttendance(this._studentListRepository);
   @override
   Future<Either<Failure, void>> call(MarkAttendanceParams params) async {
+    print('object');
     return await _studentListRepository.markAttendance(
-        studentId: params.studentId, busId: params.busId, image: params.image);
+        attendanceId: params.attendanceId,
+        checkin: params.checkin,
+        checkout: params.checkout);
   }
 }
 
 class MarkAttendanceParams {
-  final String studentId;
-  final String busId;
-  final File image;
-  MarkAttendanceParams(this.studentId, this.busId, this.image);
+  final String attendanceId;
+  DateTime? checkin;
+  DateTime? checkout;
+  MarkAttendanceParams(this.attendanceId, this.checkin, this.checkout);
+  Map<String, dynamic> toJson() => {
+        "attendanceId": attendanceId,
+        "checkin": checkin?.toIso8601String() ?? '',
+        "checkout": checkout?.toIso8601String() ?? '',
+      };
 }

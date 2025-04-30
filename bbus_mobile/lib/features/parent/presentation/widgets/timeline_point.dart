@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class TimelinePoint extends StatelessWidget {
   final IconData icon;
   final String? time;
+  final String? timeLeave;
   final String title;
   final String address;
   final bool isLast;
@@ -18,7 +19,8 @@ class TimelinePoint extends StatelessWidget {
       required this.address,
       required this.isLast,
       this.verifier,
-      this.reachedNext = true});
+      this.reachedNext = true,
+      this.timeLeave});
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +75,16 @@ class TimelinePoint extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: TColors.textSecondary),
                 ),
               ),
+              title == 'Trường tiểu học Ngôi Sao'
+                  ? Align(
+                      alignment: AlignmentDirectional(-1, -1),
+                      child: Text(
+                        timeLeave ?? 'N/A',
+                        style: TextStyle(
+                            fontSize: 16, color: TColors.textSecondary),
+                      ),
+                    )
+                  : SizedBox(),
             ],
           ),
         ),

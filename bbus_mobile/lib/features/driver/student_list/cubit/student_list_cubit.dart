@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:bbus_mobile/common/entities/bus_schedule.dart';
 import 'package:bbus_mobile/common/entities/student.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/end_schedule.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/get_student_stream.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/mark_attendance.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -10,28 +14,35 @@ part 'student_list_state.dart';
 
 class StudentListCubit extends Cubit<StudentListState> {
   final GetStudentStream _getStudentStream;
+  final MarkAttendance _markAttendance;
+  final EndSchedule _endSchedule;
   StreamSubscription<List<StudentEntity>>? _subscription;
   List<StudentEntity> _allStudents = [];
   String? _currentFilter;
   int? _currentDirection;
-  String? _busId;
-  StudentListCubit(this._getStudentStream) : super(StudentListInitial());
-  void initialize(String busId) {
-    _busId = busId;
+  BusScheduleEntity? _busSchedule;
+  String? _message;
+  bool? _routeEnded;
+  StudentListCubit(
+      this._getStudentStream, this._markAttendance, this._endSchedule)
+      : super(StudentListInitial());
+  void initialize(BusScheduleEntity busSchedule) {
+    _busSchedule = busSchedule;
+    _routeEnded = busSchedule.busScheduleStatus!.toLowerCase() == 'completed';
   }
 
   Future<void> markStudentAttendance() async {}
   Future<void> loadStudents(int direction) async {
-    final currentState = state;
+    // final currentState = state;
     _currentDirection = direction;
-    if (currentState is StudentListLoaded &&
-        currentState.currentDirection == direction) {
-      return; // already showing this direction
-    }
+    // if (currentState is StudentListLoaded &&
+    //     currentState.currentDirection == direction) {
+    //   return; // already showing this direction
+    // }
     emit(StudentListLoading());
     await _subscription?.cancel();
-    final result =
-        await _getStudentStream(StudentStreamParams(_busId!, direction));
+    final result = await _getStudentStream(
+        StudentStreamParams(_busSchedule!.busId!, direction));
     result.fold(
       (failure) => emit(StudentLoadFailure(failure.message)),
       (stream) {
@@ -79,10 +90,50 @@ class StudentListCubit extends Cubit<StudentListState> {
 
     emit(StudentListLoaded(
       filteredStudents: filtered,
-      allStudents: _allStudents,
+      allStudents: List<StudentEntity>.from(_allStudents),
       currentDirection: _currentDirection!,
       currentFilter: _currentFilter,
+      routeEnded: _routeEnded,
     ));
+  }
+
+  Future<void> markAttendance(
+      String attendanceId, DateTime? checkin, DateTime? checkout) async {
+    final res = await _markAttendance(
+        MarkAttendanceParams(attendanceId, checkin, checkout));
+    res.fold((l) {
+      final currentState = state;
+      if (currentState is StudentListLoaded) {
+        emit(currentState.copyWith(message: l.message));
+      }
+    }, (r) {
+      final index = _allStudents.indexWhere((s) => s.id == attendanceId);
+      if (index != -1) {
+        final updatedStudent = _allStudents[index].copyWith(
+          checkin: checkin?.toIso8601String(),
+          checkout: checkout?.toIso8601String(),
+        );
+        _allStudents[index] = updatedStudent;
+        _applyFilter(); // Refresh UI with updated data
+      }
+    });
+  }
+
+  Future<void> endRoute(String feedback) async {
+    if (state is StudentListLoaded) {
+      final currentState = state as StudentListLoaded;
+      final res = await _endSchedule
+          .call(EndScheduleParams(_busSchedule!.id!, feedback));
+      res.fold((l) {
+        emit(currentState.copyWith(message: l.message));
+      }, (r) {
+        _routeEnded = true;
+        emit(currentState.copyWith(
+            routeEnded: true,
+            message: 'Xác nhận kết thúc chuyến xe thành công'));
+      });
+      emit(currentState.copyWith(routeEnded: true));
+    }
   }
 
   @override

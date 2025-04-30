@@ -26,7 +26,19 @@ final class OtpVerified extends ForgotPasswordState {
 
 final class PasswordResetSuccess extends ForgotPasswordState {}
 
+final class PasswordResetError extends ForgotPasswordState {
+  final String message;
+  PasswordResetError(this.message);
+}
+
+final class OtpVerifiedError extends ForgotPasswordState {
+  final String message;
+  OtpVerifiedError(this.message);
+}
+
 final class ForgotPasswordError extends ForgotPasswordState {
   final String message;
   ForgotPasswordError(this.message);
 }
+
+final class ForgotPasswordSuccess extends ForgotPasswordState {}

@@ -6,12 +6,14 @@ class BusInfoItem extends StatelessWidget {
   final String middleTitle;
   final String middleInfo;
   final IconData? lastIcon;
+  final VoidCallback? onLastIconTap;
   const BusInfoItem(
       {super.key,
       required this.firstIcon,
       required this.middleTitle,
       required this.middleInfo,
-      this.lastIcon});
+      this.lastIcon,
+      this.onLastIconTap});
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +65,13 @@ class BusInfoItem extends StatelessWidget {
             decoration: BoxDecoration(),
             alignment: AlignmentDirectional(0, -1),
             child: lastIcon != null
-                ? Icon(
-                    Icons.call,
-                    color: TColors.primary,
-                    size: 24,
+                ? GestureDetector(
+                    onTap: onLastIconTap,
+                    child: Icon(
+                      lastIcon,
+                      color: TColors.primary,
+                      size: 24,
+                    ),
                   )
                 : SizedBox(),
           ),

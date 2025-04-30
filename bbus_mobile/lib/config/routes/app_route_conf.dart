@@ -1,12 +1,15 @@
-import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
 import 'package:bbus_mobile/common/entities/child.dart';
-import 'package:bbus_mobile/common/entities/user.dart';
+import 'package:bbus_mobile/common/widgets/splash_screens.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/authentication/presentation/pages/forgot_password_page.dart';
 import 'package:bbus_mobile/features/authentication/presentation/pages/login_page.dart';
 import 'package:bbus_mobile/features/authentication/presentation/pages/otp_verify_page.dart';
 import 'package:bbus_mobile/features/authentication/presentation/pages/reset_password_page.dart';
 import 'package:bbus_mobile/features/change_password/change_password_page.dart';
+import 'package:bbus_mobile/features/driver/schedules/schedule_calendar_page.dart';
+import 'package:bbus_mobile/features/map/driver_map.dart';
+import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/absent_request_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/add_location_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/child_feature_layout.dart';
@@ -19,6 +22,7 @@ import 'package:bbus_mobile/features/map/edit_location_map.dart';
 import 'package:bbus_mobile/features/map/map_page.dart';
 import 'package:bbus_mobile/features/notification/notification_page.dart';
 import 'package:bbus_mobile/features/notification/notification_setting_page.dart';
+import 'package:bbus_mobile/features/parent/presentation/pages/edit_child_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/parent_home_page.dart';
 import 'package:bbus_mobile/features/profile/profile_page.dart';
 import 'package:bbus_mobile/features/parent/presentation/pages/requests_page.dart';
@@ -33,20 +37,45 @@ class AppRouteConf {
       GlobalKey<NavigatorState>();
   late final _router = GoRouter(
     navigatorKey: _rootNavigatorKey,
+    // initialLocation: '/splash',
     initialLocation: RoutePaths.login,
-    // initialLocation: RoutePaths.forgotPassword,
+    // initialLocation: RoutePaths.driverStudent,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
-          return ParentHomePage(
-            child: child,
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => sl<RequestListCubit>(),
+              ),
+            ],
+            child: ParentHomePage(
+              child: child,
+            ),
           );
         },
         routes: [
           GoRoute(
+            path: RoutePaths.parentNotification,
+            name: RouteNames.parentNotification,
+            builder: (_, __) => const NotificationPage(),
+          ),
+          GoRoute(
             path: RoutePaths.parentChildren,
             name: RouteNames.parentChildren,
             builder: (_, __) => const ChildrenListPage(),
+            routes: [
+              GoRoute(
+                path: RoutePaths.parentEditChild,
+                name: RouteNames.parentEditChild,
+                builder: (context, state) {
+                  final data = state.extra as ChildEntity;
+                  return EditChildPage(
+                    child: data,
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: RoutePaths.parentProfile,
@@ -71,16 +100,17 @@ class AppRouteConf {
           GoRoute(
               path: RoutePaths.parentRequest,
               name: RouteNames.parentRequest,
-              builder: (_, __) => RequestsPage(),
+              builder: (context, __) => BlocProvider.value(
+                    value: context.read<RequestListCubit>()..getRequestList(),
+                    child: RequestsPage(),
+                  ),
               routes: [
                 GoRoute(
-                  parentNavigatorKey: _rootNavigatorKey,
                   path: RoutePaths.parentAbsentRequest,
                   name: RouteNames.parentAbsentRequest,
                   builder: (_, __) => AbsentRequestPage(),
                 ),
                 GoRoute(
-                  parentNavigatorKey: _rootNavigatorKey,
                   path: RoutePaths.parentOtherRequest,
                   name: RouteNames.parentOtherRequest,
                   builder: (_, __) => AddLocationPage(),
@@ -99,9 +129,9 @@ class AppRouteConf {
             builder: (_, __) => const StudentListPage(),
           ),
           GoRoute(
-            path: RoutePaths.driverProfile,
-            name: RouteNames.driverProfile,
-            builder: (_, __) => const ProfilePage(),
+            path: RoutePaths.driverSchedule,
+            name: RouteNames.driverSchedule,
+            builder: (_, __) => const ScheduleCalendarPage(),
           ),
           GoRoute(
             path: RoutePaths.driverContact,
@@ -123,11 +153,6 @@ class AppRouteConf {
         },
       ),
       GoRoute(
-        path: RoutePaths.parentNotification,
-        name: RouteNames.parentNotification,
-        builder: (_, __) => const NotificationPage(),
-      ),
-      GoRoute(
         path: '${RoutePaths.parentEditLocation}/:actionType',
         name: RouteNames.parentEditLocation,
         builder: (_, state) {
@@ -142,6 +167,16 @@ class AppRouteConf {
       //   name: RouteNames.parentBusMap,
       //   builder: (_, __) => const BusTrackingMap(),
       // ),
+      GoRoute(
+        path: '${RoutePaths.driverBusMap}/:routeId',
+        name: RouteNames.driverBusMap,
+        builder: (_, state) {
+          String? routeId = state.pathParameters['routeId'];
+          return DriverMap(
+            routeId: routeId!,
+          );
+        },
+      ),
       GoRoute(
         path: RoutePaths.forgotPassword,
         name: RouteNames.forgotPassword,
@@ -169,6 +204,11 @@ class AppRouteConf {
         path: RoutePaths.login,
         name: RouteNames.login,
         builder: (_, __) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (_, __) => const SplashScreen(),
       ),
     ],
   );
