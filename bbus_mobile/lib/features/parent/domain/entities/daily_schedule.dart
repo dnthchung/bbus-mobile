@@ -80,6 +80,11 @@ class EventDetail {
   static String? _formatTime(String? raw) {
     if (raw == null || raw.isEmpty) return null;
     try {
+      raw = raw.replaceFirst(RegExp(r'Z$'), '');
+      // Remove fractional seconds (e.g. .000 or .123456)
+      raw = raw.replaceFirst(RegExp(r'\.\d+'), '');
+      // Remove timezone offset like +00:00 or -04:30
+      raw = raw.replaceFirst(RegExp(r'([+-])\d{2}:\d{2}$'), '');
       final parsed = DateTime.parse(raw);
       return DateFormat('HH:mm').format(parsed);
     } catch (_) {
