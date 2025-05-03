@@ -11,8 +11,8 @@ class ChildEntity extends Equatable {
   dynamic gender;
   dynamic status;
   dynamic parentId;
-  String? busId;
-  String? busName;
+  dynamic busId;
+  dynamic busName;
   dynamic parent;
   dynamic checkpointId;
   dynamic checkpointName;

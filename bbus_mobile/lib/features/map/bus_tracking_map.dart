@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:bbus_mobile/common/entities/checkpoint.dart';
+import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/common/entities/location.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
@@ -17,22 +19,28 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
 class BusTrackingMap extends StatefulWidget {
-  const BusTrackingMap({super.key});
+  final ChildEntity child;
+  final List<CheckpointEntity> checkpoints;
+  const BusTrackingMap(
+      {super.key, required this.child, required this.checkpoints});
 
   @override
   State<BusTrackingMap> createState() => _BusTrackingMapState();
 }
 
 class _BusTrackingMapState extends State<BusTrackingMap> {
-  late LocationTrackingCubit _locationTrackingCubit;
+  final ValueNotifier<LatLng?> _markerPosition = ValueNotifier(null);
   final MapController _mapController = MapController();
   final Location _location = Location();
   LatLng? _currentLocation = LatLng(35.761648, 51.399856);
   LatLng? _destination = LatLng(35.761641, 51.399850);
   List<LatLng> _route = [];
-  List<LatLng> _checkpoints = [];
   Marker? _marker;
-
+  bool _isFollowMode = true;
+  final Distance _distance = const Distance();
+  void _updateMarker(LocationEntity location) {
+    _markerPosition.value = LatLng(location.latitude, location.longitude);
+  }
   // Future<void> _fetchCoordinatesPoint(String location) async {
   //   final url =
   //       'https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1';
@@ -88,45 +96,29 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
   }
 
   void _fetchBusRoute() async {
-    final cubit = context.read<LocationTrackingCubit>();
-    final res =
-        await sl<GetMapRoute>().call('efd29829-782a-44fe-a30c-429f70c39e49');
-    res.fold((l) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.message)),
-      );
-    }, (r) async {
-      if (r.length >= 2) {
-        setState(() {
-          _checkpoints = r
-              .map(
-                  (location) => LatLng(location.latitude!, location.longitude!))
-              .toList();
-        });
-        final coordinates = r
-            .map((location) => '${location.longitude},${location.latitude}')
-            .join(';');
+    final coordinates = widget.checkpoints
+        .map((location) => '${location.longitude},${location.latitude}')
+        .join(';');
+    final url = 'http://router.project-osrm.org/route/v1/driving/$coordinates'
+        '?overview=full&geometries=polyline';
+    try {
+      final data = await sl<DioClient>().get(url);
+      final geometry = data['routes'][0]['geometry'];
+      _decodePolyline(geometry);
 
-        final url =
-            'http://router.project-osrm.org/route/v1/driving/$coordinates'
-            '?overview=full&geometries=polyline';
-
-        try {
-          final data = await sl<DioClient>().get(url);
-          final geometry = data['routes'][0]['geometry'];
-          _decodePolyline(geometry);
-
-          setState(() {
-            _currentLocation = LatLng(r.first.latitude!, r.first.longitude!);
-            _destination = LatLng(r.last.latitude!, r.last.longitude!);
-          });
-          _mapController.move(
-              LatLng(r.first.latitude!, r.first.longitude!), 15);
-        } catch (e) {
-          print("Failed to fetch OSRM route: $e");
-        }
-      }
-    });
+      setState(() {
+        _currentLocation = LatLng(widget.checkpoints.first.latitude!,
+            widget.checkpoints.first.longitude!);
+        _destination = LatLng(widget.checkpoints.last.latitude!,
+            widget.checkpoints.last.longitude!);
+      });
+      _mapController.move(
+          LatLng(widget.checkpoints.first.latitude!,
+              widget.checkpoints.first.longitude!),
+          15);
+    } catch (e) {
+      print("Failed to fetch OSRM route: $e");
+    }
   }
 
   @override
@@ -142,64 +134,92 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
     super.dispose();
   }
 
-  void _addMarker(LocationEntity location) {
-    logger.i(location);
-    final marker = Marker(
-      point: LatLng(location.latitude, location.longitude),
-      width: 45,
-      height: 45,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: TColors.darkPrimary, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(8),
-        child: Icon(
-          Icons.directions_bus_filled, // slightly better bus icon
-          size: 30,
-          color: TColors.darkPrimary,
-        ),
-      ),
-    );
-    _marker = marker;
-  }
+  // void _addMarker(LocationEntity location) {
+  //   logger.i(location);
+  //   final marker = Marker(
+  //     point: LatLng(location.latitude, location.longitude),
+  //     width: 45,
+  //     height: 45,
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         shape: BoxShape.circle,
+  //         border: Border.all(color: TColors.darkPrimary, width: 2),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.black.withOpacity(0.3),
+  //             blurRadius: 4,
+  //             offset: Offset(0, 2),
+  //           ),
+  //         ],
+  //       ),
+  //       padding: const EdgeInsets.all(8),
+  //       child: Icon(
+  //         Icons.directions_bus_filled, // slightly better bus icon
+  //         size: 30,
+  //         color: TColors.darkPrimary,
+  //       ),
+  //     ),
+  //   );
+  //   _marker = marker;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          BlocBuilder<LocationTrackingCubit, LocationTrackingState>(
-            builder: (context, state) {
-              if (state is LocationTrackingOpened) {
-                return _buildMap();
-              } else if (state is LocationUpdated) {
-                _addMarker(state.location);
-                return _buildMap();
-              } else if (state is LocationTrackingError) {
-                return Center(
-                  child: Text('Error: ${state.message}'),
-                );
-              } else if (state is LocationTrackingClosed) {
-                return const SnackBar(
-                  content: Text('Dừng theo dõi!'),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          )
-        ],
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+          children: [
+            BlocListener<LocationTrackingCubit, LocationTrackingState>(
+              listener: (context, state) {
+                if (state is LocationUpdated) {
+                  _updateMarker(state.location);
+                  if (_isFollowMode && _mapController.camera.center != null) {
+                    final LatLng newBusPosition = LatLng(
+                        state.location.latitude, state.location.longitude);
+                    final double distanceFromCenter = _distance(
+                      _mapController.camera.center,
+                      newBusPosition,
+                    );
+
+                    if (distanceFromCenter > 50) {
+                      _mapController.move(
+                          newBusPosition, _mapController.camera.zoom);
+                    }
+                  }
+                } else if (state is LocationTrackingError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: ${state.message}')),
+                  );
+                } else if (state is LocationTrackingClosed) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Dừng theo dõi!')),
+                  );
+                }
+              },
+              child: _buildMap(),
+            ),
+            Positioned(
+              top: 50,
+              right: 20,
+              child: FloatingActionButton(
+                mini: true,
+                backgroundColor:
+                    _isFollowMode ? TColors.darkPrimary : Colors.grey,
+                onPressed: () {
+                  print('Press');
+                  setState(() {
+                    _isFollowMode = true;
+                    if (_markerPosition.value != null) {
+                      _mapController.move(_markerPosition.value!, 18.12);
+                    }
+                  });
+                },
+                child: Icon(Icons.directions_bus_filled),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -212,6 +232,15 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
         initialZoom: 20,
         minZoom: 2,
         maxZoom: 100,
+        onPositionChanged: (MapCamera camera, bool hasGesture) {
+          print("Current zoom level: ${camera.zoom}");
+          if (hasGesture && _isFollowMode) {
+            setState(() {
+              _isFollowMode =
+                  false; // Disable follow mode if user drags the map
+            });
+          }
+        },
       ),
       children: [
         TileLayer(
@@ -229,38 +258,105 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
             markerDirection: MarkerDirection.heading,
           ),
         ),
-        if (_destination != null)
-          MarkerLayer(
-            markers: [_marker!],
-          ),
-        if (_checkpoints.isNotEmpty)
-          MarkerLayer(
-            markers: _checkpoints.asMap().entries.map((entry) {
-              final index = entry.key;
-              final point = entry.value;
-              final isLast = index == _checkpoints.length - 1;
-
-              return Marker(
-                point: point,
-                width: 50,
-                height: 50,
-                child: Icon(
-                  isLast ? Icons.flag : Icons.location_on,
-                  color: isLast ? Colors.green : Colors.red,
-                  size: 40,
-                ),
-              );
-            }).toList(),
-          ),
         if (_route.length >= 2)
           PolylineLayer(
             polylines: [
               Polyline(
                 points: _route,
                 strokeWidth: 4,
-                color: TColors.darkPrimary,
+                color: Colors.blue,
               ),
             ],
+          ),
+        ValueListenableBuilder<LatLng?>(
+          valueListenable: _markerPosition,
+          builder: (context, value, _) {
+            if (value == null) return SizedBox.shrink();
+            return MarkerLayer(
+              markers: [
+                Marker(
+                  point: value,
+                  width: 30,
+                  height: 30,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border:
+                          Border.all(color: TColors.darkPrimary, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 3,
+                          offset: Offset(0, 1.5),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(4), // smaller padding
+                    child: Icon(
+                      Icons.directions_bus_filled,
+                      size: 18, // smaller icon
+                      color: TColors.darkPrimary,
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
+        ),
+        if (widget.checkpoints.isNotEmpty)
+          MarkerLayer(
+            markers: widget.checkpoints.asMap().entries.map((entry) {
+              final index = entry.key;
+              final point = entry.value;
+              final isLast = index == widget.checkpoints.length - 1;
+              final isChildCheckpoint = widget.child.checkpointId == point.id;
+              return Marker(
+                point: LatLng(point.latitude!, point.longitude!),
+                width: (isLast || isChildCheckpoint) ? 30 : 15,
+                height: (isLast || isChildCheckpoint) ? 30 : 15,
+                child: isLast
+                    ? Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                        size: 40,
+                      )
+                    : isChildCheckpoint
+                        ? Container(
+                            decoration: BoxDecoration(
+                              color: TColors.secondary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                )
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.child_care,
+                              color: Colors.white,
+                              size: 26,
+                            ),
+                          )
+                        // Icon(
+                        //     Icons.location_on,
+                        //     color: TColors.secondary,
+                        //     size: 40,
+                        //   )
+                        : Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: TColors.accent,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                          ),
+              );
+            }).toList(),
           ),
       ],
     );

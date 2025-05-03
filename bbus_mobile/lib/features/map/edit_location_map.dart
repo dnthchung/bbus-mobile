@@ -1,23 +1,18 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bbus_mobile/common/entities/checkpoint.dart';
-import 'package:bbus_mobile/common/entities/child.dart';
 import 'package:bbus_mobile/common/widgets/result_dialog.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
-import 'package:bbus_mobile/core/network/dio_client.dart';
 import 'package:bbus_mobile/features/map/cubit/checkpoint/checkpoint_list_cubit.dart';
-import 'package:bbus_mobile/features/map/cubit/location_tracking/location_tracking_cubit.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/register_checkpoint.dart';
-import 'package:bbus_mobile/features/parent/presentation/pages/add_location_page.dart';
 import 'package:bbus_mobile/features/map/widgets/change_checkpoint_dialog.dart';
 import 'package:bbus_mobile/features/parent/domain/usecases/send_change_checkpoint_req.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
-import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
@@ -33,6 +28,8 @@ class EditLocationMap extends StatefulWidget {
 class _EditLocationMapState extends State<EditLocationMap> {
   final MapController _mapController = MapController();
   final Location _location = Location();
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   bool isLoading = true;
   LatLng? _currentLocation;
   LatLng? _destination;
@@ -60,34 +57,57 @@ class _EditLocationMapState extends State<EditLocationMap> {
         setState(() {
           _currentLocation =
               LatLng(locationData.latitude!, locationData.longitude!);
-          isLoading = false;
         });
       }
     });
   }
 
-  // Future<void> _fetchRouteToDestination(LatLng destination) async {
-  //   if (_currentLocation == null) return;
-  //   _destination = destination;
+  CheckpointEntity? _findClosestCheckpoint(
+      LatLng userLocation, List<CheckpointEntity> checkpoints) {
+    double _deg2rad(double deg) => deg * pi / 180;
 
-  //   final url = "http://router.project-osrm.org/route/v1/driving/"
-  //       '${_currentLocation!.longitude},${_currentLocation!.latitude};'
-  //       '${_destination!.longitude},${_destination!.latitude}?overview=full&geometries=polyline';
-  //   final data = await sl<DioClient>().get(url);
-  //   final geometry = data['routes'][0]['geometry'];
-  //   _decodePolyline(geometry);
-  // }
+    double _calculateDistance(LatLng a, LatLng b) {
+      const earthRadius = 6371; // km
+      final dLat = _deg2rad(b.latitude - a.latitude);
+      final dLng = _deg2rad(b.longitude - a.longitude);
+      final lat1 = _deg2rad(a.latitude);
+      final lat2 = _deg2rad(b.latitude);
 
-  // void _decodePolyline(String encodedPolyline) {
-  //   PolylinePoints polylinePoints = PolylinePoints();
-  //   List<PointLatLng> decodedPoints =
-  //       polylinePoints.decodePolyline(encodedPolyline);
-  //   setState(() {
-  //     _route = decodedPoints
-  //         .map((point) => LatLng(point.latitude, point.longitude))
-  //         .toList();
-  //   });
-  // }
+      final aVal = sin(dLat / 2) * sin(dLat / 2) +
+          sin(dLng / 2) * sin(dLng / 2) * cos(lat1) * cos(lat2);
+      final c = 2 * atan2(sqrt(aVal), sqrt(1 - aVal));
+      return earthRadius * c;
+    }
+
+    if (checkpoints.isEmpty) return null;
+
+    checkpoints.sort((a, b) {
+      final distA =
+          _calculateDistance(userLocation, LatLng(a.latitude!, a.longitude!));
+      final distB =
+          _calculateDistance(userLocation, LatLng(b.latitude!, b.longitude!));
+      return distA.compareTo(distB);
+    });
+
+    return checkpoints.first;
+  }
+
+  void _tryZoomToClosestCheckpoint() {
+    final state = context.read<CheckpointListCubit>().state;
+    if (state is CheckpointListSuccess && _currentLocation != null) {
+      final closest = _findClosestCheckpoint(_currentLocation!, state.data);
+      if (closest != null) {
+        setState(() {
+          isLoading = false;
+        });
+        print(closest);
+        _mapController.move(
+          LatLng(closest.latitude!, closest.longitude!),
+          15,
+        );
+      }
+    }
+  }
 
   Future<bool> _checkRequestPermission() async {
     bool serviceEnabled = await _location.serviceEnabled();
@@ -165,7 +185,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
     });
     final result = await sl<SendChangeCheckpointReq>().call(
       SendChangeCheckpointReqParams(_selectedLocation!,
-          'a9f42863-57b4-4b82-91fb-227f82ecaa20', reason, _selectedChild),
+          'a9f42863-57b4-4b82-91fb-227f82ecaa20', _selectedChild, reason),
     );
     setState(() {
       _isSubmitting = false;
@@ -221,44 +241,36 @@ class _EditLocationMapState extends State<EditLocationMap> {
               children: [
                 isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : FlutterMap(
-                        mapController: _mapController,
-                        options: MapOptions(
-                          initialCenter: _currentLocation ?? LatLng(0, 0),
-                          initialZoom: 20,
-                          minZoom: 2,
-                          maxZoom: 100,
-                        ),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          ),
-                          CurrentLocationLayer(
-                            style: LocationMarkerStyle(
-                              marker: DefaultLocationMarker(
-                                child: Icon(Icons.location_pin,
-                                    color: Colors.white),
-                              ),
-                              markerSize: const Size(35, 35),
-                              markerDirection: MarkerDirection.heading,
-                            ),
-                          ),
-                          BlocBuilder<CheckpointListCubit, CheckpointListState>(
-                            builder: (context, state) {
-                              if (state is CheckpointListLoading) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else if (state is CheckpointListSuccess) {
-                                if (_selectedLocation != null) {
-                                  final initialCp = state.data.firstWhere(
-                                      (cp) => cp.id == _selectedLocation);
-                                  _mapController.move(
-                                      LatLng(initialCp.latitude!,
-                                          initialCp.longitude!),
-                                      15);
-                                }
-                                return MarkerLayer(
+                    : BlocBuilder<CheckpointListCubit, CheckpointListState>(
+                        builder: (context, state) {
+                          if (state is CheckpointListLoading) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (state is CheckpointListSuccess) {
+                            return FlutterMap(
+                              mapController: _mapController,
+                              options: MapOptions(
+                                  initialCenter:
+                                      _currentLocation ?? LatLng(0, 0),
+                                  initialZoom: 20,
+                                  minZoom: 2,
+                                  maxZoom: 100,
+                                  onMapReady: _tryZoomToClosestCheckpoint),
+                              children: [
+                                TileLayer(
+                                  urlTemplate:
+                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                ),
+                                CurrentLocationLayer(
+                                  style: LocationMarkerStyle(
+                                    marker: DefaultLocationMarker(
+                                      child: Icon(Icons.location_pin,
+                                          color: Colors.white),
+                                    ),
+                                    markerSize: const Size(35, 35),
+                                    markerDirection: MarkerDirection.heading,
+                                  ),
+                                ),
+                                MarkerLayer(
                                   markers: state.data.map((checkpoint) {
                                     final bool isSelected =
                                         _selectedLocation != null &&
@@ -278,6 +290,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                             _destination = LatLng(
                                                 checkpoint.latitude!,
                                                 checkpoint.longitude!);
+                                            _searchController.text =
+                                                checkpoint.name ?? '';
                                           });
                                           // _fetchRouteToDestination(location);
                                         },
@@ -291,23 +305,23 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                       ),
                                     );
                                   }).toList(),
-                                );
-                              } else {
-                                return Text("Failed to load locations");
-                              }
-                            },
-                          ),
-                          if (_route.isNotEmpty)
-                            PolylineLayer(
-                              polylines: [
-                                Polyline(
-                                  points: _route,
-                                  strokeWidth: 5,
-                                  color: TColors.darkPrimary,
                                 ),
+                                if (_route.isNotEmpty)
+                                  PolylineLayer(
+                                    polylines: [
+                                      Polyline(
+                                        points: _route,
+                                        strokeWidth: 5,
+                                        color: TColors.darkPrimary,
+                                      ),
+                                    ],
+                                  ),
                               ],
-                            ),
-                        ],
+                            );
+                          }
+                          return Center(
+                              child: Text("Không thể tải các điểm đón"));
+                        },
                       ),
                 Positioned(
                   left: 16,
@@ -350,7 +364,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                     DropdownMenuItem<String?>(
                                       value:
                                           null, // <-- null for "Tất cả học sinh"
-                                      child: const Text('Tất cả học sinh'),
+                                      child: const Text('Tất cả các con'),
                                     ),
                                     ...state.data.map(
                                         (child) => DropdownMenuItem<String?>(
@@ -384,6 +398,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
                               return LayoutBuilder(
                                   builder: (context, constraints) {
                                 return RawAutocomplete<String>(
+                                  textEditingController: _searchController,
+                                  focusNode: _searchFocusNode,
                                   optionsBuilder:
                                       (TextEditingValue textEditingValue) {
                                     if (textEditingValue.text == '') {
@@ -392,7 +408,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                     return state.data
                                         .where((checkpoint) => checkpoint.name!
                                             .toLowerCase()
-                                            .contains(textEditingValue.text
+                                            .startsWith(textEditingValue.text
                                                 .toLowerCase()))
                                         .map((e) => e.name!);
                                   },
@@ -407,8 +423,8 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                       FocusNode focusNode,
                                       VoidCallback onFieldSubmitted) {
                                     return TextFormField(
-                                      controller: textEditingController,
-                                      focusNode: focusNode,
+                                      controller: _searchController,
+                                      focusNode: _searchFocusNode,
                                       decoration: InputDecoration(
                                         hintText: 'Tìm điểm đón',
                                         filled: true,
@@ -420,6 +436,17 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                         contentPadding:
                                             const EdgeInsets.symmetric(
                                                 horizontal: 20),
+                                        suffixIcon: _selectedLocation != null
+                                            ? IconButton(
+                                                icon: Icon(Icons.clear),
+                                                onPressed: () {
+                                                  _searchController.clear();
+                                                  setState(() {
+                                                    _selectedLocation = null;
+                                                  });
+                                                },
+                                              )
+                                            : null,
                                       ),
                                     );
                                   },
@@ -448,9 +475,6 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                                   break;
                                                 }
                                               }
-
-                                              final selectedName =
-                                                  selectedCheckpoint?.name;
                                               return ListTile(
                                                 title: Text(
                                                   option,

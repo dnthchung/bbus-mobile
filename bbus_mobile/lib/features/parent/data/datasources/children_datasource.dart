@@ -55,8 +55,9 @@ class ChildrenDatasourceImpl implements ChildrenDatasource {
       final date = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
       final res = await _dioClient
-          // .get('${ApiConstants.getBusSchedule}?date=$formattedDate');
-          .get('${ApiConstants.getChildAttandance}/$childId?date=2025-04-18');
+          // .get('${ApiConstants.getChildAttandance}?date=$formattedDate');
+          .get(
+              '${ApiConstants.getChildAttandance}/$childId?date=$formattedDate');
       if (res['status'] == 404) {
         return throw EmptyException();
       }

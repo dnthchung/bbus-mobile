@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bbus_mobile/common/entities/bus.dart';
+import 'package:bbus_mobile/common/entities/checkpoint.dart';
 import 'package:bbus_mobile/common/notifications/notification_service.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
@@ -16,7 +17,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MenuTabs extends StatefulWidget {
   final String childId;
-  const MenuTabs({super.key, required this.childId});
+  final ScrollController scrollController;
+  final List<CheckpointEntity> checkpoints;
+  const MenuTabs(
+      {super.key,
+      required this.childId,
+      required this.checkpoints,
+      required this.scrollController});
 
   @override
   State<MenuTabs> createState() => _MenuTabsState();
@@ -64,18 +71,17 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
           } else if (message['direction'] == 'PICK_UP' &&
               message['status'] == 'ATTENDED') {
             _trackingSchedule = _trackingSchedule!.copyWith(
-                pickup: _trackingSchedule!.attendance!
+                attendance: _trackingSchedule!.attendance!
                     .copyWith(time: message['time']));
           } else if (message['direction'] == 'DROP_OFF' &&
               message['status'] == 'IN_BUS') {
             _trackingSchedule = _trackingSchedule!.copyWith(
-                pickup: _trackingSchedule!.attendance!
+                attendance: _trackingSchedule!.attendance!
                     .copyWith(timeLeave: message['time']));
           } else if (message['direction'] == 'DROP_OFF' &&
               message['status'] == 'ATTENDED') {
             _trackingSchedule = _trackingSchedule!.copyWith(
-                pickup:
-                    _trackingSchedule!.drop!.copyWith(time: message['time']));
+                drop: _trackingSchedule!.drop!.copyWith(time: message['time']));
           }
         });
       });
@@ -121,56 +127,53 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
     if (busDetail == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return Container(
+    return SizedBox(
       height: MediaQuery.sizeOf(context).height,
-      child: Align(
-        alignment: AlignmentDirectional(-1, -1),
-        child: Column(
-          children: [
-            TabBar(
-              labelColor: TColors.primary,
-              unselectedLabelColor: TColors.textSecondary,
-              labelStyle: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              unselectedLabelStyle: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              indicatorColor: TColors.primary,
-              tabs: [
-                Tab(
-                  text: 'Trạng thái',
-                ),
-                // Tab(
-                //   text: 'History',
-                // ),
-                Tab(
-                  text: 'Thông tin xe',
-                ),
-              ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tab bar stays pinned
+          TabBar(
+            labelColor: TColors.primary,
+            unselectedLabelColor: TColors.textSecondary,
+            labelStyle:
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            unselectedLabelStyle:
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            indicatorColor: TColors.primary,
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Trạng thái'),
+              Tab(text: 'Thông tin xe'),
+            ],
+          ),
+
+          // Scrollable content under the TabBar
+          Expanded(
+            child: TabBarView(
               controller: _tabController,
-              onTap: (i) async {
-                [() async {}, () async {}, () async {}][i]();
-              },
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  StatusTabView(
+              children: [
+                // Wrap with SingleChildScrollView or your desired scrollable
+                SingleChildScrollView(
+                  controller: widget.scrollController,
+                  padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 0),
+                  child: StatusTabView(
                     trackingSchedule: _trackingSchedule,
                     isLoading: _isLoading,
                   ),
-                  BusInfoTabView(
-                    busDetail: context.read<LocationTrackingCubit>().busDetail!,
+                ),
+                SingleChildScrollView(
+                  padding: EdgeInsetsDirectional.fromSTEB(12, 24, 12, 12),
+                  controller: widget.scrollController,
+                  child: BusInfoTabView(
+                    busDetail: busDetail,
+                    checkpoints: widget.checkpoints,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

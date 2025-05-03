@@ -136,6 +136,7 @@ class ChildCard extends StatelessWidget {
                     id: studentId,
                     name: name,
                     checkpointName: checkpointName,
+                    checkpointId: checkpointId,
                     busId: busId, // if needed
                     avatar: avatar ?? '',
                   ),

@@ -1,4 +1,5 @@
 import 'package:bbus_mobile/config/theme/colors.dart';
+import 'package:bbus_mobile/features/contact/boarding_screen.dart';
 import 'package:flutter/material.dart';
 
 class SchoolContactPage extends StatelessWidget {
@@ -96,8 +97,69 @@ class SchoolContactPage extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 40),
+          const Text(
+            "Câu hỏi thường gặp",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          _buildQASection(),
+          const SizedBox(height: 30),
+          Center(
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const BoardingScreen()),
+                );
+              },
+              icon: const Icon(Icons.info_outline),
+              label: const Text("Hướng dẫn sử dụng ứng dụng"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TColors.primary,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+Widget _buildQASection() {
+  return Column(
+    children: const [
+      ExpansionTile(
+        title: Text("Làm thế nào để đăng ký tài khoản?"),
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Text(
+                "Bạn có thể đăng ký bằng số điện thoại hoặc email từ màn hình chính."),
+          )
+        ],
+      ),
+      ExpansionTile(
+        title: Text("Tôi quên mật khẩu, phải làm sao?"),
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Text(
+                "Sử dụng chức năng 'Quên mật khẩu' để đặt lại mật khẩu qua email."),
+          )
+        ],
+      ),
+      ExpansionTile(
+        title: Text(
+            "Ứng dụng có hỗ trợ theo dõi xe buýt theo thời gian thực không?"),
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Text(
+                "Có, bạn có thể theo dõi vị trí xe buýt từ mục 'Theo dõi'."),
+          )
+        ],
+      ),
+    ],
+  );
 }

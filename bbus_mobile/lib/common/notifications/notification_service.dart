@@ -17,7 +17,7 @@ class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
-  final _format = DateFormat("EEE MMM dd HH:mm:ss 'ICT' yyyy");
+  final _format = DateFormat("yyyy-MM-dd HH:mm:ss");
   String? _userId;
   late Box _notificationBox;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -38,7 +38,28 @@ class NotificationService {
     } else {
       _notificationBox = Hive.box(boxName);
     }
-    await _messaging.requestPermission();
+    NotificationSettings settings = await _messaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: true,
+      sound: true,
+    );
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('Permission_Granted');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('Provisional_Permission_Granted');
+    } else {
+      print('Permission_Denied');
+    }
+    Future<String> getDeviceToken() async {
+      String? token = await _messaging.getToken();
+      return token!;
+    }
+
     _notificationCubit = cubit;
 
     // Initialize local notifications
@@ -54,12 +75,8 @@ class NotificationService {
     );
     // Listen for foreground notifications
     FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
-
     // Listen for notifications tapped when the app is in the background
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
-
-    // Listen for foreground notifications
-    FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
   }
 
   void _handleForegroundNotification(message) async {
@@ -100,9 +117,8 @@ class NotificationService {
         } else {
           var notifBody = jsonDecode(notification.body!);
           DateTime time = _format.parse(notifBody['time']);
-          notifBody['time'] = time.toString().split('.')[0];
           final notifBodyText =
-              'Con ${notifBody['studentName']} đã ${notifBody['status'] == 'IN_BUS' ? 'lên xe' : notifBody['direction'] == 'PICK_UP' ? 'dến trường' : 'về điểm đón'} lúc ${time.toString().split('.')[0]}';
+              'Con ${notifBody['studentName']} đã ${notifBody['status'] == 'IN_BUS' ? 'lên xe' : notifBody['direction'] == 'PICK_UP' ? 'dến trường' : 'về điểm đón'} lúc ${notifBody['time']}';
           // Show notification
           await _localNotif.show(
             notification.hashCode,
@@ -132,30 +148,6 @@ class NotificationService {
       logger.e(e);
     }
   }
-
-  Future<void> _handleBackgroundNotification(RemoteMessage message) async {
-    logger.i('Background message received: ${message.notification}');
-    final notification = message.notification;
-    var notifBody = jsonDecode(notification!.body!);
-    final format = DateFormat("EEE MMM dd HH:mm:ss 'ICT' yyyy");
-    DateTime time = format.parse(notifBody['time']);
-    notifBody['time'] = time.toString().split('.')[0];
-    final notifBodyText =
-        'Con ${notifBody['studentName']} đã ${notifBody['status'] == 'IN_BUS' ? 'lên xe' : notifBody['direction'] == 'PICK_UP' ? 'dến trường' : 'về điểm đón'} lúc ${time.toString().split('.')[0]}';
-
-    final localNotif = LocalNotificationModel(
-      title: notification.title ?? '',
-      body: notifBodyText,
-      timestamp: time,
-      isRead: false,
-    );
-
-    await addNotification(localNotif);
-    if (_notificationStreamController.hasListener) {
-      _notificationStreamController.add(message.notification);
-    }
-  }
-
   // Future<void> _saveNotificationToStorage(LocalNotificationModel notif) async {
   //   final boxName = 'notificationBox_$_userId';
   //   final key = 'notification_${notif.timestamp.toIso8601String()}';

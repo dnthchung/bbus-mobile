@@ -1,8 +1,11 @@
 import 'package:bbus_mobile/common/entities/bus_schedule.dart';
+import 'package:bbus_mobile/common/entities/checkpoint.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/features/driver/datasources/schedule_datasource.dart';
+import 'package:bbus_mobile/features/map/domain/usecases/get_map_route.dart';
 import 'package:bbus_mobile/features/parent/presentation/widgets/bus_info_item.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ScheduleCalendarPage extends StatefulWidget {
@@ -15,6 +18,7 @@ class ScheduleCalendarPage extends StatefulWidget {
 class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
+  List<CheckpointEntity> _checkpoints = [];
   DateTime? _selectedDay;
   bool _isLoading = true;
 
@@ -36,7 +40,17 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
     // Replace this with your actual logic to fetch events from an API.
     List<BusScheduleEntity> fetchedEvents =
         await sl<ScheduleDatasource>().getBusScheduleByMonth(year, month);
-
+    final checkpointRes =
+        await sl<GetMapRoute>().call(fetchedEvents.first.routeId!);
+    checkpointRes.fold((l) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.message)),
+      );
+    }, (r) {
+      setState(() {
+        _checkpoints = r;
+      });
+    });
     // Organize the fetched events by day
     Map<DateTime, BusScheduleEntity> newEvents = {};
     for (var event in fetchedEvents) {
@@ -46,7 +60,6 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
         newEvents[eventDate] = event; // Assign directly
       }
     }
-
     // Update the events and refresh the UI
     setState(() {
       _events = newEvents;
@@ -121,45 +134,77 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
         //         .toList(),
         //   ),
         // ),
-        SingleChildScrollView(
-          padding: EdgeInsetsDirectional.fromSTEB(12, 24, 12, 12),
-          child: Builder(builder: (context) {
-            final event = _getEventsForDay(_selectedDay ?? _focusedDay);
-            if (event == null) {
-              return Center(child: Text('Không có lịch trình trong ngày.'));
-            }
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              spacing: 28,
-              children: [
-                BusInfoItem(
-                    firstIcon: Icons.airline_seat_recline_normal_rounded,
-                    middleTitle: 'Tài xế',
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsetsDirectional.fromSTEB(12, 24, 12, 12),
+            child: Builder(builder: (context) {
+              final event = _getEventsForDay(_selectedDay ?? _focusedDay);
+              if (event == null) {
+                return Center(child: Text('Không có lịch trình trong ngày.'));
+              }
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  BusInfoItem(
+                      firstIcon: Icons.airline_seat_recline_normal_rounded,
+                      middleTitle: 'Tài xế',
+                      middleInfo: _getEventsForDay(_selectedDay ?? _focusedDay)!
+                              .driverName ??
+                          'N/A'),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  BusInfoItem(
+                      firstIcon: Icons.info_rounded,
+                      middleTitle: 'Số hiệu',
+                      middleInfo:
+                          _getEventsForDay(_selectedDay ?? _focusedDay)!.name ??
+                              'N/A'),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  BusInfoItem(
+                      firstIcon: Icons.directions_bus_rounded,
+                      middleTitle: 'Biển số xe',
+                      middleInfo: _getEventsForDay(_selectedDay ?? _focusedDay)!
+                              .licensePlate ??
+                          'N/A'),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  BusInfoItem(
+                    firstIcon: Icons.account_box_rounded,
+                    middleTitle: 'Phụ xe',
                     middleInfo: _getEventsForDay(_selectedDay ?? _focusedDay)!
-                            .driverName ??
-                        'N/A'),
-                BusInfoItem(
-                    firstIcon: Icons.info_rounded,
-                    middleTitle: 'Số hiệu',
-                    middleInfo:
-                        _getEventsForDay(_selectedDay ?? _focusedDay)!.name ??
-                            'N/A'),
-                BusInfoItem(
-                    firstIcon: Icons.directions_bus_rounded,
-                    middleTitle: 'Biển số xe',
-                    middleInfo: _getEventsForDay(_selectedDay ?? _focusedDay)!
-                            .licensePlate ??
-                        'N/A'),
-                BusInfoItem(
-                  firstIcon: Icons.account_box_rounded,
-                  middleTitle: 'Phụ xe',
-                  middleInfo: _getEventsForDay(_selectedDay ?? _focusedDay)!
-                          .assistantName ??
-                      'N/A',
-                ),
-              ],
-            );
-          }),
+                            .assistantName ??
+                        'N/A',
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Text(
+                    'Lộ trình & Thời gian',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  ...?_checkpoints?.map((cp) {
+                    bool isLast = cp.id == _checkpoints?.last.id;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        isLast ? Icons.flag : Icons.location_on,
+                        color: isLast ? Colors.green : Colors.red,
+                      ),
+                      title: Text(cp.name!),
+                      subtitle:
+                          Text("Lat: ${cp.latitude}, Lng: ${cp.longitude}"),
+                      trailing: Text(cp.time!),
+                    );
+                  }).toList(),
+                ],
+              );
+            }),
+          ),
         ),
       ],
     );

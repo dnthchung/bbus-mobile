@@ -7,6 +7,7 @@ class CheckpointEntity extends Equatable {
   double? latitude;
   double? longitude;
   String? status;
+  dynamic? time;
 
   CheckpointEntity({
     this.id,
@@ -15,6 +16,7 @@ class CheckpointEntity extends Equatable {
     this.latitude,
     this.longitude,
     this.status,
+    this.time,
   });
 
   factory CheckpointEntity.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class CheckpointEntity extends Equatable {
           ? double.tryParse(json["longitude"].toString())
           : null,
       status: json["status"] ?? "",
+      time: json["time"] ?? "",
     );
   }
 
@@ -40,5 +43,6 @@ class CheckpointEntity extends Equatable {
         latitude,
         longitude,
         status,
+        time,
       ];
 }

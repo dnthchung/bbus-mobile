@@ -27,7 +27,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final model = LoginModel(phone: phone, password: password);
       final result = await _authRemoteDatasource.login(model);
       if (result['status'] == 401) {
-        return Left(Failure('Wrong Email or Password'));
+        return Left(Failure('Sai số điện thoại hoặc mật khẩu'));
       }
       final tokenPayload = parseJwt(result['access_token']);
       await _secureLocalStorage.save(
