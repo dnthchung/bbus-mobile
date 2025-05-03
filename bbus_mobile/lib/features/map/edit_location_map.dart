@@ -408,7 +408,7 @@ class _EditLocationMapState extends State<EditLocationMap> {
                                     return state.data
                                         .where((checkpoint) => checkpoint.name!
                                             .toLowerCase()
-                                            .startsWith(textEditingValue.text
+                                            .contains(textEditingValue.text
                                                 .toLowerCase()))
                                         .map((e) => e.name!);
                                   },
