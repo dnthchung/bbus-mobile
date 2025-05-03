@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:bbus_mobile/common/entities/bus_schedule.dart';
 import 'package:bbus_mobile/common/entities/student.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
+import 'package:bbus_mobile/core/usecases/usecase.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/end_schedule.dart';
+import 'package:bbus_mobile/features/driver/domain/usecases/get_bus_schedule.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/get_student_stream.dart';
 import 'package:bbus_mobile/features/driver/domain/usecases/mark_attendance.dart';
 import 'package:bloc/bloc.dart';
@@ -26,9 +29,25 @@ class StudentListCubit extends Cubit<StudentListState> {
   StudentListCubit(
       this._getStudentStream, this._markAttendance, this._endSchedule)
       : super(StudentListInitial());
-  void initialize(BusScheduleEntity busSchedule) {
+  void firstInitial(BusScheduleEntity busSchedule) {
     _busSchedule = busSchedule;
     _routeEnded = busSchedule.busScheduleStatus!.toLowerCase() == 'completed';
+  }
+
+  void initialize(BusScheduleEntity busSchedule) async {
+    final res = await sl<GetBusSchedule>().call(NoParams());
+    res.fold(
+      (l) {},
+      (r) {
+        if (r.isNotEmpty) {
+          final newBusSchedule =
+              r.firstWhere((bs) => bs.direction == _busSchedule!.direction);
+          _busSchedule = newBusSchedule;
+          _routeEnded =
+              newBusSchedule.busScheduleStatus!.toLowerCase() == 'completed';
+        }
+      },
+    );
   }
 
   Future<void> markStudentAttendance() async {}
