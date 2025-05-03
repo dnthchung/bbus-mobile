@@ -75,7 +75,7 @@ class TimelinePoint extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: TColors.textSecondary),
                 ),
               ),
-              title == 'Trường tiểu học Ngôi Sao'
+              title == 'Trường liên cấp TH & THCS Ngôi sao Hà nội'
                   ? Align(
                       alignment: AlignmentDirectional(-1, -1),
                       child: Text(
