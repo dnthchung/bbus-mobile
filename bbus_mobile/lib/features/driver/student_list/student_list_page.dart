@@ -75,7 +75,7 @@ class _StudentListPageState extends State<StudentListPage>
         if (r.isNotEmpty) {
           _noSchedule = false;
           _busSchedules = r;
-          context.read<StudentListCubit>().initialize(_busSchedules.last);
+          context.read<StudentListCubit>().firstInitial(_busSchedules.last);
           context.read<StudentListCubit>().loadStudents(0);
         } else {
           _noSchedule = true;
