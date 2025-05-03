@@ -25,7 +25,8 @@ class MarkAttendanceParams {
   MarkAttendanceParams(this.attendanceId, this.checkin, this.checkout);
   Map<String, dynamic> toJson() => {
         "attendanceId": attendanceId,
-        "checkin": '${checkin?.toIso8601String()}+07:00' ?? '',
-        "checkout": '${checkout?.toIso8601String()}+07:00' ?? '',
+        "checkin": checkin != null ? '${checkin?.toIso8601String()}+07:00' : '',
+        "checkout":
+            checkout != null ? '${checkout?.toIso8601String()}+07:00' : '',
       };
 }
