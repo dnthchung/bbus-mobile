@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
 import 'package:bbus_mobile/common/entities/local_notification_model.dart';
 import 'package:bbus_mobile/common/notifications/cubit/notification_cubit.dart';
@@ -17,18 +19,32 @@ import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/chi
 import 'package:bbus_mobile/features/parent/presentation/cubit/request_list/request_list_cubit.dart';
 // import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'config/injector/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
   await Hive.initFlutter();
   Hive.registerAdapter(LocalNotificationModelAdapter());
   initializeDependencies();
   runApp(const MyApp());
+}
+
+@pragma('vm:entry-point')
+Future<void> _handleBackgroundNotification(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  logger.i('Background message received: ${message.notification}');
+  final notification = message.notification;
+  print(notification);
+  // var notifBody = jsonDecode(notification!.body!);
+  // final format = DateFormat("EEE MMM dd HH:mm:ss 'ICT' yyyy");
+  // DateTime time = format.parse(notifBody['time']);
 }
 
 class MyApp extends StatelessWidget {

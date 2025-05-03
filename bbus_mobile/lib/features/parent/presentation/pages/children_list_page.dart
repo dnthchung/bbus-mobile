@@ -3,6 +3,7 @@ import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/utils/date_utils.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/features/parent/data/datasources/children_datasource.dart';
 import 'package:bbus_mobile/features/parent/presentation/cubit/children_list/children_list_cubit.dart';
 import 'package:flutter/material.dart';
@@ -31,18 +32,22 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
   void _geEventTime() async {
     try {
       final res = await sl<ChildrenDatasource>().getRegistrationTime();
-      final isWithin =
-          isNowBetween(parseAsLocal(res['start']), parseAsLocal(res['end']));
-      print(isWithin);
-      setState(() {
-        _registetionEvent = res;
-      });
-      if (isWithin != _isEventOpened) {
+      if (res is String && res.isEmpty) {
+      } else {
+        final isWithin =
+            isNowBetween(parseAsLocal(res['start']), parseAsLocal(res['end']));
+        print(isWithin);
         setState(() {
-          _isEventOpened = isWithin;
+          _registetionEvent = res;
         });
+        if (isWithin != _isEventOpened) {
+          setState(() {
+            _isEventOpened = isWithin;
+          });
+        }
       }
     } catch (e) {
+      logger.e(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Một số lỗi đã xảy ra, vui lòng thử lại sau')),
       );
@@ -91,16 +96,16 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
                     ],
                   )
                 ] else ...[
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Thời gian đăng ký điểm đón đã đóng lúc ${formatStringDate(_registetionEvent?['end'])}',
-                      style: TextStyle(
-                          color: TColors.textSecondary,
-                          fontSize: 16.0,
-                          fontStyle: FontStyle.italic),
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.topLeft,
+                  //   child: Text(
+                  //     'Thời gian đăng ký điểm đón đã đóng lúc ${formatStringDate(_registetionEvent?['end'])}',
+                  //     style: TextStyle(
+                  //         color: TColors.textSecondary,
+                  //         fontSize: 16.0,
+                  //         fontStyle: FontStyle.italic),
+                  //   ),
+                  // ),
                 ],
                 Expanded(
                   child: ListView.builder(

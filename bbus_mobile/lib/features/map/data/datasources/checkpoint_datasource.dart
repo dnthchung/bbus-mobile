@@ -32,10 +32,10 @@ class CheckpointDatasourceImpl implements CheckpointDatasource {
     try {
       var result;
       if (studentId == null) {
-        result = await _dioClient.post(
+        result = await _dioClient.patch(
             '${ApiConstants.registerCheckpointUrl}?checkpointId=$checkpointId');
       } else {
-        result = await _dioClient.post(
+        result = await _dioClient.patch(
             '${ApiConstants.registerCheckpointForSingleUrl}?studentId=$studentId&checkpointId=$checkpointId');
       }
 

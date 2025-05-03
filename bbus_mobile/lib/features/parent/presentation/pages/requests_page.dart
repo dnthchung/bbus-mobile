@@ -232,12 +232,19 @@ class _RequestListState extends State<RequestList> {
                                               request.requestTypeName ??
                                                   'Không có'),
                                           const SizedBox(height: 10),
+                                          if (request
+                                              .studentName.isNotEmpty) ...[
+                                            _buildLabelValue(
+                                                'Con', request.studentName!),
+                                            const SizedBox(height: 10),
+                                          ],
                                           if (request.checkpointName != null &&
-                                              request
-                                                  .checkpointName!.isNotEmpty)
+                                              request.checkpointName!
+                                                  .isNotEmpty) ...[
                                             _buildLabelValue('Điểm đón',
                                                 request.checkpointName!),
-                                          const SizedBox(height: 10),
+                                            const SizedBox(height: 10),
+                                          ],
                                           _buildLabelValue(
                                               'Lý do', request.reason ?? ''),
                                           const SizedBox(height: 10),
@@ -336,7 +343,11 @@ class _RequestListState extends State<RequestList> {
                                     request.checkpointName != null &&
                                             request.checkpointName!.isNotEmpty
                                         ? Text(
-                                            'Đổi sang điểm đón: ${request.checkpointName}')
+                                            request.checkpointName,
+                                            style: TextStyle(
+                                                color: TColors.textSecondary,
+                                                fontStyle: FontStyle.italic),
+                                          )
                                         : const SizedBox(),
                                     Text(request.reason),
                                     const SizedBox(height: 5),

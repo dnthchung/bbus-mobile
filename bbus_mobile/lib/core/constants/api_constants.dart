@@ -26,9 +26,8 @@ class ApiConstants {
   static const String socketAddress = 'ws://10.0.2.2:8080/ws';
   static const String childrenListUrl = '/parent/list-student';
   static const String registerCheckpointForSingleUrl =
-      '/parent/register-checkpoint';
-  static const String registerCheckpointUrl =
-      '/parent/register-checkpoint-for-all-children';
+      '/parent/checkpoint/register/one';
+  static const String registerCheckpointUrl = '/parent/checkpoint/register/all';
   static const String getBusSchedule = '/driver/get-schedule';
   static const String getAttandance = '/attendance/get-attendance';
   static const String getChildAttandance = '/attendance/parent';

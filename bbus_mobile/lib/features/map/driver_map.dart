@@ -141,8 +141,13 @@ class _DriverMapState extends State<DriverMap> {
                             : Colors.red,
                       ),
                       title: Text(stop.name ?? "Bus Stop ${index + 1}"),
-                      subtitle:
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text("Lat: ${stop.latitude}, Lng: ${stop.longitude}"),
+                          if (stop.time != null) Text("Time: ${stop.time}"),
+                        ],
+                      ),
                     );
                   },
                 ),

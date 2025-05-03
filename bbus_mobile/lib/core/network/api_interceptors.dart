@@ -25,9 +25,7 @@ class ApiInterceptors extends Interceptor {
       return handler.next(options); // Skip authentication
     }
     final token = await _secureLocalStorage.load(key: 'token');
-    logger.i(token);
     options.headers['Authorization'] = 'Bearer $token';
-    logger.i(options.headers);
     handler.next(options);
   }
 
@@ -71,7 +69,7 @@ class ApiInterceptors extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
-    if (response.data['status'] == 403) {
+    if (response.data.isNotEmpty && response.data['status'] == 403) {
       logger.i(response.data);
       final refreshToken = await _secureLocalStorage.load(key: 'refreshToken');
       logger.i(refreshToken);

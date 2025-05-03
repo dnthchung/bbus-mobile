@@ -16,9 +16,6 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
   Future<Map<String, dynamic>> checkLoggedInStatus() async {
     try {
       final user = jsonDecode(await _secureLocalStorage.load(key: 'user'));
-      final token = await _secureLocalStorage.load(key: 'token');
-      final refreshToke = await _secureLocalStorage.load(key: 'refreshToken');
-      logger.i(refreshToke);
       // if (!isTokenExpired(token)) {
       //   logger.e('Token is expired: $token');
       //   throw TokenExpireException();
