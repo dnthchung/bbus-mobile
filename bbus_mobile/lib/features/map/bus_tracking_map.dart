@@ -95,6 +95,11 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
     return true;
   }
 
+  double? sanitizeHeading(double? heading) {
+  if (heading == null || heading.isNaN || !heading.isFinite) return 0.0;
+  return heading;
+}
+
   void _fetchBusRoute() async {
     final coordinates = widget.checkpoints
         .map((location) => '${location.longitude},${location.latitude}')
@@ -211,7 +216,7 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
                   setState(() {
                     _isFollowMode = true;
                     if (_markerPosition.value != null) {
-                      _mapController.move(_markerPosition.value!, 18.12);
+                      _mapController.move(_markerPosition.value!, 16.12);
                     }
                   });
                 },
@@ -246,18 +251,18 @@ class _BusTrackingMapState extends State<BusTrackingMap> {
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         ),
-        CurrentLocationLayer(
-          style: LocationMarkerStyle(
-            marker: DefaultLocationMarker(
-              child: Icon(
-                Icons.location_pin,
-                color: Colors.white,
-              ),
-            ),
-            markerSize: Size(35, 35),
-            markerDirection: MarkerDirection.heading,
-          ),
-        ),
+        // CurrentLocationLayer(
+        //   style: LocationMarkerStyle(
+        //     marker: DefaultLocationMarker(
+        //       child: Icon(
+        //         Icons.location_pin,
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //     markerSize: Size(35, 35),
+        //     markerDirection: sanitizeHeading(MarkerDirection.heading),
+        //   ),
+        // ),
         if (_route.length >= 2)
           PolylineLayer(
             polylines: [
