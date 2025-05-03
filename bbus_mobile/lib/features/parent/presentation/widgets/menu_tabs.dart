@@ -49,13 +49,13 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
       setState(() {
         _trackingSchedule = DailyScheduleEntity(
           pickup: EventDetail.withFormattedTime(
-              time: res[1].checkin, address: res[1].checkpointName),
+              time: res[0].checkin, address: res[0].checkpointName),
           attendance: EventDetail.withFormattedTime(
-              time: res[1].checkout,
-              timeLeave: res[0].checkin,
+              time: res[0].checkout,
+              timeLeave: res[1].checkin,
               address: "Trường tiểu học Ngôi Sao"),
           drop: EventDetail.withFormattedTime(
-              time: res[0].checkout, address: res[0].checkpointName),
+              time: res[1].checkout, address: res[1].checkpointName),
         );
         _isLoading = false;
       });
