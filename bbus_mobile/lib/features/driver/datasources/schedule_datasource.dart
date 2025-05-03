@@ -22,10 +22,14 @@ class ScheduleDatasourceImpl implements ScheduleDatasource {
   @override
   Future<List<BusScheduleEntity>> getBusSchedule() async {
     try {
+      final jsonUser = await _secureLocalStorage.load(key: 'user');
+      final user = jsonDecode(jsonUser);
+      String role = user['role'];
+
       final date = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
       final res = await _dioClient
-          .get('${ApiConstants.getBusSchedule}?date=$formattedDate');
+          .get('/${role.toLowerCase()}${ApiConstants.getBusSchedule}?date=$formattedDate');
       // .get('${ApiConstants.getBusSchedule}?date=2025-04-18');
       logger.d(res['data']);
       final List<dynamic> data = res['data'];

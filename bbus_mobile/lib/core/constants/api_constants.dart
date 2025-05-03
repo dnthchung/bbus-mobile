@@ -1,7 +1,8 @@
 class ApiConstants {
   //API
+  // Run cmd: ipconfig -> copy ipv4 address to baseApiUrl and socketAddress
   // static const String baseApiUrl = "http://10.0.2.2:8080";
-  static const String baseApiUrl = "http://192.168.1.6:8080";
+  static const String baseApiUrl = "http://172.16.96.48:8080";
   // static const String baseApiUrl = "http://192.168.180.206:8080";
   static const String apiKey = '8581463081de418880661cf14ad3d77a';
 
@@ -25,12 +26,12 @@ class ApiConstants {
   static const String cancelRequest = '/request/reply';
   static const String addRequestUrl = '/request/add';
   // static const String socketAddress = 'ws://10.0.2.2:8080/ws';
-  static const String socketAddress = 'ws://192.168.1.6:8080/ws';
+  static const String socketAddress = 'ws://172.16.96.48:8080/ws';
   static const String childrenListUrl = '/parent/list-student';
   static const String registerCheckpointForSingleUrl =
       '/parent/checkpoint/register/one';
   static const String registerCheckpointUrl = '/parent/checkpoint/register/all';
-  static const String getBusSchedule = '/driver/get-schedule';
+  static const String getBusSchedule = '/get-schedule';
   static const String getAttandance = '/attendance/get-attendance';
   static const String getChildAttandance = '/attendance/parent';
   static const String markAttendance = '/attendance/manual-attendance';

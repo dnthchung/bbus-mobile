@@ -73,6 +73,7 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
+    String? token = await _messaging.getToken();
     // Listen for foreground notifications
     FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
     // Listen for notifications tapped when the app is in the background
