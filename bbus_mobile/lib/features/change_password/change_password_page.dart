@@ -26,6 +26,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Đổi mật khẩu thành công!')),
               );
+              _currentPasswordController.clear();
+              _passwordController.clear();
+              _confirmPasswordController.clear();
             } else if (state is ChangePasswordFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),

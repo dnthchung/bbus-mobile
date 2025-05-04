@@ -1,6 +1,7 @@
 import 'package:bbus_mobile/common/entities/local_notification_model.dart';
 import 'package:bbus_mobile/common/notifications/notification_service.dart';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 part 'notification_state.dart';
