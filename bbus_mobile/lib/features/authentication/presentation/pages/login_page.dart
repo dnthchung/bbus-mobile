@@ -1,6 +1,10 @@
+import 'package:bbus_mobile/common/notifications/cubit/notification_cubit.dart';
+import 'package:bbus_mobile/common/notifications/notification_service.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
 import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/core/constants/app_text.dart';
+import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bbus_mobile/features/authentication/presentation/cubit/auth_cubit.dart';
@@ -209,13 +213,21 @@ class __FormContentState extends State<_FormContent> {
               },
             ),
             BlocListener<AuthCubit, AuthState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state is AuthLoginSucess) {
                   print(state.data.role);
-                  if (state.data.role?.toLowerCase() == 'parent')
+                  if (state.data.role?.toLowerCase() == 'parent') {
+                    await sl<NotificationService>()
+                        .init(context.read<NotificationCubit>());
+                    final fcmToken =
+                        await sl<NotificationService>().getFcmToken();
+                    logger.i('FCM Token: $fcmToken');
                     context.goNamed(RouteNames.parentChildren);
-                  else
+                  } else if (state.data.role?.toLowerCase() == 'driver') {
+                    context.goNamed(RouteNames.driverSchedule);
+                  } else {
                     context.goNamed(RouteNames.driverStudent);
+                  }
                 } else if (state is AuthLoginFailure) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -30,6 +30,8 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(Failure('Sai số điện thoại hoặc mật khẩu'));
       }
       final tokenPayload = parseJwt(result['access_token']);
+      final roleList = tokenPayload['role'] as List<dynamic>;
+      final role = roleList.isNotEmpty ? roleList.first.toString() : null;
       await _secureLocalStorage.save(
         key: 'token',
         value: result['access_token'],
@@ -41,6 +43,10 @@ class AuthRepositoryImpl implements AuthRepository {
       await _secureLocalStorage.save(
         key: 'userId',
         value: tokenPayload['userId'].toString(),
+      );
+      await _secureLocalStorage.save(
+        key: 'role',
+        value: role,
       );
       // final entityId = await _authRemoteDatasource
       //     .getEntityId(tokenPayload['userId'].toString());

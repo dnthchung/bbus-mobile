@@ -39,9 +39,8 @@ class _StudentListPageState extends State<StudentListPage>
     }
     if (cubit.state is CurrentUserLoggedIn) {
       _isAssistant =
-          // (cubit.state as CurrentUserLoggedIn).user.role!.toLowerCase() ==
-          //     'assistant';
-          true;
+          (cubit.state as CurrentUserLoggedIn).user.role!.toLowerCase() ==
+              'assistant';
     }
     _tabController = TabController(length: 3, vsync: this);
     initialize();
@@ -73,12 +72,16 @@ class _StudentListPageState extends State<StudentListPage>
       },
       (r) {
         if (r.isNotEmpty) {
-          _noSchedule = false;
-          _busSchedules = r;
+          setState(() {
+            _busSchedules = r;
+            _noSchedule = false;
+          });
           context.read<StudentListCubit>().firstInitial(_busSchedules.last);
           context.read<StudentListCubit>().loadStudents(0);
         } else {
-          _noSchedule = true;
+          setState(() {
+            _noSchedule = true;
+          });
         }
         setState(() {
           _isLoading = false;
