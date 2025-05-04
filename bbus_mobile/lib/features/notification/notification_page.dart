@@ -110,8 +110,9 @@ class NotificationPage extends StatelessWidget {
                   //   );
                   // },
                   onDoubleTap: () {
-                    if (!notif.isRead)
+                    if (!notif.isRead) {
                       context.read<NotificationCubit>().markOneAsRead(notif);
+                    }
                   },
                   child: Card(
                     elevation: notif.isRead ? 1 : 4,

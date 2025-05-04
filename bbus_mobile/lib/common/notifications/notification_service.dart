@@ -12,6 +12,7 @@ import 'package:hive/hive.dart';
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -55,11 +56,6 @@ class NotificationService {
     } else {
       print('Permission_Denied');
     }
-    Future<String> getDeviceToken() async {
-      String? token = await _messaging.getToken();
-      return token!;
-    }
-
     _notificationCubit = cubit;
 
     // Initialize local notifications
@@ -99,6 +95,8 @@ class NotificationService {
         const iosDetails = DarwinNotificationDetails();
         const platformDetails =
             NotificationDetails(android: androidDetails, iOS: iosDetails);
+        final uuid = Uuid();
+        final key = uuid.v4();
         if (!notification.title.startsWith('Con của bạn')) {
           await _localNotif.show(
             notification.hashCode,
@@ -107,11 +105,11 @@ class NotificationService {
             platformDetails,
           );
           final localNotif = LocalNotificationModel(
-            title: notification.title ?? '',
-            body: notification.body,
-            timestamp: DateTime.now(),
-            isRead: false,
-          );
+              title: notification.title ?? '',
+              body: notification.body,
+              timestamp: DateTime.now(),
+              isRead: false,
+              key: key);
 
           await addNotification(localNotif);
         } else {
@@ -135,11 +133,11 @@ class NotificationService {
           }
           // // Save notification to secure storage
           final localNotif = LocalNotificationModel(
-            title: notification.title ?? '',
-            body: notifBodyText,
-            timestamp: time,
-            isRead: false,
-          );
+              title: notification.title ?? '',
+              body: notifBodyText,
+              timestamp: time,
+              isRead: false,
+              key: key);
 
           await addNotification(localNotif);
         }
@@ -179,11 +177,10 @@ class NotificationService {
   }
 
   Future<void> addNotification(LocalNotificationModel notif) async {
-    final key = 'notification_${notif.timestamp.toIso8601String()}}';
     try {
-      await _notificationBox.put(key, notif);
+      await _notificationBox.put(notif.key, notif);
       await _notificationCubit?.addNotification(notif);
-      logger.i('Notification saved: $key');
+      logger.i('Notification saved: ${notif.key}');
     } catch (e) {
       logger.e('Error saving notification: $e');
     }
@@ -196,27 +193,26 @@ class NotificationService {
         _notificationBox.putAt(
             i,
             LocalNotificationModel(
-              title: item.title,
-              body: item.body,
-              timestamp: item.timestamp,
-              isRead: true,
-            ));
+                title: item.title,
+                body: item.body,
+                timestamp: item.timestamp,
+                isRead: true,
+                key: item.key));
       }
     }
   }
 
   // Mark a single notification as read
   Future<void> markOneAsRead(LocalNotificationModel notif) async {
-    final key = 'notification_${notif.timestamp.toIso8601String()}}';
     try {
       final updatedNotif = LocalNotificationModel(
-        title: notif.title,
-        body: notif.body,
-        timestamp: notif.timestamp,
-        isRead: true,
-      );
-      await _notificationBox.put(key, updatedNotif);
-      logger.i('Notification marked as read: $key');
+          title: notif.title,
+          body: notif.body,
+          timestamp: notif.timestamp,
+          isRead: true,
+          key: notif.key);
+      await _notificationBox.put(notif.key, updatedNotif);
+      logger.i('Notification marked as read: ${notif.key}');
     } catch (e) {
       logger.e('Error marking notification as read: $e');
     }
@@ -239,22 +235,7 @@ class NotificationService {
 
   void _handleNotificationTap(RemoteMessage message) async {
     logger.i('Notification tapped: ${message.notification}');
-    final notification = message.notification;
-    var notifBody = jsonDecode(notification!.body!);
-    final format = DateFormat("EEE MMM dd HH:mm:ss 'ICT' yyyy");
-    DateTime time = format.parse(notifBody['time']);
-    notifBody['time'] = time.toString().split('.')[0];
-    final notifBodyText =
-        'Con ${notifBody['studentName']} đã ${notifBody['status'] == 'IN_BUS' ? 'lên xe' : notifBody['direction'] == 'PICK_UP' ? 'dến trường' : 'về điểm đón'} lúc ${time.toString().split('.')[0]}';
-    // Handle notification tap (e.g., navigate to a specific page)
-    final localNotif = LocalNotificationModel(
-      title: notification.title ?? '',
-      body: notifBodyText,
-      timestamp: time,
-      isRead: false,
-    );
-    await addNotification(localNotif);
-    debugPrint('Notification tapped: ${message.data}');
+    // await _notificationCubit!.loadNotifications();
   }
 
   void _onNotificationTap(NotificationResponse response) {
@@ -262,35 +243,6 @@ class NotificationService {
     logger.i('Notification tapped: ${response}');
     // Handle local notification tap
     debugPrint('Local notification tapped: ${response.payload}');
-  }
-
-  Future<void> deleteYesterdayNotifications() async {
-    final boxName = 'notificationBox_$_userId';
-    if (!Hive.isBoxOpen(boxName)) {
-      await Hive.openBox(boxName);
-    }
-
-    final box = Hive.box(boxName);
-
-    final now = DateTime.now();
-    final yesterday = now.subtract(const Duration(days: 1));
-
-    try {
-      for (var key in box.keys) {
-        final notification = box.get(key) as LocalNotificationModel?;
-
-        if (notification != null) {
-          final timestamp = notification.timestamp;
-          if (timestamp.isBefore(yesterday) && notification.isRead) {
-            // Delete notifications older than yesterday and marked as 'read'
-            await box.delete(key);
-            logger.i('Deleted old read notification: $key');
-          }
-        }
-      }
-    } catch (e) {
-      logger.e('Error deleting yesterday notifications: $e');
-    } finally {}
   }
 
   Future<String?> getFcmToken() async {

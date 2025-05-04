@@ -22,13 +22,14 @@ class LocalNotificationModelAdapter
       body: fields[1] as String,
       timestamp: fields[2] as DateTime,
       isRead: fields[3] as bool,
+      key: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, LocalNotificationModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -36,7 +37,9 @@ class LocalNotificationModelAdapter
       ..writeByte(2)
       ..write(obj.timestamp)
       ..writeByte(3)
-      ..write(obj.isRead);
+      ..write(obj.isRead)
+      ..writeByte(4)
+      ..write(obj.key);
   }
 
   @override
