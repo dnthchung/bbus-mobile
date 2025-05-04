@@ -58,6 +58,7 @@ class ResetPasswordPage extends StatelessWidget {
                         ),
                         TextFormField(
                           controller: _newPasswordController,
+                          obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Mật khẩu mới',
                           ),
@@ -78,6 +79,7 @@ class ResetPasswordPage extends StatelessWidget {
                         ),
                         TextFormField(
                           controller: _confirmPasswordController,
+                          obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Nhập lại mật khẩu',
                           ),

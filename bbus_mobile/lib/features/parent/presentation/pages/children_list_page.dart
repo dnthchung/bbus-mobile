@@ -29,7 +29,7 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
     context.read<ChildrenListCubit>().getAll();
   }
 
-  void _geEventTime() async {
+  Future<void> _geEventTime() async {
     try {
       final res = await sl<ChildrenDatasource>().getRegistrationTime();
       if (res is String && res.isEmpty) {
@@ -108,24 +108,33 @@ class _ChildrenListPageState extends State<ChildrenListPage> {
                   // ),
                 ],
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: state.data.length,
-                    itemBuilder: (context, index) {
-                      final child = state.data[index];
-                      return ChildCard(
-                        studentId: child.id ?? 'N/A',
-                        busId: child.busId ?? 'Unknown',
-                        name: child.name ?? 'No Name',
-                        dob: child.dob ?? 'No Age Info',
-                        gender: child.gender,
-                        avatar: child.avatar ?? '',
-                        address: child.address ?? '',
-                        checkpointId: child.checkpointId ?? '',
-                        checkpointName: child.checkpointName ?? '',
-                        status: child.status ?? 'Unknown',
-                        isRegisterOpened: _isEventOpened,
-                      );
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await _geEventTime(); // Refresh event data (like openEvent)
+                      context
+                          .read<ChildrenListCubit>()
+                          .getAll(); // Refresh children list
                     },
+                    child: ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      itemCount: state.data.length,
+                      itemBuilder: (context, index) {
+                        final child = state.data[index];
+                        return ChildCard(
+                          studentId: child.id ?? 'N/A',
+                          busId: child.busId ?? 'Unknown',
+                          name: child.name ?? 'No Name',
+                          dob: child.dob ?? 'No Age Info',
+                          gender: child.gender,
+                          avatar: child.avatar ?? '',
+                          address: child.address ?? '',
+                          checkpointId: child.checkpointId ?? '',
+                          checkpointName: child.checkpointName ?? '',
+                          status: child.status ?? 'Unknown',
+                          isRegisterOpened: _isEventOpened,
+                        );
+                      },
+                    ),
                   ),
                 )
               ],

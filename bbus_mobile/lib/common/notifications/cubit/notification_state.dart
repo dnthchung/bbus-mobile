@@ -1,6 +1,6 @@
 part of 'notification_cubit.dart';
 
-class NotificationState {
+class NotificationState extends Equatable {
   final List<LocalNotificationModel> notifications;
   final bool hasUnread;
 
@@ -8,4 +8,8 @@ class NotificationState {
     required this.notifications,
     required this.hasUnread,
   });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [notifications];
 }
