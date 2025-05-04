@@ -1,6 +1,8 @@
 import 'package:bbus_mobile/common/entities/user.dart';
 import 'package:bbus_mobile/common/widgets/navigation_drawer_widget.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/config/routes/routes.dart';
+import 'package:bbus_mobile/core/cache/secure_local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -53,22 +55,37 @@ class DriverHomePage extends StatelessWidget {
     final String currentRoute =
         GoRouter.of(context).routeInformationProvider.value.uri.path;
     final String appBarTitle = getAppBarTitle(currentRoute);
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(appBarTitle),
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
-      ),
-      drawer: NavigationDrawerWidget(
-        menuItems: menuItems,
-        currentRoute: currentRoute,
-      ),
-      body: child,
-    );
+    return FutureBuilder<String?>(
+        future: sl<SecureLocalStorage>().load(key: 'role'),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator(); // or splash/loading screen
+          }
+          final role = snapshot.data!
+              .replaceAll(RegExp(r'[\[\]]'), '')
+              .toUpperCase(); // Clean and normalize role
+
+          // Filter menu items based on role
+          final filteredMenuItems = role == 'DRIVER'
+              ? menuItems.where((item) => item.$1 != 1).toList()
+              : menuItems;
+          return Scaffold(
+            key: _scaffoldKey,
+            appBar: AppBar(
+              title: Text(appBarTitle),
+              leading: IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  _scaffoldKey.currentState?.openDrawer();
+                },
+              ),
+            ),
+            drawer: NavigationDrawerWidget(
+              menuItems: filteredMenuItems,
+              currentRoute: currentRoute,
+            ),
+            body: child,
+          );
+        });
   }
 }

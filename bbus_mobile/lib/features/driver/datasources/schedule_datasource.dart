@@ -76,17 +76,11 @@ class ScheduleDatasourceImpl implements ScheduleDatasource {
           '/${role.toLowerCase()}${ApiConstants.getSCheduleByMonth}?year=$year&month=$month');
       final List<dynamic> data = res['data'];
       if (data.isEmpty) {
-        return throw EmptyException();
+        return [];
       }
       return data.map((bs) => BusScheduleEntity.fromJson(bs)).toList();
     } catch (e) {
-      logger.e(e.toString());
-      if (e.toString() == noElement) {
-        throw EmptyException();
-      }
-      if (e is EmptyException) {
-        throw EmptyException();
-      }
+      logger.e(e);
       throw ServerException(e.toString());
     }
   }

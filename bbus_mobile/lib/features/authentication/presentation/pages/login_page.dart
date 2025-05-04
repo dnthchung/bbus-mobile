@@ -223,8 +223,11 @@ class __FormContentState extends State<_FormContent> {
                         await sl<NotificationService>().getFcmToken();
                     logger.i('FCM Token: $fcmToken');
                     context.goNamed(RouteNames.parentChildren);
-                  } else
+                  } else if (state.data.role?.toLowerCase() == 'driver') {
+                    context.goNamed(RouteNames.driverSchedule);
+                  } else {
                     context.goNamed(RouteNames.driverStudent);
+                  }
                 } else if (state is AuthLoginFailure) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -1,10 +1,13 @@
 import 'package:bbus_mobile/common/entities/bus_schedule.dart';
 import 'package:bbus_mobile/common/entities/checkpoint.dart';
 import 'package:bbus_mobile/config/injector/injector.dart';
+import 'package:bbus_mobile/config/routes/routes.dart';
+import 'package:bbus_mobile/config/theme/colors.dart';
 import 'package:bbus_mobile/features/driver/datasources/schedule_datasource.dart';
 import 'package:bbus_mobile/features/map/domain/usecases/get_map_route.dart';
 import 'package:bbus_mobile/features/parent/presentation/widgets/bus_info_item.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -18,6 +21,7 @@ class ScheduleCalendarPage extends StatefulWidget {
 class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
+  String? _currentRouteId;
   List<CheckpointEntity> _checkpoints = [];
   DateTime? _selectedDay;
   bool _isLoading = true;
@@ -40,42 +44,66 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
     // Replace this with your actual logic to fetch events from an API.
     List<BusScheduleEntity> fetchedEvents =
         await sl<ScheduleDatasource>().getBusScheduleByMonth(year, month);
-    final checkpointRes =
-        await sl<GetMapRoute>().call(fetchedEvents.first.routeId!);
-    checkpointRes.fold((l) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.message)),
-      );
-    }, (r) {
-      setState(() {
-        _checkpoints = r;
+    if (fetchedEvents.isNotEmpty) {
+      final checkpointRes =
+          await sl<GetMapRoute>().call(fetchedEvents.first.routeId!);
+      _currentRouteId = fetchedEvents.first.routeId;
+      checkpointRes.fold((l) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.message)),
+        );
+      }, (r) {
+        setState(() {
+          _checkpoints = r;
+        });
       });
-    });
-    // Organize the fetched events by day
-    Map<DateTime, BusScheduleEntity> newEvents = {};
-    for (var event in fetchedEvents) {
-      if (event.date != null) {
-        DateTime eventDate =
-            DateTime.utc(event.date!.year, event.date!.month, event.date!.day);
-        newEvents[eventDate] = event; // Assign directly
+      // Organize the fetched events by day
+      Map<DateTime, BusScheduleEntity> newEvents = {};
+      for (var event in fetchedEvents) {
+        if (event.date != null) {
+          DateTime eventDate = DateTime.utc(
+              event.date!.year, event.date!.month, event.date!.day);
+          newEvents[eventDate] = event; // Assign directly
+        }
       }
+      // Update the events and refresh the UI
+      setState(() {
+        _events = newEvents;
+        _isLoading = false;
+      });
     }
-    // Update the events and refresh the UI
-    setState(() {
-      _events = newEvents;
-      _isLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
     return Column(
       children: [
+        _currentRouteId != null
+            ? Align(
+                alignment: Alignment.topRight,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.pushNamed(RouteNames.driverBusMap, pathParameters: {
+                      'routeId': _currentRouteId!,
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: TColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  icon: const Icon(
+                    Icons.near_me,
+                    color: Colors.white,
+                  ),
+                  label: const Text('Tuyến đường'),
+                ),
+              )
+            : SizedBox(),
         TableCalendar<BusScheduleEntity>(
           firstDay: DateTime.utc(2020, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
