@@ -20,13 +20,19 @@ class _BoardingScreenState extends State<BoardingScreen> {
     },
     {
       "title": "Bước 2",
-      "description": "Xem các tuyến xe buýt gần bạn và lên kế hoạch di chuyển.",
+      "description": "Chọn 1 điểm đón phù hợp và ấn nút Lưu để đăng kí.",
       "image": "assets/images/onboarding2.png",
     },
     {
       "title": "Bước 3",
-      "description": "Theo dõi vị trí xe buýt theo thời gian thực trên bản đồ.",
+      "description": "Thông báo hiển thị đăng kí thành công.",
       "image": "assets/images/onboarding3.png",
+    },
+    {
+      "title": "Bước 4",
+      "description":
+          "Sau khi có lịch chạy, bạn đã có thể theo dõi chuyến xe trong ngày của con.",
+      "image": "assets/images/onboarding4.png",
     },
   ];
 

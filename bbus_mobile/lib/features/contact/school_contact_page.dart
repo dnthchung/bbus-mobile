@@ -69,7 +69,7 @@ class SchoolContactPage extends StatelessWidget {
               Expanded(
                 flex: 8,
                 child: Text(
-                  "+84 987 654 3210",
+                  "19008189",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -91,7 +91,7 @@ class SchoolContactPage extends StatelessWidget {
               Expanded(
                 flex: 8,
                 child: Text(
-                  "helpschool@gmail.com",
+                  "info@ngoisaohanoi.edu.vn",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -135,7 +135,7 @@ Widget _buildQASection() {
           Padding(
             padding: EdgeInsets.all(12.0),
             child: Text(
-                "Bạn có thể đăng ký bằng số điện thoại hoặc email từ màn hình chính."),
+                "Bạn có thể đăng ký bằng số điện thoại hoặc email từ tại nhà trường."),
           )
         ],
       ),
