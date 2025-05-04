@@ -101,12 +101,12 @@ class _MenuTabsState extends State<MenuTabs> with TickerProviderStateMixin {
         _isLoading = false;
       });
       logger.e(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi không xác định'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Lỗi không xác định'),
+      //     duration: const Duration(seconds: 2),
+      //   ),
+      // );
     } catch (e) {
       logger.e(e.toString());
     }

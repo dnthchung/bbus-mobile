@@ -30,8 +30,8 @@ String fromDatetoString(DateTime date) {
 
 String formatStringDate(String date) {
   try {
-    final dateTime = df.parse(date);
-    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime);
+    final dateTime = DateTime.parse(date); // Parses ISO 8601 format
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime.toLocal());
   } catch (e) {
     logger.e('Error formatting date: $date', error: e);
     return date; // Return the original string if parsing fails

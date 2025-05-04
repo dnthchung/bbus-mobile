@@ -71,7 +71,10 @@ class _ChildFeatureLayoutState extends State<ChildFeatureLayout> {
               top: 30,
               left: 0,
               right: 0,
-              child: CustomAppbar(childName: widget.child.name ?? 'John Doe'),
+              child: CustomAppbar(
+                childName: widget.child.name ?? 'John Doe',
+                avatarUrl: widget.child.avatar,
+              ),
             ),
             DraggableScrollableSheet(
               initialChildSize: 0.3,
