@@ -30,8 +30,8 @@ class PickupDropToggle extends StatelessWidget {
             ],
             showSelectedIcon: false,
             selected: {selected},
-            onSelectionChanged: (newSelection) {
-              cubit.initialize(newSelection.first == 0
+            onSelectionChanged: (newSelection) async {
+              await cubit.initialize(newSelection.first == 0
                   ? busSchedules.last
                   : busSchedules.first);
               cubit.loadStudents(newSelection.first);

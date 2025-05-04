@@ -134,6 +134,11 @@ class AppRouteConf {
             builder: (_, __) => const ScheduleCalendarPage(),
           ),
           GoRoute(
+            path: RoutePaths.driverChangePassword,
+            name: RouteNames.driverChangePassword,
+            builder: (_, __) => ChangePasswordPage(),
+          ),
+          GoRoute(
             path: RoutePaths.driverContact,
             name: RouteNames.driverContact,
             builder: (_, __) => const SchoolContactPage(),

@@ -34,14 +34,16 @@ class StudentListCubit extends Cubit<StudentListState> {
     _routeEnded = busSchedule.busScheduleStatus!.toLowerCase() == 'completed';
   }
 
-  void initialize(BusScheduleEntity busSchedule) async {
+  Future<void> initialize(BusScheduleEntity busSchedule) async {
     final res = await sl<GetBusSchedule>().call(NoParams());
     res.fold(
-      (l) {},
+      (l) {
+        logger.e(l.message);
+      },
       (r) {
         if (r.isNotEmpty) {
           final newBusSchedule =
-              r.firstWhere((bs) => bs.direction == _busSchedule!.direction);
+              r.firstWhere((bs) => bs.direction == busSchedule.direction);
           _busSchedule = newBusSchedule;
           _routeEnded =
               newBusSchedule.busScheduleStatus!.toLowerCase() == 'completed';
