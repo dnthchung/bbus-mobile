@@ -102,6 +102,8 @@ class MyApp extends StatelessWidget {
               final fcmToken = await sl<NotificationService>().getFcmToken();
               logger.i('FCM Token: $fcmToken');
               router.goNamed(RouteNames.parentChildren);
+            } else if (state.data.role?.toLowerCase() == 'driver') {
+              router.goNamed(RouteNames.driverSchedule);
             } else {
               router.goNamed(RouteNames.driverStudent);
             }
