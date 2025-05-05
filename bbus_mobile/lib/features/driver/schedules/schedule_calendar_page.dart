@@ -107,6 +107,7 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
         TableCalendar<BusScheduleEntity>(
           firstDay: DateTime.utc(2020, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
+          locale: 'vi_VN',
           focusedDay: _focusedDay,
           calendarFormat: _calendarFormat,
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),

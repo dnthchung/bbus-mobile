@@ -24,6 +24,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'config/injector/injector.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -114,6 +115,15 @@ class MyApp extends StatelessWidget {
         },
         child: MaterialApp.router(
           theme: TAppTheme.lightTheme,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('vi', 'VN'), // Vietnamese
+          ],
+          locale: Locale('vi', 'VN'),
           routerConfig: router,
         ),
       ),
