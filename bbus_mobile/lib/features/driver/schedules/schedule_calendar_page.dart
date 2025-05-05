@@ -131,6 +131,11 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
             _fetchEvents(focusedDay.year,
                 focusedDay.month); // <- FETCH new month data here
           },
+          availableCalendarFormats: const {
+            CalendarFormat.month: 'Tháng',
+            CalendarFormat.twoWeeks: '2 tuần',
+            CalendarFormat.week: 'Tuần',
+          },
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
               if (events.isNotEmpty) {
