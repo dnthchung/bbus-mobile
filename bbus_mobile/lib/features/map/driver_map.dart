@@ -257,6 +257,16 @@ class _DriverMapState extends State<DriverMap> {
             markerDirection: MarkerDirection.heading,
           ),
         ),
+        if (_route.length >= 2)
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: _route,
+                strokeWidth: 4,
+                color: TColors.darkPrimary,
+              ),
+            ],
+          ),
         if (_checkpoints.isNotEmpty)
           MarkerLayer(
             markers: _checkpoints.asMap().entries.map((entry) {
@@ -299,16 +309,6 @@ class _DriverMapState extends State<DriverMap> {
                 ),
               );
             }).toList(),
-          ),
-        if (_route.length >= 2)
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: _route,
-                strokeWidth: 4,
-                color: TColors.darkPrimary,
-              ),
-            ],
           ),
       ],
     );
