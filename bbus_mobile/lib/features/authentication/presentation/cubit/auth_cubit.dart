@@ -1,4 +1,6 @@
 import 'package:bbus_mobile/common/cubit/current_user/current_user_cubit.dart';
+import 'package:bbus_mobile/common/notifications/notification_service.dart';
+import 'package:bbus_mobile/config/injector/injector.dart';
 import 'package:bbus_mobile/core/usecases/usecase.dart';
 import 'package:bbus_mobile/core/utils/logger.dart';
 import 'package:bbus_mobile/common/entities/user.dart';
@@ -42,6 +44,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logout() async {
     emit(AuthLogoutLoading());
+    sl<NotificationService>().closeBox();
     final result = await _logoutUsecase.call(NoParams());
     result.fold((l) {
       emit(AuthLogoutFailure(l.message));

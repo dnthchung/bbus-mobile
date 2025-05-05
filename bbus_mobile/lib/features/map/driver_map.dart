@@ -132,46 +132,49 @@ class _DriverMapState extends State<DriverMap> {
                   itemBuilder: (context, index) {
                     final stop = _busStops[index];
                     return ListTile(
-                      leading: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(
-                            index == _busStops.length - 1
-                                ? Icons.flag
-                                : Icons.location_on,
-                            color: index == _busStops.length - 1
-                                ? TColors.secondary
-                                : TColors.primary,
-                            size: 30,
-                          ),
-                          if (index != _busStops.length - 1)
-                            Positioned(
-                              top: 8,
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  '${index + 1}',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                      leading: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(
+                              index == _busStops.length - 1
+                                  ? Icons.flag
+                                  : Icons.location_on,
+                              color: index == _busStops.length - 1
+                                  ? TColors.secondary
+                                  : TColors.primary,
+                              size: 30,
+                            ),
+                            if (index != _busStops.length - 1)
+                              Positioned(
+                                top: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                       title: Text(stop.name ?? "Bus Stop ${index + 1}"),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Lat: ${stop.latitude}, Lng: ${stop.longitude}"),
                           if (stop.time != null)
-                            Text("Thời gian: ${stop.time}"),
+                            Text("ƯỚC TÍNH THỜI GIAN ĐÓN/TRẢ: ${stop.time}"),
                         ],
                       ),
                     );
