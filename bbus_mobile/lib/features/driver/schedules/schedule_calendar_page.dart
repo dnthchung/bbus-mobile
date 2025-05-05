@@ -71,6 +71,11 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
         _events = newEvents;
         _isLoading = false;
       });
+    } else {
+      setState(() {
+        _events = {};
+        _isLoading = false;
+      });
     }
   }
 
