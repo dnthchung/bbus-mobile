@@ -30,9 +30,11 @@ class NotificationService {
       StreamController.broadcast();
   Stream<dynamic> get notificationStream =>
       _notificationStreamController.stream;
+  bool _hasListeners = false;
   Future<void> init(NotificationCubit cubit) async {
     // Request notification permissions
     _userId = await _secureStorage.load(key: 'userId');
+    logger.i(_userId);
     final boxName = 'notificationBox_$_userId';
     if (!Hive.isBoxOpen(boxName)) {
       _notificationBox = await Hive.openBox(boxName);
@@ -69,11 +71,11 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
-    String? token = await _messaging.getToken();
-    // Listen for foreground notifications
-    FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
-    // Listen for notifications tapped when the app is in the background
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+    if (!_hasListeners) {
+      FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+      _hasListeners = true;
+    }
   }
 
   void _handleForegroundNotification(message) async {
@@ -141,7 +143,7 @@ class NotificationService {
               timestamp: time,
               isRead: false,
               key: key);
-
+          logger.i('call add');
           await addNotification(localNotif);
         }
       }

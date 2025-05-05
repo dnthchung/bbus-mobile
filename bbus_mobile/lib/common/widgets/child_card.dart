@@ -113,8 +113,14 @@ class ChildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: [
       Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Container(
-          decoration: BoxDecoration(gradient: TColors.secondaryGradient),
+          decoration: BoxDecoration(
+            gradient: TColors.secondaryGradient,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: InkWell(
             onTap: () {
               if (checkpointId == null || checkpointId!.isEmpty) {
@@ -154,20 +160,23 @@ class ChildCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Image.network(
-                        avatar!,
-                        height: 100,
-                        width: 100,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Image(
-                            image:
-                                AssetImage('assets/images/default_child.png'),
-                            height: 100,
-                            width: 100,
-                            fit: BoxFit.cover,
-                          );
-                        },
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          avatar!,
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Image(
+                              image:
+                                  AssetImage('assets/images/default_child.png'),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
                       ),
                       SizedBox(
                         width: 10,
@@ -256,6 +265,7 @@ class ChildCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: TColors.primary,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: IconButton(
               onPressed: () {

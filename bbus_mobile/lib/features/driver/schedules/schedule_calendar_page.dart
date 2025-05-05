@@ -235,9 +235,7 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
                         color: isLast ? Colors.green : Colors.red,
                       ),
                       title: Text(cp.name!),
-                      subtitle:
-                          Text("Lat: ${cp.latitude}, Lng: ${cp.longitude}"),
-                      trailing: Text(cp.time!),
+                      subtitle: Text('ƯỚC TÍNH THỜI GIAN ĐÓN/TRẢ: ${cp.time!}'),
                     );
                   }).toList(),
                 ],

@@ -87,7 +87,7 @@ class BusInfoTabView extends StatelessWidget {
             title: Text(cp.name!),
             // subtitle: Text("Lat: ${cp.latitude}, Lng: ${cp.longitude}"),
             // trailing: Text(cp.time!),
-            subtitle: Text(cp.time),
+            subtitle: Text("ƯỚC TÍNH THỜI GIAN ĐÓN/TRẢ: ${cp.time}"),
           );
         }),
       ],
