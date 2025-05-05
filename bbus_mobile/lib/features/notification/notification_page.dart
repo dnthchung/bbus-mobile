@@ -137,7 +137,7 @@ class NotificationPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                DateFormat('MMM d, h:mm a')
+                                DateFormat('d MMM, HH:mm', 'vi_VN')
                                     .format(notif.timestamp),
                                 style: const TextStyle(
                                   fontSize: 12,
