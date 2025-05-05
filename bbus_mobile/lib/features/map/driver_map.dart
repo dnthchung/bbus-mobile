@@ -124,7 +124,7 @@ class _DriverMapState extends State<DriverMap> {
         return Container(
           padding: const EdgeInsets.all(16),
           child: _busStops.isEmpty
-              ? const Center(child: Text("No checkpoints found"))
+              ? const Center(child: Text("Không tìm thấy điểm đón nào"))
               : ListView.separated(
                   shrinkWrap: true,
                   itemCount: _busStops.length,
@@ -145,7 +145,8 @@ class _DriverMapState extends State<DriverMap> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("Lat: ${stop.latitude}, Lng: ${stop.longitude}"),
-                          if (stop.time != null) Text("Time: ${stop.time}"),
+                          if (stop.time != null)
+                            Text("Thời gian: ${stop.time}"),
                         ],
                       ),
                     );

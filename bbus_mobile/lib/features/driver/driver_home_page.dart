@@ -40,13 +40,6 @@ final List<(int, IconData, String, String, String)> menuItems = [
   ),
   (
     4,
-    Icons.mail,
-    "Liên hệ trường",
-    RoutePaths.driverContact,
-    RouteNames.driverContact
-  ),
-  (
-    5,
     Icons.logout,
     "Đăng xuất",
     '/logout',
