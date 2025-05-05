@@ -71,6 +71,11 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
         _events = newEvents;
         _isLoading = false;
       });
+    } else {
+      setState(() {
+        _events = {};
+        _isLoading = false;
+      });
     }
   }
 
@@ -130,6 +135,11 @@ class _ScheduleCalendarPageState extends State<ScheduleCalendarPage> {
             _focusedDay = focusedDay;
             _fetchEvents(focusedDay.year,
                 focusedDay.month); // <- FETCH new month data here
+          },
+          availableCalendarFormats: const {
+            CalendarFormat.month: 'Tháng',
+            CalendarFormat.twoWeeks: '2 tuần',
+            CalendarFormat.week: 'Tuần',
           },
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
