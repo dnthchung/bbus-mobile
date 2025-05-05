@@ -114,9 +114,10 @@ class NotificationService {
           await addNotification(localNotif);
         } else {
           var notifBody = jsonDecode(notification.body!);
-          DateTime time = _format.parse(notifBody['time']);
+          DateTime time =
+              _format.parse(notifBody['time']).add(Duration(hours: 7));
           final notifBodyText =
-              'Con ${notifBody['studentName']} đã ${notifBody['status'] == 'IN_BUS' ? 'lên xe' : notifBody['direction'] == 'PICK_UP' ? 'dến trường' : 'về điểm đón'} lúc ${notifBody['time']}';
+              'Con ${notifBody['studentName']} đã ${notifBody['status'] == 'IN_BUS' ? 'lên xe' : notifBody['direction'] == 'PICK_UP' ? 'dến trường' : 'về điểm đón'} lúc ${_format.format(time)}';
           // Show notification
           await _localNotif.show(
             notification.hashCode,
@@ -128,6 +129,7 @@ class NotificationService {
             logger.i('Notification stream has listener');
             if (notifBody['direction'] == 'PICK_UP' ||
                 notifBody['direction'] == 'DROP_OFF') {
+              notifBody['time'] = _format.format(time);
               _notificationStreamController.add(notifBody);
             }
           }
